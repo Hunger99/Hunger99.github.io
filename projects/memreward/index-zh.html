@@ -170,30 +170,52 @@
             <img src="static/images/pipeline_rollouts.png" alt="数学、问答和代码任务中有标签的问题，以及初始策略生成的 rollout">
             <div class="content has-text-justified">
               <p>对数学、问答和代码任务中每个有真实标签的问题，初始策略生成若干 rollout，每个 rollout 包含思考过程和最终答案。问题、思考过程和答案被编码成嵌入，rollout 存为经验记忆。</p>
+              <p class="pipeline-group has-text-left">把每段文本变成嵌入的模型叫句子编码器（sentence encoder）。为什么固定它，而不是用奖励训练它？</p>
+              <p>我们固定句子编码器，是因为这项工作要回答的是奖励能否在按语义相似度选出的邻居之间传播，而不是怎样造一个更好的编码器。主要实验用的 all-MiniLM-L6-v2 是通用编码器，没有用奖励训练；把被微调的 LLM（backbone）从 Qwen 换成 Llama 时，这个编码器也保持不变，所以 Llama 实验只改变 backbone。</p>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="mr-panel-2" aria-labelledby="mr-tab-2" tabindex="0">
             <img src="static/images/pipeline_graph.png" alt="MemReward 的预热阶段及节点和边的图例">
             <div class="content has-text-justified">
               <p>图里有问题、思考和答案三类节点，由三类边连接：问题-问题边按余弦相似度把问题连到最相似的 top-<i>k</i> 个问题，问题-思考边把问题连到它的思考节点，思考-答案边把思考节点和它的答案一一配对。只有问题-问题边取决于嵌入相似度。</p>
+              <p class="pipeline-group has-text-left">两个相似的问题，答案的对错也可能不同。为什么还要按相似度连接问题？</p>
+              <p>相似度边值得保留，因为它们带有有用但含噪声的奖励信息。相关的问题往往有相同的推理要求、解题策略和失败方式。这些边只负责提出候选邻居：图神经网络（GNN）可以学会降低奖励不一致的邻居的权重。</p>
+              <p class="pipeline-group has-text-left">思考文本远比它的问题长。为什么这个长度不会影响哪些经验被连接？</p>
+              <p>思考文本的长度或共用的行文模板（template）改变不了哪些经验被连接，因为挑选邻居的步骤，即检索，根本不读取思考文本。思考文本只在检索之后起作用，用于预测奖励，以及每个节点根据邻居更新自身嵌入的步骤，即消息传递（message passing）。我们还直接测量了长度的影响：思考文本更长，并不会系统性地与 7 个最近邻的思考文本更相似，因为两者的相关系数总体为 −0.287，9 个按基准的测量中有 7 个为负。</p>
+              <p class="pipeline-group has-text-left">为什么不给每条边定方向并禁止成环，把图做成有向无环图（DAG）？</p>
+              <p>我们不加这个约束，因为这张图记录的是经验之间的关系，不是时间上的先后，而问题之间的相似度排不出一个全局先后供 DAG 遵循。DAG 可以按生成时间或标签置信度给问题-问题边定向，但这等于加了一条由人选定、数据本身并不提供的规则，即排序启发式（heuristic）。这种定向还可能去掉相关经验之间双向的消息传递路径，限制信息在它们之间传播。</p>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="mr-panel-3" aria-labelledby="mr-tab-3" tabindex="0">
             <img src="static/images/pipeline_gnn.png" alt="含有标签和无标签 rollout 子图的异构图">
             <div class="content has-text-justified">
               <p>异构 GNN 按边的类型用各自可学习的权重聚合邻居，再用问题表示和 rollout 表示的缩放点积给每个 rollout 打分。它在有标签的 rollout 上用二元交叉熵训练；对 token 级 F1 这样的连续奖励则用回归损失训练。</p>
+              <p class="pipeline-group has-text-left">为什么要训练 GNN，而不是在同一张图上用固定规则扩散标签？</p>
+              <p>我们训练 GNN，是因为在同一张图上，学到的消息传递比固定规则收益更大。在 Qwen2.5-3B 上，标签传播在同样的问题嵌入和相似度图上按固定规则扩散标签，比只用 20% 有标签 rollout 训练、丢弃其余 rollout 的基线 R1-p 高 0.30 分，而 MemReward 比 R1-p 高 1.35 分（分数是测试结果的百分数，在 10 个基准上取平均）。在留出的测试集上，同样的 backbone 和 20% 标签下，GNN 预测奖励的准确率也高于两种更简单的方法：GNN 是 83.8%，对最近的有标签问题做多数投票的 kNN 是 77.5%，不用图的普通神经网络 MLP 是 73.5%。</p>
+              <p class="pipeline-group has-text-left">为什么不跳过图，直接从策略的置信度得到缺失的奖励？</p>
+              <p>策略的置信度，也就是它给自己答案的概率，在这个设定下校准不足，提供不了可靠的奖励：它与实际答对的频率贴合得不够紧。FixMatch 式基线在每批中只保留置信度最高的 30% 无标签 rollout，并给它们未经验证的奖励，即伪奖励（pseudo-reward），不使用图，也不使用其他问题的信息。这个基线在 Qwen2.5-3B 上得 72.55 分，比 R1-p 低 3.12 分，可见 MemReward 的提升不是只靠多加奖励得来的。</p>
+              <p class="pipeline-group has-text-left">为什么预热后冻结 GNN，而不是在在线策略优化时继续训练它？</p>
+              <p>冻结让 GNN 和策略不必互相追着变：如果继续训练，GNN 的每次更新都会改变策略用来学习的奖励，策略的每次更新又会改变 GNN 用来学习的 rollout，这就是移动目标（moving target）反馈回路。GRPO 是更新策略的 RL 算法；在 Qwen2.5-3B 上，它的 410 步训练中冻结 GNN 的准确率保持稳定，没有随策略变化而下降。</p>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="mr-panel-4" aria-labelledby="mr-tab-4" tabindex="0">
             <img src="static/images/pipeline_online.png" alt="MemReward 的在线阶段，包含有标签和无标签的 rollout">
             <div class="content has-text-justified">
               <p>在线策略优化时，无标签的问题不在预热图中。每个问题用同一编码器编码，连到最相似的 top-<i>k</i> 个预热问题，再经训练好的 GNN 传播，由 GNN 预测它的 rollout 的奖励。</p>
+              <p class="pipeline-group has-text-left">为什么 GNN 能给训练时从未见过的领域里的问题打分？</p>
+              <p>GNN 在相似度边上学到的东西可以在数学和问答之间迁移，我们测试的两个方向都是如此。同一数据集随机划分出的问题大多与有标签问题相似，所以更难的测试不给 GNN 目标领域的任何标签：只在问答上训练时，它预测数学奖励的准确率比 MLP 高 12.95 个百分点；只在数学上训练时，它在问答上比 MLP 高 7.35 个百分点。两个模型用的是相同的固定嵌入和训练流程，所以这个差距来自图。把这些预测奖励用于 GRPO 后，数学基准的均分从 R1-p 的 77.36 提到 80.79，问答基准的均分从 R1-p 的 73.95 提到 76.80。</p>
+              <p class="pipeline-group has-text-left">一个问题的邻居互相矛盾，甚至指向错误答案时，为什么 GNN 还能给它的 rollout 打对分？</p>
+              <p>在 Qwen2.5-3B、20% 标签的一个验证问题上，7 个最近邻各自的 8 个 rollout 里只有 0 到 5 个正确，同领域和跨领域的邻居都是如此，所以相似度和领域都说明不了该信哪个邻居。GNN 仍然给 5 个正确的 rollout 打了 0.58–0.77 分，给 3 个错误的 rollout 打了 0.009–0.048 分，8 个标签全部判对。原因是 GNN 既不是 kNN 投票，也不是对邻居标签的简单平均：它学会了在问题、思考和答案节点上做加权聚合，所以即使邻近问题的奖励模式相反，也能区分对的和错的 rollout。</p>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="mr-panel-5" aria-labelledby="mr-tab-5" tabindex="0">
             <img src="static/images/pipeline_reward.png" alt="有标签的 rollout 取真实奖励，无标签的 rollout 取 GNN 预测奖励，再估计优势">
             <div class="content has-text-justified">
               <p>GRPO 为每个问题生成 rollout。有标签的 rollout 取真实奖励，其余 rollout 取 GNN 的预测：按 0.5 阈值二值化，连续奖励则直接用预测分数。然后用 GRPO 目标更新策略。</p>
+              <p class="pipeline-group has-text-left">很多预测奖励是错的，为什么 GRPO 还能改进策略？</p>
+              <p>这种容错来自训练设计的两部分：20% 的真实奖励始终可靠，持续引导优化；GRPO 拿每个 rollout 与同一问题的全部八个 rollout 比较（奖励减去组内均值，再除以组内标准差），得到的分数叫优势（advantage），只要同一组内预测仍与真实奖励正相关，个别奖励错误的影响就会减小。在 Qwen2.5-1.5B 上，在 GNN 自身错误之外再随机翻转每个预测奖励，10 个基准的平均分在翻转概率为 30% 时降 0.72 分，50% 时降 1.01 分，降到 67.09，仍高于 R1-p。</p>
+              <p class="pipeline-group has-text-left">为什么 20% 的标签在部分基准上能比全部标签得分更高？</p>
+              <p>R1-Oracle 是用全部标签训练的 Oracle 运行，只是参照，不是每个基准的上界：训练看到的仍是有限的随机样本，而且同一个模型要同时学数学、问答和代码，所以全部标签并不保证每个基准都得最高分。在数学基准上，一个原因是预测奖励在数学上最可靠：在 Qwen2.5-1.5B 上，冻结的 GNN 把正确 rollout 排在错误 rollout 之前的概率，即 ROC-AUC，在数学上是 0.918，问答是 0.871，代码是 0.754，所以 MemReward 相对更侧重数学，受噪声更大的问答和代码更新影响更小。为检验这一解释，我们在同一 backbone 上把问答和代码的真实标签比例从 20% 提到 70%，数学保持 20%：问答和代码提升，数学下降 2.01 分，不再超过 R1-Oracle。这个结果符合领域之间此消彼长的解释。</p>
             </div>
           </div>
         </div>
