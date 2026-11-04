@@ -19,6 +19,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})"></script>
   <link rel="stylesheet" href="static/css/main.css">
 </head>
 <body>
@@ -91,7 +94,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            This project post-trains a 4B base model, Qwen3.5-4B-Base, into a tool-using financial agent that looks up market prices, macroeconomic series and company filings, computes over them in a Python sandbox and answers multi-step questions. The official post-trained Qwen3.5-4B already solves 84.7% of our earlier market-retrieval development tasks, so we built a harder offline dataset of 3,148 tasks: 2,850 generated in the style of FinSearchComp over a fixed data snapshot, with answers computed by programs and rechecked by an independent implementation, plus 98 FinSearchComp and 200 DocFinQA test tasks. A Qwen3.8-27B teacher solves the market training tasks of two difficulty tiers in an agent harness; these filtered trajectories, with filtered wealth-management and machine-learning trajectories and 2,000 general conversations, train the 4B model with multi-turn agent SFT. On 300 test market-data tasks, on held-out stocks and, for indices, ETFs, FX and FRED series, later periods, the SFT model solves <b>88.7%</b>, against 57.7% for the official Qwen3.5-4B, 16.7% for the base model and 94.7% for the teacher. Reinforcement learning with GRPO from the SFT model is running now.
+            This project post-trains a 4B base model, Qwen3.5-4B-Base, into a tool-using financial agent that looks up market prices, macroeconomic series and company filings, computes over them in a Python sandbox and answers multi-step questions. The official post-trained Qwen3.5-4B already solves 84.7% of our earlier market-retrieval development tasks, so we built a harder offline dataset of 3,148 tasks: 2,850 generated in the style of FinSearchComp over a fixed data snapshot, with answers computed by programs and rechecked by an independent implementation, plus 98 FinSearchComp and 200 DocFinQA test tasks. A Qwen3.8-27B teacher solves the market training tasks of two difficulty tiers in an agent harness; these filtered trajectories, with filtered wealth-management and machine-learning trajectories and 2,000 conversations from the 1:1 mix, train the 4B model with multi-turn agent SFT. On 300 test market-data tasks, on held-out stocks and, for indices, ETFs, FX and FRED series, later periods, the SFT model solves <b>88.7%</b>, against 57.7% for the official Qwen3.5-4B, 16.7% for the base model and 94.7% for the teacher. Reinforcement learning with GRPO from the SFT model is running now.
           </p>
         </div>
       </div>
@@ -107,7 +110,7 @@
       <div class="column">
         <h3 class="title is-3">Pipeline</h3>
         <div class="content"><p>Select a stage to see what it does.</p></div>
-        <div class="pipeline" data-pipeline>
+        <div class="pipeline" id="co-pipeline" data-pipeline>
           <div class="pipeline-steps" role="tablist" aria-label="Project pipeline stages">
             <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-selected="true" aria-controls="co-panel-1"><span class="pipeline-step-num">1</span>Data pipeline</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
@@ -117,13 +120,23 @@
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
             <button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>Multi-turn agent SFT</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-running" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>GRPO (running)</button>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>SFT evaluation</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>Evaluation</button>
+            <button class="pipeline-step is-running" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>GRPO (running)</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL fine-tuning evaluation</button>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-            <div class="content has-text-justified">
-              <p>Collects financial question-answering sources and general SFT data (Tülu 3), synthesizes document QA, removes overlap with the test sets, deduplicates, and mixes financial and general data at set ratios.</p>
+            <div class="content">
+              <p>This stage turns public financial and general data into training mixes for supervised fine-tuning (SFT). These mixes train the single-turn SFT runs, and the agent SFT model in stage 4 takes 2,000 conversations sampled from the 1:1 mix.</p>
+              <ul>
+                <li><b>Format normalization:</b> Every source is rewritten into one sample format with an id, source, messages and metadata. Later steps can then run the same code on all sources. The rewrite drops samples over 4,096 tokens rather than cutting them, since a cut would keep the reasoning and lose the answer.</li>
+                <li><b>Synthetic document QA:</b> The model gpt-oss-120b reads a finance passage of 1,000 to 2,000 characters and writes a calculation question with its worked answer. This extends the read-and-compute task type beyond annual reports. A sample stays only if its numbers appear in the passage and a second answer from the same passage agrees within 1%.</li>
+                <li><b>Decontamination:</b> This step deletes training samples that repeat or closely copy an evaluation task. Otherwise a score could come from a task the model has already seen. A sample is flagged when shared runs of 8 tokens cover at least half of an evaluation task, when the same check passes after table and JSON formatting is stripped, when either of two embedding models finds it too similar, or when it shares enough numbers with an annual-report excerpt.</li>
+                <li><b>Grounding filter:</b> This filter deletes samples of the financial instruction dataset IndustryInstruction whose answer uses material the prompt does not include. Such samples teach the model to write numbers that are not in its material. A sample goes when a short prompt cites an article or data it leaves out, or when the answer has two or more specific numbers missing from the prompt.</li>
+                <li><b>Deduplication:</b> This step keeps one sample per question. The same FinQA task also appears in the DianJin and BizBench datasets, and the FinQA version ranks first because a standard program produced its solution. Samples built on a document excerpt match when the normalized question is the same and the excerpts' number sets have a Jaccard similarity of at least 0.5; the others match exactly or by MinHash at 0.9.</li>
+                <li><b>Mixing:</b> Each SFT run draws 100,000 samples from a finance pool of 143,442 and a general pool of 829,947 at a set ratio. Finance-only SFT can erase the base model's general skills, so the ratio sets how much general data protects them. Finance sources are sampled by size with a 40% cap per source, and a smaller draw nests inside a larger one.</li>
+              </ul>
             </div>
             <div class="pipeline-facts">
               <span class="pipeline-fact">100,000 SFT samples per run</span>
@@ -131,7 +144,7 @@
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
-            <div class="content has-text-justified">
+            <div class="content">
               <p>A SQLite snapshot (through 2025-10-30) of daily prices with splits and dividends, FRED macro series and SEC XBRL filings, with lookup tools and a sandboxed Python. Programs generate tasks that need many periods of data, price adjustment, unit conversion and multi-step aggregation, and compute their answers. Stocks are split by ticker and indices, ETFs, FX and FRED series by time, so test tasks use held-out stocks or later periods.</p>
             </div>
             <div class="pipeline-facts">
@@ -142,33 +155,94 @@
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
-            <div class="content has-text-justified">
-              <p>An append-only context, so each market-data trajectory is exactly what the model saw; a checklist tool; answer verification that rejects numbers with no support in the tool results; and correction messages after rejected actions.</p>
+            <div class="content">
+              <p>The harness wraps the model for multi-step tasks: it supplies the system prompt and tools, runs the tool calls, checks the answer and grades it. The model ends a task by calling the <code>finish</code> tool with its answer. These bullets describe the full configuration of version 3, which the teacher used on the market tasks.</p>
+              <ul>
+                <li><b>Append-only context:</b> No message changes after it is sent, so each model call's messages are a prefix of the next call's and of the stored trajectory. Market SFT data and GRPO then use the message sequence the model saw. Older results are never summarized; each tool result is cut at 8,000 characters when it is produced, with a note on how to ask for less.</li>
+                <li><b>Checklist tool:</b> <code>set_checklist</code> lets the model write the steps a request needs and mark them done. It keeps sub-goals in view during a long task. The harness restates the checklist after every tool result, and the model may call the tool at most 20 times in a task.</li>
+                <li><b>Separate step budgets:</b> The limit of 100 steps counts only task turns, the turns that do the task's work. Checklist upkeep and redoing a rejected answer should not use up the steps a long task needs. A checklist-only turn, a turn with a rejected finish and the 10 turns after it do not count, under a hard cap of 142 turns.</li>
+                <li><b>Constraints:</b> Code checks every write action against the tool schema and the checkable business rules before running it. A trade that breaks a rule should never reach the account. A breaking write is rejected unexecuted and the model gets the reason. Market tools only read data, so this part acts in the wealth-management environment.</li>
+                <li><b>Answer verification:</b> When the model calls finish, the answer's numbers, apart from exceptions such as dates, must have support in the tool results or the request, every checklist item must be done, and the environment's own checks must pass, such as each trade meeting the rules on the final state. This targets numbers no tool produced and answers given before the work is done. On market tasks a number counts as supported when a tool-result number matches it after scaling by thousands, millions, billions or percent and rounding to the answer's decimals. A failed check rejects the finish at most twice; the next finish is accepted unchecked, and the SFT filters drop such trajectories.</li>
+                <li><b>Correction messages:</b> These messages tell the model what went wrong. They aim to stop loops and wasted steps. A rejected finish returns the failing checks, a tool error on a known tool returns an example of a valid call, the third identical call gets a hint to change approach, and a reply with no tool call gets a reminder.</li>
+                <li><b>Thinking-preserving chat template:</b> This changed Qwen3.5 template, used to serve the 4B models in harness version 3 and to render market SFT data, keeps the thinking of every assistant turn after the first user message. The original template dropped earlier thinking after a reminder, so the next prompt no longer extended the last one. Each turn records its sampled tokens and whether its prompt begins with the previous prompt and completion, so any break shows up.</li>
+              </ul>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
-            <div class="content has-text-justified">
-              <p>Market trajectories from the Qwen3.8-27B teacher pass up to 11 filters, and wealth-management and machine-learning trajectories pass the 7 that apply to them. With 2,000 general conversations they train Qwen3.5-4B-Base, with the thinking of accepted turns in the loss and tool outputs out of it.</p>
+            <div class="content">
+              <p>Market trajectories from the Qwen3.8-27B teacher pass up to 11 filters, such as a correct answer, no repeated calls, a teacher check of the method, and a limit on tasks the base model already solves. Wealth-management and machine-learning trajectories pass the 7 that apply to them. With 2,000 conversations from the 1:1 mix they make 12,475 samples. Several samples share one training sequence of up to 32,768 tokens, which gives 2,439 sequences. Training fine-tunes all of Qwen3.5-4B-Base for 2 epochs at a learning rate of 1e-5 on 6 GPUs.</p>
+              <ul>
+                <li><b>Loss:</b> Training minimizes the cross-entropy between the model's next-token prediction and the label, the standard causal-LM loss \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\), where \(x_{&lt;t}\) is the sequence before position \(t\), \(\theta\) the model weights and \(N\) the number of labeled tokens. This makes the model reproduce the labeled turns token by token. The loss is computed only at labeled positions, in chunks recomputed during the backward pass, which leaves its value and gradients unchanged and saves the memory of full-vocabulary logits at every position.</li>
+                <li><b>Labels:</b> A label is the token itself where the model should learn and &minus;100, which the loss ignores, everywhere else. Tool outputs come from the tools, so they are not imitated. The labels cover a trajectory's assistant turns: thinking, text and tool calls through the end token. System, user and tool turns are masked. Market trajectories also leave out a reply that drew a reminder and a turn with a rejected call, which stay in the context. Wealth-management and machine-learning trajectories keep the loss on rejected turns, and any with a reminder are dropped. The current data builder also masks turns with malformed calls, such as unknown tool names; the SFT model's data predates this rule, and those turns are 0.25% of its labeled tokens.</li>
+                <li><b>Sample boundaries:</b> Each batch tells the model where every sample in a shared sequence begins and ends. Without this, Qwen3.5's linear-attention layers would carry state from one sample into the next. With it, the largest per-token loss difference from this leak fell from 6.3 nats to 0.13 nats, which is numerical noise.</li>
+              </ul>
             </div>
             <div class="pipeline-facts">
               <span class="pipeline-fact">12,475 samples</span>
-              <span class="pipeline-fact">Up to 32,768 tokens</span>
+              <span class="pipeline-fact">2,439 sequences</span>
+              <span class="pipeline-fact">24.22M of 79.57M tokens carry loss</span>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
-            <div class="content has-text-justified">
-              <p>GRPO in verl continues from the SFT model, with ablations on training tasks screened by the SFT model's pass rate, the number of updates per step, and DAPO-style dynamic sampling.</p>
+            <div class="content">
+              <p>Programs score every SFT model on the sets below. Two models are compared task by task: \(\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\), where \(a_i\) and \(b_i\) are 100 for a correct task and 0 otherwise, and the 95% interval comes from 10,000 paired bootstrap resamples of the \(n\) tasks.</p>
+              <p class="pipeline-group">Single-turn SFT runs</p>
+              <ul>
+                <li><b>Finance score (1,886 FinQA and TAT-QA test questions):</b> A question is correct when the first number after the last "Answer:" is within 1% of the reference, in either percent or decimal form. Here \(y_i\) is the reference, \(\hat{y}_i\) the answer and \(\tau_i = 0.01|y_i|\), or 0.005 when \(y_i = 0\). \[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
+                <li><b>MMLU (13,018 questions):</b> A question from the knowledge benchmark, without its four economics and accounting subjects, is correct when the most likely option \(o\) for prompt \(x_q\) is the right option \(o^{*}_q\). \[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
+                <li><b>GSM8K (1,319 questions):</b> A math word problem is correct when \(\hat{a}_q\), the last number in the reply, equals the reference \(a_q\). \[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
+                <li><b>IFEval (541 prompts):</b> A prompt counts only when the reply meets all its program-checkable instructions \(I_p\), such as a word limit or JSON output; \(f_{p,j}=1\) when instruction \(j\) holds. \[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
+                <li><b>General score:</b> The mean of the three general benchmarks. \[A_{\text{gen}} = \tfrac{1}{3}(A_{\text{MMLU}} + A_{\text{GSM}} + A_{\text{IF}})\]</li>
+              </ul>
+              <p class="pipeline-group">Agent SFT model</p>
+              <ul>
+                <li><b>Market-data test (300 tasks):</b> A task passes (\(s_t = 1\)) when every key of its reference, a number within tolerance, a date, a text or a set, appears correctly in the final answer. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>FinSearchComp, offline (98 tasks):</b> A task passes under the same key rule, using the tolerance each task states. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>DocFinQA (200 tasks):</b> A question over a full SEC 10-K passes when the agent’s number is within 1% of the reference, by the finance-score rule. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>Wealth management + ML (550 tasks):</b> One of the 500 wealth-management tasks passes when the final holdings, cash and trade records match the reference and the key numbers in the answer are within tolerance; on a task the rules forbid, the banned trade must not run and the answer must name the rule. One of the 50 machine-learning tasks passes when a model is submitted and scores at most 0.015 AUC or 0.03 \(R^2\) below the model that generated the data. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>Development set (200 tasks, 4 attempts each):</b> pass@1 is the average pass rate of one attempt, and pass@4 is the share of tasks solved at least once; \(T\) is the tasks with 4 valid attempts, and \(c_t\) of the \(n_t\) valid attempts at task \(t\) pass. \[P_1 = \frac{100}{|T|}\sum_{t \in T}\frac{c_t}{n_t}, \qquad P_4 = \frac{100}{|T|}\sum_{t \in T}\mathbf{1}[c_t \ge 1]\]</li>
+              </ul>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
-            <div class="content has-text-justified">
-              <p>Each model runs once per task in the same harness and programs grade the answers. Models are compared with a paired bootstrap over tasks.</p>
+            <div class="content">
+              <p>GRPO in verl continues from the SFT model, with ablations on training tasks screened by the SFT model's pass rate, the number of updates per step, and DAPO-style dynamic sampling. GRPO 1 has finished and GRPO 2 is training.</p>
+              <ul>
+                <li><b>GRPO:</b> This reinforcement learning method samples a group of attempts at each task and scores each attempt against its group. The group mean serves as the baseline, so no value network is needed. Each step, run in the RL framework verl, takes 96 tasks with 8 attempts each, and an attempt earns reward 1 when the grader passes it and 0 otherwise.</li>
+                <li><b>Ablation:</b> Each setting changes one factor of the setting before it. A score difference between neighbouring settings can then be traced to that factor, except that GRPO 1 and 2 also differ in the first 4 steps of GRPO 1. The table below lists the four settings.</li>
+                <li><b>Pass-rate screening:</b> The SFT model tries each candidate training task 8 times, and its pass rate decides whether the task stays. A group of attempts with equal rewards gives GRPO nothing to compare. Of 2,000 newly generated tasks that repeat no SFT task and no generated development or test task, those never solved went, those sometimes solved stayed and 10% of those always solved stayed; a per-template cut then took the 1,123 kept to 939, the size of GRPO 1's set.</li>
+                <li><b>Updates per step:</b> This is how many times the weights change on one batch of attempts. It sets how far the model moves on each costly batch. A mini-batch of 24 tasks instead of 96 gives 4 updates a step and 112 in all.</li>
+                <li><b>DAPO-style dynamic sampling:</b> A group whose 8 rewards are all equal is dropped and replaced during the step. Such a group has zero advantage, so it costs generation time and gives no signal. Each dropped group earns 2 refill tasks, and once a step has dispatched 288 tasks, three times the batch, filtering stops for that step.</li>
+                <li><b>Attempt limits:</b> An attempt stops at 30 task turns or at a budget of 28,672 tokens after the prompt, tool results included. With the 4,096-token prompt, this matches the 32,768-token SFT sequences. An attempt cut by the budget keeps reward 0 in its group but carries no loss, since the cut is not the model's choice.</li>
+              </ul>
             </div>
-            <div class="pipeline-facts">
-              <span class="pipeline-fact">Market-data test (300)</span>
-              <span class="pipeline-fact">FinSearchComp, offline (98)</span>
-              <span class="pipeline-fact">DocFinQA (200)</span>
-              <span class="pipeline-fact">Wealth management + ML (550)</span>
+            <div class="table-container">
+              <table class="table is-narrow is-hoverable results-table">
+                <thead><tr><th>Setting</th><th>Training tasks</th><th>Updates per step</th><th>Dynamic sampling</th></tr></thead>
+                <tbody>
+                <tr><td>GRPO 1</td><td>939 SFT training tasks: those missed in 2 attempts, plus 25% of those always solved</td><td>1</td><td>Off</td></tr>
+                <tr><td>GRPO 2</td><td>939 screened new tasks</td><td>1</td><td>Off</td></tr>
+                <tr><td>GRPO 3</td><td>939 screened new tasks</td><td>4</td><td>Off</td></tr>
+                <tr><td>GRPO 4</td><td>939 screened new tasks</td><td>4</td><td>On</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="pipeline-note">All four start from the SFT model and run 28 steps at a learning rate of 8.7e-7. The first 4 steps of GRPO 1 used 128 tasks at 1e-6.</p>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
+            <div class="content">
+              <p>The SFT model and the last checkpoint of each GRPO setting run the sets below, so their results pair task by task.</p>
+              <ul>
+                <li><b>Market-data test (300 tasks):</b> A task passes (\(s_t = 1\)) by the same key rule as in the SFT evaluation. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>Strict market-data grading (same 300 tasks; also run on FinSearchComp and the development set):</b> An answer must also pass four rules (\(r_t = 1\)): at most 50 numbers outside dates, at most 40 distinct dates, each number key found outside any date, and, on tasks with candidates, a correct company named first and each later company key followed by its value. \[S_{\text{strict}} = \frac{100}{|T|}\sum_{t \in T} s_t\, r_t\]</li>
+                <li><b>FinSearchComp, offline (98 tasks):</b> A task passes by the same key rule as in the SFT evaluation. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>DocFinQA (200 tasks):</b> A question passes within 1% of the reference, as in the SFT evaluation. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>Wealth management + ML (550 tasks):</b> A task passes by the same state and metric rules as in the SFT evaluation. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>Development set (200 tasks, 4 attempts each):</b> pass@1 and pass@4 are defined as in the SFT evaluation, and validation during training runs on these tasks every 4 steps. \[P_1 = \frac{100}{|T|}\sum_{t \in T}\frac{c_t}{n_t}, \qquad P_4 = \frac{100}{|T|}\sum_{t \in T}\mathbf{1}[c_t \ge 1]\]</li>
+                <li><b>Reworded market-data test (300 tasks):</b> The same tasks are rewritten in new wording with the same parameters and answers, and a change shows how much a score depends on the wording. \[\Delta_{\text{reword}} = S_{\text{reworded}} - S_{\text{original}}\]</li>
+                <li><b>General ability (MMLU, GSM8K, IFEval):</b> The three benchmarks are scored as in the SFT evaluation, except that IFEval uses the model’s own chat template instead of the single-turn runs’ training template, and scores only the text after its thinking. \[A_{\text{gen}} = \tfrac{1}{3}(A_{\text{MMLU}} + A_{\text{GSM}} + A_{\text{IF}})\]</li>
+                <li><b>Gain over the SFT model:</b> On each task-based set above, \(a_i\) is the SFT model and \(b_i\) the checkpoint on task \(i\), with the same paired bootstrap as in the SFT evaluation. \[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -237,21 +311,6 @@
   </div>
 </section>
 <!-- End quantitative results -->
-
-<!-- Status and limits -->
-<section class="section">
-  <div class="container is-max-desktop content">
-    <h2 class="title">Status and Limits</h2>
-    <ul>
-            <li><b>GRPO is still training:</b> the first run starts from the SFT model, and three ablation runs and their evaluations follow it. No GRPO result is reported yet.</li>
-            <li><b>Same task types:</b> market-data test tasks share their types with the training tasks; only the stocks or time periods differ.</li>
-            <li><b>Task selection:</b> the test task types were chosen where the official model did poorly on development tasks.</li>
-            <li><b>Uncertainty:</b> each test task ran once, so the intervals reflect which tasks were sampled, not training randomness.</li>
-            <li><b>Stricter grading:</b> a stricter regrade changed 10 answers in the market-data evaluations and left the conclusions of the comparisons of the SFT model with the base and official models unchanged.</li>
-    </ul>
-  </div>
-</section>
-<!-- End status and limits -->
 
 <footer class="footer">
   <div class="container">
