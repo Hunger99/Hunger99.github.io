@@ -189,15 +189,15 @@
               <p>程序在下面的数据集上给每个 SFT 模型打分。两个模型按题配对比较：\(\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\)，其中 \(a_i\)、\(b_i\) 做对为 100、做错为 0，95% 区间由对 \(n\) 道题的 10,000 次配对 bootstrap 重抽得到。</p>
               <p class="pipeline-group">单轮 SFT 的运行</p>
               <ul>
-                <li><b>金融分（1,886 道 FinQA 和 TAT-QA 测试题）：</b>最后一个 "Answer:" 之后的第一个数与标准答案相差 1% 以内算对，百分数和小数两种写法都认。其中 \(y_i\) 是标准答案，\(\hat{y}_i\) 是回答，\(\tau_i = 0.01|y_i|\)，\(y_i = 0\) 时为 0.005。\[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
-                <li><b>MMLU（13,018 题）：</b>这个知识评测去掉了四个经济和会计科目，对提示 \(x_q\)，概率最大的选项 \(o\) 是正确选项 \(o^{*}_q\) 就算对。\[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
-                <li><b>GSM8K（1,319 题）：</b>数学应用题的回答中，最后一个数 \(\hat{a}_q\) 等于标准答案 \(a_q\) 算对。\[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
-                <li><b>IFEval（541 条提示）：</b>回答满足这条提示中所有可由程序检查的指令 \(I_p\)（如字数上限或 JSON 输出）才算对；指令 \(j\) 成立时 \(f_{p,j}=1\)。\[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
+                <li><b>金融分（1,886 道 FinQA 和 TAT-QA 测试题）：</b>最后一个 "Answer:" 之后的第一个数与标准答案相差 1% 以内算对，百分数和小数两种写法都认。其中 \(D\) 是题目集合，\(y_i\) 是标准答案，\(\hat{y}_i\) 是回答，\(\tau_i = 0.01|y_i|\)，\(y_i = 0\) 时为 0.005。\[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
+                <li><b>MMLU（13,018 题）：</b>这个知识评测去掉了四个经济和会计科目，对提示 \(x_q\)，概率最大的选项 \(o\) 是正确选项 \(o^{*}_q\) 就算对；\(Q\) 是题目集合。\[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
+                <li><b>GSM8K（1,319 题）：</b>数学应用题的回答中，最后一个数 \(\hat{a}_q\) 等于标准答案 \(a_q\) 算对；\(Q\) 是题目集合。\[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
+                <li><b>IFEval（541 条提示）：</b>回答满足这条提示中所有可由程序检查的指令 \(I_p\)（如字数上限或 JSON 输出）才算对；\(P\) 是提示集合，指令 \(j\) 成立时 \(f_{p,j}=1\)。\[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
                 <li><b>通用分：</b>三项通用评测的平均。\[A_{\text{gen}} = \tfrac{1}{3}(A_{\text{MMLU}} + A_{\text{GSM}} + A_{\text{IF}})\]</li>
               </ul>
               <p class="pipeline-group">Agent SFT 模型</p>
               <ul>
-                <li><b>行情测试集（300 题）：</b>标准答案的每个键（容差内的数值、日期、文本或集合）都在最终答案中正确出现，这道题才算通过（\(s_t = 1\)）。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>行情测试集（300 题）：</b>标准答案的每个键（容差内的数值、日期、文本或集合）都在最终答案中正确出现，题目集合 \(T\) 中的这道题才算通过（\(s_t = 1\)）。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>FinSearchComp 离线（98 题）：</b>按同样的键规则判，容差取每题写明的值。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>DocFinQA（200 题）：</b>针对整份 SEC 10-K 的问题，agent 给出的数与标准答案相差 1% 以内算通过，规则同金融分。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>财富管理 + 机器学习（550 题）：</b>500 个财富管理任务要求最终持仓、现金和交易记录与标准状态一致，且答案中的关键数值在误差内；规则禁止的任务要求不执行被禁止的交易，并在答案中指出规则。50 道机器学习任务要求提交模型，且指标比生成数据的模型低不超过 0.015 AUC 或 0.03 \(R^2\)。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
@@ -234,12 +234,12 @@
             <div class="content">
               <p>SFT 模型和每个 GRPO setting 的最后一个检查点都跑下面的数据集，所以结果能按题配对。</p>
               <ul>
-                <li><b>行情测试集（300 题）：</b>每道题按与 SFT 评测相同的键规则判定通过（\(s_t = 1\)）。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
+                <li><b>行情测试集（300 题）：</b>题目集合 \(T\) 中的每道题按与 SFT 评测相同的键规则判定通过（\(s_t = 1\)）。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>严格行情判分（同样 300 题；FinSearchComp 和开发集也跑）：</b>答案还要满足四条规则（\(r_t = 1\)）：日期之外最多 50 个数字；最多 40 个不同日期；每个数值键都在日期之外找到；有候选的题首先点名的公司要正确，其后每个公司键都紧跟它的数值。\[S_{\text{strict}} = \frac{100}{|T|}\sum_{t \in T} s_t\, r_t\]</li>
                 <li><b>FinSearchComp 离线（98 题）：</b>每道题按与 SFT 评测相同的键规则判定通过。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>DocFinQA（200 题）：</b>与标准答案相差 1% 以内算通过，同 SFT 评测。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>财富管理 + 机器学习（550 题）：</b>每道题按与 SFT 评测相同的状态和指标规则判定通过。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
-                <li><b>开发集（200 题，每题 4 次）：</b>pass@1 和 pass@4 的定义同 SFT 评测，训练期间每 4 步也在这些题上验证一次。\[P_1 = \frac{100}{|T|}\sum_{t \in T}\frac{c_t}{n_t}, \qquad P_4 = \frac{100}{|T|}\sum_{t \in T}\mathbf{1}[c_t \ge 1]\]</li>
+                <li><b>开发集（200 题，每题 4 次）：</b>pass@1 和 pass@4 的定义同 SFT 评测，\(T\) 是有 4 次有效尝试的题，训练期间每 4 步也在这些题上验证一次。\[P_1 = \frac{100}{|T|}\sum_{t \in T}\frac{c_t}{n_t}, \qquad P_4 = \frac{100}{|T|}\sum_{t \in T}\mathbf{1}[c_t \ge 1]\]</li>
                 <li><b>换措辞的行情测试集（300 题）：</b>同样的题换一种措辞，参数和答案不变，分数变化说明成绩有多依赖措辞。\[\Delta_{\text{reword}} = S_{\text{reworded}} - S_{\text{original}}\]</li>
                 <li><b>通用能力（MMLU、GSM8K、IFEval）：</b>三项按 SFT 评测的方式打分，只是 IFEval 用模型自己的对话模板，而不是单轮运行的训练模板，并且只给思考之后的文字打分。\[A_{\text{gen}} = \tfrac{1}{3}(A_{\text{MMLU}} + A_{\text{GSM}} + A_{\text{IF}})\]</li>
                 <li><b>相对 SFT 模型的提升：</b>在上面每个按题评测的数据集上，\(a_i\) 是 SFT 模型、\(b_i\) 是检查点在题 \(i\) 上的得分，配对 bootstrap 同 SFT 评测。\[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
