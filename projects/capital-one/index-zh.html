@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Post-training a 4B tool-using financial LLM agent with a self-built data pipeline, multi-turn agent SFT and GRPO, sponsored by Capital One">
+  <meta property="og:title" content="Post-Training a 4B Financial LLM Agent"/>
+  <meta property="og:description" content="Post-training a 4B tool-using financial LLM agent with a self-built data pipeline, multi-turn agent SFT and GRPO, sponsored by Capital One"/>
+  <meta property="og:url" content="https://hunger99.github.io/projects/capital-one/index-zh.html"/>
+  <meta name="twitter:title" content="Post-Training a 4B Financial LLM Agent">
+  <meta name="twitter:description" content="Post-training a 4B tool-using financial LLM agent with a self-built data pipeline, multi-turn agent SFT and GRPO">
+  <meta name="twitter:card" content="summary">
+  <meta name="keywords" content="financial LLM agent, post-training, agent SFT, GRPO, tool use, FinSearchComp, Qwen3.5">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>金融 LLM Agent</title>
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text></svg>">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/main.css">
+</head>
+<body>
+
+<a class="lang-switch" href="index.html" hreflang="en" lang="en">[English]</a>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            <span class="title-gradient">后训练</span>一个 4B 金融 LLM Agent
+            <br>
+            基于多轮 Agent SFT 与 GRPO
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="../../index-zh.html">Tianyang Luo</a><sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <sup>1</sup>伊利诺伊大学厄巴纳-香槟分校
+            </span>
+            <br>
+            <span class="sponsor-line"><img src="../../assets/images/badges/Capital-One.png" alt="Capital One"><small>赞助实践项目</small></span>
+            <br>
+            <span class="eql-cntrb"><small>2026 年 2 月 – 至今</small></span>
+          </div>
+
+          <span class="venue-text">进行中的项目</span>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://github.com/Hunger99/fin-agent-posttrain" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>代码</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser figure -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="static/images/teaser-zh.svg" alt="起点模型、官方模型、SFT 模型和教师在行情测试集、FinSearchComp 和 DocFinQA 上的成功率" style="display: block; margin: 0 auto; width: 100%;">
+      <h2 class="subtitle has-text-centered">
+        在训练过的题型上，多轮 agent SFT 把 4B 模型从 16.7% 提升到 88.7%，超过官方 Qwen3.5-4B（57.7%）。在训练数据没有覆盖的长文档问答上，它仍低于官方模型。
+      </h2>
+    </div>
+  </div>
+</section>
+<!-- End teaser figure -->
+
+<!-- Abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">摘要</h2>
+        <div class="content has-text-justified">
+          <p>
+            本项目把 4B 底座模型 Qwen3.5-4B-Base 后训练成会调用工具的金融 agent：它查询行情、宏观序列和公司财报，在 Python 沙箱里计算，并回答多步问题。官方后训练的 Qwen3.5-4B 已经能做对我们早先行情检索开发题的 84.7%，所以我们构建了一套更难的离线数据集，共 3,148 道题：其中 2,850 道参照 FinSearchComp 在固定数据快照上生成，答案由程序计算并由另一套独立实现复核，另有 98 道 FinSearchComp 和 200 道 DocFinQA 测试题。Qwen3.8-27B 教师在 agent harness 中做两档难度的行情训练题，过滤后的这些轨迹，连同过滤后的财富管理和机器学习轨迹以及 2,000 条通用对话，用多轮 agent SFT 训练 4B 模型。在 300 道行情测试题上（股票是留出的，指数、ETF、外汇和 FRED 序列用更晚的时间段），SFT 模型做对 <b>88.7%</b>，官方 Qwen3.5-4B 为 57.7%，起点模型为 16.7%，教师为 94.7%。从 SFT 模型出发的 GRPO 强化学习正在进行。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End abstract -->
+
+<!-- Pipeline -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h3 class="title is-3">流水线</h3>
+        <div class="content"><p>点击下面的环节查看它做什么。</p></div>
+        <div class="pipeline" data-pipeline>
+          <div class="pipeline-steps" role="tablist" aria-label="项目流水线的环节">
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1"><span class="pipeline-step-num">1</span>数据流水线</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>离线数据集</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>Agent harness</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>多轮 agent SFT</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step is-running" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>GRPO（进行中）</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>评测</button>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
+            <div class="content has-text-justified">
+              <p>采集金融问答数据和通用 SFT 数据（Tülu 3），合成文档问答，删除与测试集重叠的样本，去重，再按设定比例混合金融和通用数据。</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">每次 100,000 条 SFT 样本</span>
+              <span class="pipeline-fact">金融与通用 1:1 混合</span>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
+            <div class="content has-text-justified">
+              <p>SQLite 数据快照（截至 2025-10-30），包含含拆股和分红的日线、FRED 宏观序列和 SEC XBRL 财报，配有查询工具和 Python 沙箱。由程序生成需要多期数据、价格复权、单位换算和多步汇总的题目，并计算答案。股票按代码划分，指数、ETF、外汇和 FRED 序列按时间划分，所以测试题用的是留出的股票或更晚的时间段。</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">3,148 道题</span>
+              <span class="pipeline-fact">565 只证券</span>
+              <span class="pipeline-fact">68 条 FRED 序列</span>
+              <span class="pipeline-fact">516 家公司</span>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
+            <div class="content has-text-justified">
+              <p>只追加的上下文，让每条行情轨迹都与模型当时看到的内容完全一致；清单工具；答案校验，拒绝工具结果中没有依据的数字；动作被拒绝后发送纠错消息。</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
+            <div class="content has-text-justified">
+              <p>Qwen3.8-27B 教师的行情轨迹最多通过 11 道过滤，财富管理和机器学习轨迹通过其中适用的 7 道；它们连同 2,000 条通用对话训练 Qwen3.5-4B-Base。被接受的轮次的思考计入损失，工具输出不计入。</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">12,475 条样本</span>
+              <span class="pipeline-fact">最多 32,768 token</span>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
+            <div class="content has-text-justified">
+              <p>在 verl 上从 SFT 模型继续做 GRPO，并消融三项设置：按 SFT 模型通过率筛选的训练题、每步更新次数和 DAPO 式动态采样。</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
+            <div class="content has-text-justified">
+              <p>每个模型在同一 harness 下每题跑 1 次，由程序判分。模型之间用逐题配对 bootstrap 比较。</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">行情测试集（300）</span>
+              <span class="pipeline-fact">FinSearchComp 离线（98）</span>
+              <span class="pipeline-fact">DocFinQA（200）</span>
+              <span class="pipeline-fact">财富管理 + 机器学习（550）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End pipeline -->
+
+<!-- Quantitative results -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">定量结果</h2>
+
+      <h3 class="title is-5">Agent SFT 让 4B 模型在留出的行情题上从 16.7% 升到 88.7%</h3>
+      <div class="content has-text-justified">
+        <p>
+          成功率（%），使用同一 harness，每题跑 1 次。FinSearchComp（离线）是 FinSearchComp Global T2 和 T3 中快照给出的答案与官方答案在容差内一致的 98 道题。DocFinQA 是长年报问答，本训练数据不针对它，SFT 模型比官方 Qwen3.5-4B 低 14.0 分。
+        </p>
+      </div>
+      <p class="table-hint">左右滑动表格可查看所有列。</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>模型</th><th>行情测试集（300）</th><th>FinSearchComp 离线（98）</th><th>DocFinQA（200）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base（起点）</td><td>16.7</td><td>50.0</td><td>43.5</td></tr>
+            <tr><td>Qwen3.5-4B（官方后训练）</td><td>57.7</td><td>64.3</td><td><u>53.0</u></td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><u>88.7</u></td><td><u>77.6</u></td><td>39.0</td></tr>
+            <tr><td>Qwen3.8-27B（教师）</td><td><b>94.7</b></td><td><b>83.7</b></td><td><b>59.0</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">在 550 道财富管理和机器学习任务上，提升同样成立</h3>
+      <div class="content has-text-justified">
+        <p>
+          自建财富管理环境测试集（500 个任务，如再平衡、基金转换和受规则约束的交易）加 50 道机器学习任务上的成功率（%），每题跑 1 次。SFT 模型比官方 Qwen3.5-4B 高 6.9 分（95% 区间 +3.8 到 +10.2）。
+        </p>
+      </div>
+      <p class="table-hint">左右滑动表格可查看所有列。</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>模型</th><th>全部（550）</th><th>财富管理（500）</th><th>机器学习（50）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base（起点）</td><td>50.4</td><td>51.0</td><td>44</td></tr>
+            <tr><td>Qwen3.5-4B（官方后训练）</td><td>84.2</td><td>86.2</td><td>64</td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><b>91.1</b></td><td><b>92.2</b></td><td><b>80</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">金融 SFT 中混入一半通用数据，能保住数学能力</h3>
+      <div class="content has-text-justified">
+        <p>
+          在 Qwen3-4B-Base 上每次用 100,000 条 SFT 样本：只用金融数据时，GSM8K 比起点模型低 30.4 分；金融与通用数据 1:1 混合时，与起点模型只差 1.1 分以内，金融分比只用金融数据低 1.5 分。通用数据里有 GSM8K 风格的训练题，这个差距有一部分来自练过相似的题。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End quantitative results -->
+
+<!-- Status and limits -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <h2 class="title">进展与局限</h2>
+    <ul>
+            <li><b>GRPO 仍在训练：</b> 第一个运行从 SFT 模型开始，之后是三个消融运行和它们的评测。目前还没有 GRPO 结果。</li>
+            <li><b>题型相同：</b> 行情测试题与训练题题型相同，只是股票或时间段不同。</li>
+            <li><b>选题：</b>测试题型选自官方模型在开发题上表现差的类型。</li>
+            <li><b>不确定性：</b> 每个测试任务只跑 1 次，所以区间只反映抽到哪些题，不含训练随机性。</li>
+            <li><b>更严格的判分：</b> 严格重判改判了行情评测中的 10 个答案，SFT 模型相对起点模型和官方模型的比较结论不变。</li>
+    </ul>
+  </div>
+</section>
+<!-- End status and limits -->
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-9">
+        <div class="content">
+          <p style="font-size: 10pt;">
+            本页面改编自 <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>，该模板源自 <a href="https://nerfies.github.io" target="_blank">Nerfies</a>，遵循 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../assets/js/pipeline.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Post-training a 4B tool-using financial LLM agent with a self-built data pipeline, multi-turn agent SFT and GRPO, sponsored by Capital One">
+  <meta property="og:title" content="Post-Training a 4B Financial LLM Agent"/>
+  <meta property="og:description" content="Post-training a 4B tool-using financial LLM agent with a self-built data pipeline, multi-turn agent SFT and GRPO, sponsored by Capital One"/>
+  <meta property="og:url" content="https://hunger99.github.io/projects/capital-one/"/>
+  <meta name="twitter:title" content="Post-Training a 4B Financial LLM Agent">
+  <meta name="twitter:description" content="Post-training a 4B tool-using financial LLM agent with a self-built data pipeline, multi-turn agent SFT and GRPO">
+  <meta name="twitter:card" content="summary">
+  <meta name="keywords" content="financial LLM agent, post-training, agent SFT, GRPO, tool use, FinSearchComp, Qwen3.5">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Financial LLM Agent</title>
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text></svg>">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/main.css">
+</head>
+<body>
+
+<a class="lang-switch" href="index-zh.html" hreflang="zh-CN" lang="zh-CN">[中文]</a>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            <span class="title-gradient">Post-Training</span> a 4B Financial LLM Agent
+            <br>
+            with Multi-Turn Agent SFT and GRPO
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="../../index.html">Tianyang Luo</a><sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <sup>1</sup>University of Illinois Urbana-Champaign
+            </span>
+            <br>
+            <span class="sponsor-line"><img src="../../assets/images/badges/Capital-One.png" alt="Capital One"><small>Sponsored Practicum Project</small></span>
+            <br>
+            <span class="eql-cntrb"><small>Feb. 2026 – Present</small></span>
+          </div>
+
+          <span class="venue-text">Ongoing Project</span>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://github.com/Hunger99/fin-agent-posttrain" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser figure -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="static/images/teaser.svg" alt="Success rates on the market-data test, FinSearchComp and DocFinQA for the base, official, SFT and teacher models" style="display: block; margin: 0 auto; width: 100%;">
+      <h2 class="subtitle has-text-centered">
+        On tasks of the trained types, multi-turn agent SFT takes the 4B model from 16.7% to 88.7%, past the official Qwen3.5-4B (57.7%). On long-document QA that the training data does not cover, it stays below the official model.
+      </h2>
+    </div>
+  </div>
+</section>
+<!-- End teaser figure -->
+
+<!-- Abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            This project post-trains a 4B base model, Qwen3.5-4B-Base, into a tool-using financial agent that looks up market prices, macroeconomic series and company filings, computes over them in a Python sandbox and answers multi-step questions. The official post-trained Qwen3.5-4B already solves 84.7% of our earlier market-retrieval development tasks, so we built a harder offline dataset of 3,148 tasks: 2,850 generated in the style of FinSearchComp over a fixed data snapshot, with answers computed by programs and rechecked by an independent implementation, plus 98 FinSearchComp and 200 DocFinQA test tasks. A Qwen3.8-27B teacher solves the market training tasks of two difficulty tiers in an agent harness; these filtered trajectories, with filtered wealth-management and machine-learning trajectories and 2,000 general conversations, train the 4B model with multi-turn agent SFT. On 300 test market-data tasks, on held-out stocks and, for indices, ETFs, FX and FRED series, later periods, the SFT model solves <b>88.7%</b>, against 57.7% for the official Qwen3.5-4B, 16.7% for the base model and 94.7% for the teacher. Reinforcement learning with GRPO from the SFT model is running now.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End abstract -->
+
+<!-- Pipeline -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h3 class="title is-3">Pipeline</h3>
+        <div class="content"><p>Select a stage to see what it does.</p></div>
+        <div class="pipeline" data-pipeline>
+          <div class="pipeline-steps" role="tablist" aria-label="Project pipeline stages">
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1"><span class="pipeline-step-num">1</span>Data pipeline</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>Offline dataset</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>Agent harness</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>Multi-turn agent SFT</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step is-running" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>GRPO (running)</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>Evaluation</button>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
+            <div class="content has-text-justified">
+              <p>Collects financial question-answering sources and general SFT data (Tülu 3), synthesizes document QA, removes overlap with the test sets, deduplicates, and mixes financial and general data at set ratios.</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">100,000 SFT samples per run</span>
+              <span class="pipeline-fact">1:1 finance and general mix</span>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
+            <div class="content has-text-justified">
+              <p>A SQLite snapshot (through 2025-10-30) of daily prices with splits and dividends, FRED macro series and SEC XBRL filings, with lookup tools and a sandboxed Python. Programs generate tasks that need many periods of data, price adjustment, unit conversion and multi-step aggregation, and compute their answers. Stocks are split by ticker and indices, ETFs, FX and FRED series by time, so test tasks use held-out stocks or later periods.</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">3,148 tasks</span>
+              <span class="pipeline-fact">565 securities</span>
+              <span class="pipeline-fact">68 FRED series</span>
+              <span class="pipeline-fact">516 companies</span>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
+            <div class="content has-text-justified">
+              <p>An append-only context, so each market-data trajectory is exactly what the model saw; a checklist tool; answer verification that rejects numbers with no support in the tool results; and correction messages after rejected actions.</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
+            <div class="content has-text-justified">
+              <p>Market trajectories from the Qwen3.8-27B teacher pass up to 11 filters, and wealth-management and machine-learning trajectories pass the 7 that apply to them. With 2,000 general conversations they train Qwen3.5-4B-Base, with the thinking of accepted turns in the loss and tool outputs out of it.</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">12,475 samples</span>
+              <span class="pipeline-fact">Up to 32,768 tokens</span>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
+            <div class="content has-text-justified">
+              <p>GRPO in verl continues from the SFT model, with ablations on training tasks screened by the SFT model's pass rate, the number of updates per step, and DAPO-style dynamic sampling.</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
+            <div class="content has-text-justified">
+              <p>Each model runs once per task in the same harness and programs grade the answers. Models are compared with a paired bootstrap over tasks.</p>
+            </div>
+            <div class="pipeline-facts">
+              <span class="pipeline-fact">Market-data test (300)</span>
+              <span class="pipeline-fact">FinSearchComp, offline (98)</span>
+              <span class="pipeline-fact">DocFinQA (200)</span>
+              <span class="pipeline-fact">Wealth management + ML (550)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End pipeline -->
+
+<!-- Quantitative results -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Quantitative Results</h2>
+
+      <h3 class="title is-5">Agent SFT lifts the 4B model from 16.7% to 88.7% on held-out market-data tasks</h3>
+      <div class="content has-text-justified">
+        <p>
+          Success rate (%) with the same harness, one attempt per task. FinSearchComp (offline) is the 98 tasks of FinSearchComp Global T2 and T3 that the snapshot answers within tolerance of the official answers. On DocFinQA, long annual-report QA that this training data does not target, the SFT model is 14.0 points below the official Qwen3.5-4B.
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>Model</th><th>Market-data test (300)</th><th>FinSearchComp, offline (98)</th><th>DocFinQA (200)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base (start)</td><td>16.7</td><td>50.0</td><td>43.5</td></tr>
+            <tr><td>Qwen3.5-4B (official post-trained)</td><td>57.7</td><td>64.3</td><td><u>53.0</u></td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><u>88.7</u></td><td><u>77.6</u></td><td>39.0</td></tr>
+            <tr><td>Qwen3.8-27B (teacher)</td><td><b>94.7</b></td><td><b>83.7</b></td><td><b>59.0</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">The gain holds on 550 wealth-management and machine-learning tasks</h3>
+      <div class="content has-text-justified">
+        <p>
+          Success rate (%) on the test set of a self-built wealth-management environment (500 tasks such as rebalancing, fund switching and rule-constrained trades) and 50 machine-learning tasks, one attempt per task. The SFT model is 6.9 points above the official Qwen3.5-4B (95% interval +3.8 to +10.2).
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>Model</th><th>All (550)</th><th>Wealth management (500)</th><th>Machine learning (50)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base (start)</td><td>50.4</td><td>51.0</td><td>44</td></tr>
+            <tr><td>Qwen3.5-4B (official post-trained)</td><td>84.2</td><td>86.2</td><td>64</td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><b>91.1</b></td><td><b>92.2</b></td><td><b>80</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">Half general data keeps math ability during financial SFT</h3>
+      <div class="content has-text-justified">
+        <p>
+          On Qwen3-4B-Base with 100,000 SFT samples per run, finance-only SFT lowers GSM8K by 30.4 points below the base model, while a 1:1 mix of financial and general data stays within 1.1 points of it and loses 1.5 points of financial score against finance-only SFT. The general data includes GSM8K-style training tasks, so part of this gap comes from practice on similar tasks.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End quantitative results -->
+
+<!-- Status and limits -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Status and Limits</h2>
+    <ul>
+            <li><b>GRPO is still training:</b> the first run starts from the SFT model, and three ablation runs and their evaluations follow it. No GRPO result is reported yet.</li>
+            <li><b>Same task types:</b> market-data test tasks share their types with the training tasks; only the stocks or time periods differ.</li>
+            <li><b>Task selection:</b> the test task types were chosen where the official model did poorly on development tasks.</li>
+            <li><b>Uncertainty:</b> each test task ran once, so the intervals reflect which tasks were sampled, not training randomness.</li>
+            <li><b>Stricter grading:</b> a stricter regrade changed 10 answers in the market-data evaluations and left the conclusions of the comparisons of the SFT model with the base and official models unchanged.</li>
+    </ul>
+  </div>
+</section>
+<!-- End status and limits -->
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-9">
+        <div class="content">
+          <p style="font-size: 10pt;">
+            This page was adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>, which was adopted from <a href="https://nerfies.github.io" target="_blank">Nerfies</a>, licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../assets/js/pipeline.js"></script>
+
+</body>
+</html>

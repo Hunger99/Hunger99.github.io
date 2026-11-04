@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="MemReward: Graph-Based Experience Memory for LLM Reward Prediction with Limited Labels">
+  <meta property="og:title" content="MemReward"/>
+  <meta property="og:description" content="MemReward: Graph-Based Experience Memory for LLM Reward Prediction with Limited Labels"/>
+  <meta property="og:url" content="https://hunger99.github.io/projects/memreward/"/>
+  <meta property="og:image" content="https://hunger99.github.io/projects/memreward/static/images/architecture.png"/>
+  <meta name="twitter:title" content="MemReward">
+  <meta name="twitter:description" content="MemReward: Graph-Based Experience Memory for LLM Reward Prediction with Limited Labels">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="keywords" content="MemReward, reward prediction, graph neural network, experience memory, GRPO, limited labels">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MemReward</title>
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text></svg>">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/main.css">
+</head>
+<body>
+
+<a class="lang-switch" href="index-zh.html" hreflang="zh-CN" lang="zh-CN">[中文]</a>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            <span class="title-gradient">MemReward</span>: Graph-Based Experience Memory
+            <br>
+            for LLM Reward Prediction with Limited Labels
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <!-- Paper authors, in paper order -->
+            <span class="author-block">
+              <a href="../../index.html">Tianyang Luo</a><sup>*1</sup>,
+            </span>
+            <span class="author-block">
+              Tao Feng<sup>*1</sup>,
+            </span>
+            <span class="author-block">
+              Zhigang Hua<sup>2</sup>,
+            </span>
+            <span class="author-block">
+              Yan Xie<sup>2</sup>,
+            </span>
+            <span class="author-block">
+              Shuang Yang<sup>2</sup>,
+            </span>
+            <span class="author-block">
+              Ge Liu<sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://jiaxuan.web.illinois.edu/" target="_blank">Jiaxuan You</a><sup>1<i class="fa fa-envelope fa-sm"></i></sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <sup>1</sup>University of Illinois Urbana-Champaign&nbsp;&nbsp;
+              <sup>2</sup>Meta
+            </span>
+            <br>
+            <span class="eql-cntrb"><small><i class="fa fa-envelope fa-sm"></i> Corresponding author</small></span>
+            <br>
+            <span class="sponsor-line"><img src="../../assets/images/badges/Meta.png" alt=""><small>Meta Sponsored Research Project</small></span>
+          </div>
+
+          <span class="venue-text">NeurIPS 2026</span>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- Paper PDF -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2603.19310" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- arXiv abstract -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2603.19310" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code -->
+              <span class="link-block">
+                <a href="https://github.com/ulab-uiuc/MemReward" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <!-- Dataset -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/ulab-ai/MemReward" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-database"></i></span>
+                  <span>Data</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser figure -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="static/images/teaser.png" alt="MemReward approaches Oracle performance with only 20% labels" style="display: block; margin: 0 auto; width: 100%;">
+      <h2 class="subtitle has-text-centered">
+        Using the same 20% ground-truth labels, MemReward (purple) substantially outperforms partial labels (R1-p, gray), closely approaching fully supervised Oracle performance (green) on both in-domain and out-of-domain tasks across both model scales.
+      </h2>
+    </div>
+  </div>
+</section>
+<!-- End teaser figure -->
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Reinforcement learning (RL) fine-tuning improves large language model (LLM) reasoning using reward signals on sampled rollouts. When reward labels are available for only a subset of rollouts, restricting policy updates to that subset leaves the remaining rollouts unused for policy optimization. Semi-supervised learning propagates labels from labeled to unlabeled samples, but existing methods either diffuse labels with fixed similarity weights or treat each sample independently, ignoring the relations among queries, thinking processes, and answers. We propose <b>MemReward</b>, a graph-based experience memory that propagates rewards to unlabeled rollouts during online policy optimization. MemReward stores queries and the rollouts (thinking processes and final answers) of an initial LLM policy as nodes of a heterogeneous graph connected by similarity and structural edges, and warms up a GNN on labeled rollouts to propagate rewards over this graph. During online RL fine-tuning, unlabeled rollouts are attached to the graph by query similarity, and the policy is updated with ground-truth rewards on labeled rollouts and GNN-predicted rewards on the rest. We evaluate MemReward on 13 benchmarks in mathematics, question answering, and code generation with verifiable rewards, and further with LLM-judge, human-preference, and continuous rewards. With ground-truth rewards on only 20% of rollouts, MemReward achieves 96.6% of the performance of fully supervised training (Oracle) on Qwen2.5-1.5B and 97.3% on Qwen2.5-3B, where it also outperforms label propagation and FixMatch-style self-training. It carries over to Llama backbones up to 8B and closely approaches Oracle on out-of-domain tasks.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<!-- Method overview -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h3 class="title is-3">Pipeline</h3>
+        <div class="content"><p>Rollouts generated by the initial policy are stored as experience memory and organized into a heterogeneous graph for reward prediction. Select a stage to see what it does.</p></div>
+        <div class="pipeline" data-pipeline>
+          <div class="pipeline-steps" role="tablist" aria-label="MemReward pipeline stages">
+            <button class="pipeline-step" type="button" role="tab" id="mr-tab-1" aria-controls="mr-panel-1"><span class="pipeline-step-num">1</span>Rollout generation</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="mr-tab-2" aria-controls="mr-panel-2"><span class="pipeline-step-num">2</span>Heterogeneous graph</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="mr-tab-3" aria-controls="mr-panel-3"><span class="pipeline-step-num">3</span>GNN warmup</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="mr-tab-4" aria-controls="mr-panel-4"><span class="pipeline-step-num">4</span>Attach unlabeled queries</button>
+            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+            <button class="pipeline-step" type="button" role="tab" id="mr-tab-5" aria-controls="mr-panel-5"><span class="pipeline-step-num">5</span>Mixed-reward GRPO</button>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="mr-panel-1" aria-labelledby="mr-tab-1" tabindex="0">
+            <img src="static/images/pipeline_rollouts.png" alt="Labeled queries from QA, math and coding tasks, and the rollouts of the initial policy">
+            <div class="content has-text-justified">
+              <p>For each query with a ground-truth label, across math, question answering and code, the initial policy generates rollouts, each a thinking process and a final answer. The query, thinking process and answer are encoded into embeddings, and the rollouts are stored as experience memory.</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="mr-panel-2" aria-labelledby="mr-tab-2" tabindex="0">
+            <img src="static/images/pipeline_graph.png" alt="The warmup step of MemReward with its node and edge legend">
+            <div class="content has-text-justified">
+              <p>The graph has query, thinking and answer nodes, joined by three edge types. Query-query edges link a query to its top-<i>k</i> most similar queries by cosine similarity, query-thinking edges link a query to its thinking nodes, and thinking-answer edges pair each thinking node with its answer. Only query-query edges depend on embedding similarity.</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="mr-panel-3" aria-labelledby="mr-tab-3" tabindex="0">
+            <img src="static/images/pipeline_gnn.png" alt="The heterogeneous graph with labeled and unlabeled rollout subgraphs">
+            <div class="content has-text-justified">
+              <p>A heterogeneous GNN aggregates over each edge type with its own learnable weights, then scores each rollout with a scaled dot product between the query and rollout representations. It is trained on labeled rollouts with binary cross-entropy, or with a regression loss for continuous rewards such as token-level F1.</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="mr-panel-4" aria-labelledby="mr-tab-4" tabindex="0">
+            <img src="static/images/pipeline_online.png" alt="The online step of MemReward with labeled and unlabeled rollouts">
+            <div class="content has-text-justified">
+              <p>During online policy optimization, unlabeled queries are not in the warmup graph. Each one is encoded with the same encoder, connected to its top-<i>k</i> most similar warmup queries, and propagated through the trained GNN, which predicts the rewards of its rollouts.</p>
+            </div>
+          </div>
+          <div class="pipeline-panel" role="tabpanel" id="mr-panel-5" aria-labelledby="mr-tab-5" tabindex="0">
+            <img src="static/images/pipeline_reward.png" alt="Labeled rollouts take ground-truth rewards and unlabeled rollouts take GNN-predicted rewards before advantage estimation">
+            <div class="content has-text-justified">
+              <p>GRPO generates rollouts for each query. Labeled rollouts receive their ground-truth reward, and the rest receive the GNN prediction, thresholded at 0.5, or the predicted score itself for continuous rewards. The policy is then updated with the GRPO objective.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End method overview -->
+
+<!-- Quantitative results -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Quantitative Results</h2>
+
+      <h3 class="title is-5">In-domain: 97.3% of Oracle on Qwen2.5-3B and 96.6% on Qwen2.5-1.5B</h3>
+      <div class="content has-text-justified">
+        <p>
+          Reward acquisition strategies under a 20% label budget on 10 in-domain benchmarks. On 3B, MemReward outperforms R1-p by +1.35, LLM-RM by +1.30, and kNN and Label Propagation by +1.05 each. Label Propagation is evaluated on Qwen2.5-3B. <b>Bold</b> and <u>underline</u> mark the best and second-best results among R1-p, MemReward, and R1-Oracle (a three-way tie is left unmarked). Avg is the mean over six random seeds, with the standard deviation as a subscript.
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th rowspan="2">Method</th><th colspan="3">Math</th><th colspan="5">QA</th><th colspan="2">Code</th><th rowspan="2">Avg</th><th rowspan="2">ΔScore</th></tr>
+            <tr><th>GSM8K</th><th>GSM-sym</th><th>MATH</th><th>MMLU</th><th>CSQA</th><th>OBQA</th><th>ARC-C</th><th>GPQA</th><th>HumanEval+</th><th>MBPP+</th></tr>
+          </thead>
+          <tbody>
+            <tr class="group-row"><td colspan="13"><i>Qwen2.5-1.5B-Instruct</i></td></tr>
+            <tr><td>R1-p</td><td>77.11</td><td>62.89</td><td>44.44</td><td>53.33</td><td>70.22</td><td>68.67</td><td>71.56</td><td><u>20.00</u></td><td>38.46</td><td><u>55.00</u></td><td>62.72<sub>±1.75</sub></td><td>-7.75</td></tr>
+            <tr><td>LLM-RM</td><td>78.22</td><td>64.00</td><td>45.35</td><td>54.44</td><td>70.34</td><td>68.79</td><td>72.22</td><td>18.33</td><td>41.03</td><td>55.00</td><td>63.29<sub>±1.91</sub></td><td>-7.18</td></tr>
+            <tr><td>kNN</td><td>79.33</td><td>65.11</td><td>46.49</td><td>55.33</td><td>71.91</td><td>70.62</td><td>73.74</td><td>20.00</td><td>41.03</td><td>52.50</td><td>64.49<sub>±1.58</sub></td><td>-5.98</td></tr>
+            <tr class="ours"><td><b>MemReward (Ours)</b></td><td><b>88.67</b></td><td><b>77.78</b></td><td><u>50.89</u></td><td><u>54.67</u></td><td><u>72.44</u></td><td><u>70.00</u></td><td><u>72.67</u></td><td><b>23.33</b></td><td><u>43.59</u></td><td><u>55.00</u></td><td><u>68.10</u><sub>±1.62</sub></td><td>-2.37</td></tr>
+            <tr><td>R1-Oracle</td><td><u>86.44</u></td><td><u>75.33</u></td><td><b>53.11</b></td><td><b>66.44</b></td><td><b>74.44</b></td><td><b>74.00</b></td><td><b>74.89</b></td><td>15.00</td><td><b>53.85</b></td><td><b>56.25</b></td><td><b>70.47</b><sub>±1.54</sub></td><td>0</td></tr>
+            <tr class="group-row"><td colspan="13"><i>Qwen2.5-3B-Instruct</i></td></tr>
+            <tr><td>R1-p</td><td>92.89</td><td>84.67</td><td>54.67</td><td>71.78</td><td><u>77.33</u></td><td>78.44</td><td>80.00</td><td><u>21.67</u></td><td><u>64.10</u></td><td><u>65.00</u></td><td>75.67<sub>±0.78</sub></td><td>-3.45</td></tr>
+            <tr><td>LLM-RM</td><td>92.44</td><td>83.56</td><td>58.73</td><td>71.78</td><td>75.73</td><td>77.00</td><td>81.06</td><td>25.00</td><td>56.41</td><td>67.50</td><td>75.72<sub>±0.89</sub></td><td>-3.40</td></tr>
+            <tr><td>kNN</td><td>91.78</td><td>81.56</td><td>64.40</td><td>72.22</td><td>73.48</td><td>78.82</td><td>80.56</td><td>21.67</td><td>56.41</td><td>66.25</td><td>75.97<sub>±0.65</sub></td><td>-3.15</td></tr>
+            <tr><td>Label Propagation</td><td>92.67</td><td>85.78</td><td>58.00</td><td>71.78</td><td>74.22</td><td>80.00</td><td>80.22</td><td>23.33</td><td>58.97</td><td>62.50</td><td>75.97<sub>±0.72</sub></td><td>-3.15</td></tr>
+            <tr class="ours"><td><b>MemReward (Ours)</b></td><td>92.89</td><td><u>86.44</u></td><td><b>61.11</b></td><td><u>72.00</u></td><td>74.44</td><td><u>81.78</u></td><td><u>80.44</u></td><td><b>30.00</b></td><td>61.54</td><td>63.75</td><td><u>77.02</u><sub>±0.67</sub></td><td>-2.10</td></tr>
+            <tr><td>R1-Oracle</td><td>92.89</td><td><b>90.22</b></td><td><u>60.44</u></td><td><b>72.22</b></td><td><b>79.11</b></td><td><b>83.11</b></td><td><b>84.00</b></td><td><b>30.00</b></td><td><b>71.79</b></td><td><b>73.75</b></td><td><b>79.12</b><sub>±0.46</sub></td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">Out-of-domain: within 0.23 (3B) and 0.75 (1.5B) points of Oracle</h3>
+      <div class="content has-text-justified">
+        <p>
+          The GNN is trained only on the 10 in-domain benchmarks; during online GRPO, queries from the held-out NuminaMath, SIQA and PIQA are connected to the warmup graph through top-<i>k</i> similarity edges, and the GNN predicts their rewards without domain-specific fine-tuning. Avg is the mean over six random seeds, with the standard deviation as a subscript.
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th><b>Method</b></th><th><b>NuminaMath</b></th><th><b>SIQA</b></th><th><b>PIQA</b></th><th><b>Avg</b></th><th>ΔScore</th></tr>
+          </thead>
+          <tbody>
+            <tr class="group-row"><td colspan="6"><i>Qwen2.5-1.5B-Instruct</i></td></tr>
+            <tr><td>R1-p</td><td>31.56</td><td>72.67</td><td>72.22</td><td>58.81<sub>±2.20</sub></td><td>-4.75</td></tr>
+            <tr class="ours"><td><b>MemReward</b></td><td><b>34.67</b></td><td><u>74.44</u></td><td><u>79.33</u></td><td><u>62.81</u><sub>±2.05</sub></td><td>-0.75</td></tr>
+            <tr><td>R1-Oracle</td><td><u>33.78</u></td><td><b>75.78</b></td><td><b>81.11</b></td><td><b>63.56</b><sub>±1.94</sub></td><td>0</td></tr>
+            <tr class="group-row"><td colspan="6"><i>Qwen2.5-3B-Instruct</i></td></tr>
+            <tr><td>R1-p</td><td>36.44</td><td>74.67</td><td><b>82.22</b></td><td>64.44<sub>±1.05</sub></td><td>-2.75</td></tr>
+            <tr class="ours"><td><b>MemReward</b></td><td><u>42.22</u></td><td><u>76.89</u></td><td>81.78</td><td><u>66.96</u><sub>±0.86</sub></td><td>-0.23</td></tr>
+            <tr><td>R1-Oracle</td><td><b>42.44</b></td><td><b>77.11</b></td><td><u>82.00</u></td><td><b>67.19</b><sub>±0.72</sub></td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">Performance scales with the label budget</h3>
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <img src="static/images/gt_ratio_bar.png" alt="MemReward performance versus ground-truth label ratio on Qwen2.5-3B" style="display: block; margin: 0 auto; width: 100%;">
+        </div>
+      </div>
+      <div class="content has-text-justified">
+        <p>
+          Overall average score on Qwen2.5-3B as the ground-truth label ratio grows. Even at 20% ground-truth labels, MemReward reaches 97.3% of Oracle; at 70%, the gap to Oracle narrows to 0.48 points (99.4% of Oracle).
+        </p>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">Beyond Qwen and verifiable rewards</h3>
+      <div class="content has-text-justified">
+        <p>
+          All settings keep ground-truth rewards on only 20% of the training queries. With Llama-3.2-3B-Instruct and Llama-3.1-8B-Instruct, MemReward improves over R1-p by 2.64 and 3.00 points, reaching 96.1% and 97.8% of R1-Oracle. With Qwen2.5-3B-Instruct, it also improves over R1-p when rewards come from an LLM judge on TruthfulQA (+2.86), from human pairwise preferences on Chatbot Arena (+1.67), and from continuous token-level F1 on HotpotQA (+2.68), where the GNN is trained as a regressor.
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>Setting (metric)</th><th>Reward signal</th><th>R1-p</th><th>MemReward</th><th>R1-Oracle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Llama-3.2-3B, 10 benchmarks (Avg)</td><td>Verifiable</td><td>67.41</td><td>70.05</td><td>72.91</td></tr>
+            <tr><td>Llama-3.1-8B, 10 benchmarks (Avg)</td><td>Verifiable</td><td>74.62</td><td>77.62</td><td>79.39</td></tr>
+            <tr><td>TruthfulQA (truthful &amp; informative)</td><td>LLM judge (binary)</td><td>36.73</td><td>39.59</td><td>44.90</td></tr>
+            <tr><td>Chatbot Arena (preference acc.)</td><td>Human preference</td><td>57.33</td><td>59.00</td><td>63.00</td></tr>
+            <tr><td>HotpotQA (token F1)</td><td>Continuous (F1)</td><td>39.42</td><td>42.10</td><td>47.17</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+      <h3 class="title is-5">Each architectural component contributes</h3>
+      <img src="static/images/radar_ablation.png" alt="Ablation radar charts on Qwen2.5-3B and Qwen2.5-1.5B" style="display: block; margin: 0 auto; width: 100%;">
+      <div class="content has-text-justified">
+        <p>
+          The full model consistently outperforms all ablated variants on both model scales across math, QA and code; on 3B it reaches 80.1% in Math, 75.6% in QA and 63.0% in Code. Replacing the GNN with an MLP on query embeddings drops QA to 72.0% on 3B. Removing edge types drops Math to 76.4% on 3B. Removing thinking nodes drops Code to 58.0% on 3B.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End quantitative results -->
+
+<!-- Acknowledgments -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Acknowledgments</h2>
+    <p>We sincerely appreciate the support from the research gift from Meta.</p>
+  </div>
+</section>
+<!-- End acknowledgments -->
+
+<!-- BibTeX citation -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{luo2026memreward,
+  title={MemReward: Graph-Based Experience Memory for LLM Reward Prediction with Limited Labels},
+  author={Tianyang Luo and Tao Feng and Zhigang Hua and Yan Xie and Shuang Yang and Ge Liu and Jiaxuan You},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2026}
+}</code></pre>
+  </div>
+</section>
+<!-- End BibTeX citation -->
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-9">
+        <div class="content">
+          <p style="font-size: 10pt;">
+            This page was adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>, which was adopted from <a href="https://nerfies.github.io" target="_blank">Nerfies</a>, licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../assets/js/pipeline.js"></script>
+
+</body>
+</html>
