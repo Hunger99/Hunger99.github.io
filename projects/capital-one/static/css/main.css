@@ -223,7 +223,7 @@ html[lang="zh-CN"] .teaser {
   color: #fff;
 }
 
-.pipeline-step.is-running {
+.pipeline-step.is-planned {
   border-style: dashed;
 }
 
@@ -299,4 +299,133 @@ html[lang="zh-CN"] .teaser {
   margin-top: .5rem;
   color: #4a5565;
   font-size: .9rem;
+}
+
+/* Arrow flow at the top of a panel: each node jumps to its sub-section below. */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: .4rem .35rem;
+  margin-bottom: 1.25rem;
+  padding: .75rem;
+  border-radius: .5rem;
+  background: #f9fafb;
+}
+
+.flow-node {
+  padding: .25rem .7rem;
+  border: 1px solid #c9bde6;
+  border-radius: .375rem;
+  background: #f3effb;
+  color: #4c2a94;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.flow-node:hover,
+.flow-node:focus-visible {
+  background: #e5dcf7;
+  color: #36196f;
+}
+
+.flow-arrow {
+  color: #99a1af;
+}
+
+.pipeline-panel .content .pipeline-group {
+  scroll-margin-top: 1rem;
+}
+
+.pipeline-panel .content .pipeline-group:target {
+  color: #4c2a94;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: .05rem .5rem;
+  border-radius: .375rem;
+  background: #fdf0dc;
+  color: #8a4b08;
+  font-size: .8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Data section: What/Why tables wrap their text, and on phones each row stacks into a block. */
+.data-section .title.is-5 {
+  margin-top: 2rem;
+  margin-bottom: .75rem;
+}
+
+.data-table {
+  width: 100%;
+  margin-bottom: .75rem;
+  background: transparent;
+  font-size: .875rem;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left !important;
+  vertical-align: top !important;
+  white-space: normal;
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  width: 24%;
+}
+
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
+  width: 36%;
+}
+
+.data-note {
+  margin-bottom: 1rem;
+  color: #4a5565;
+  font-size: .9rem;
+}
+
+@media screen and (max-width: 768px) {
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .data-table tr {
+    padding: .5rem 0;
+    border-bottom: 1px solid #d1d5dc;
+  }
+
+  .data-table td {
+    padding: .15rem 0;
+    border: 0;
+  }
+
+  .data-table td[data-label]::before {
+    content: attr(data-label) ": ";
+    font-weight: 700;
+  }
+}
+
+.pipeline-panel .content .pipeline-subgroup {
+  margin-top: .75rem;
+  margin-bottom: .35rem;
+  font-weight: 500;
+}
+
+@media screen and (max-width: 480px) {
+  .pipeline-panel .katex-display {
+    font-size: .85em;
+  }
 }
