@@ -360,9 +360,14 @@
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
+            <nav class="flow" aria-label="Agent harness parts">
+              <a class="flow-node" href="#ah-context">Context management</a>
+              <a class="flow-node" href="#ah-tools">Tool interface and constraints</a>
+              <a class="flow-node" href="#ah-verification">Verification and correction</a>
+            </nav>
             <div class="content">
               <p>The harness in this work has three parts: context management, tool interface and constraints, and verification and correction. The description below is version 3, used on market tasks; wealth-management and machine-learning tasks use version 2, which truncates older tool results into summaries.</p>
-              <p class="pipeline-group">Context management</p>
+              <p class="pipeline-group" id="ah-context">Context management</p>
               <ul>
                 <li><b>System prompt:</b> The harness opens each task with a message that states the model's role, the task's rules and how to use the tools.</li>
                 <li><b>Append-only context:</b> The harness never changes a message after sending it, so each request's messages are a prefix of the next request and of the stored trajectory. The stored trajectory is then exactly what the model saw at each step, and SFT and RL train on the sequence as it was sampled.</li>
@@ -372,7 +377,7 @@
                 <li><b>Thinking-preserving chat template:</b> A changed Qwen3.5 chat template, the rule that renders messages into model input, keeps the thinking of every assistant turn after the first user message. Under the original template a nudge, which is a user message, removed the earlier thinking from the next prompt, so the stored trajectory was no longer what the model saw.</li>
                 <li><b>Token-level logging:</b> The harness records each turn's prompt token count, sampled tokens and their log probabilities, plus <code>prefix_ok</code>, a flag for whether the prompt begins with the previous prompt and its completion. RL can then use the sampled tokens and probabilities without rescoring them, and the flag exposes any turn rendered differently from how it was sampled.</li>
               </ul>
-              <p class="pipeline-group">Tool interface and constraints</p>
+              <p class="pipeline-group" id="ah-tools">Tool interface and constraints</p>
               <ul>
                 <li><b>Function calling:</b> The harness describes each tool's name and arguments to the model in JSON Schema, a standard format for structured data, and the model calls tools in the native function-calling format.</li>
                 <li><b>Tool sets:</b> The market environment offers 11 tools, wealth management 12 and machine learning 5, each count including <code>finish</code>, which ends a task with the answer; the full harness adds <code>set_checklist</code>.</li>
@@ -380,7 +385,7 @@
                 <li><b>Sandbox (<code>run_python</code>):</b> The harness runs the model's code in bubblewrap, a Linux tool that isolates a process, with no network, a read-only file system outside a temporary directory, 30 seconds and 3 GiB, because the model's code is untrusted, may loop forever and runs on a shared disk.</li>
                 <li><b>Constraints:</b> Before a write action runs, code checks its arguments against the tool schema and the business rules, refuses a violating action unexecuted and returns the reason to the model, which mainly reduces rule violations and bad arguments.</li>
               </ul>
-              <p class="pipeline-group">Verification and correction</p>
+              <p class="pipeline-group" id="ah-verification">Verification and correction</p>
               <ul>
                 <li><b>Answer verification:</b> On <code>finish</code>, the harness checks that the answer's numbers have support in tool results or the request, that every checklist item is done and that the environment's own checks pass; on market tasks a number counts as supported when a tool-result number matches it after scaling by thousands, millions, billions or percent and rounding to the answer's decimals. Unit conversions therefore pass, while numbers worked out in the model's head or recalled from memory are rejected.</li>
                 <li><b>Rejection limit:</b> The harness rejects at most 2 finishes in a task and accepts the next one unchecked.</li>

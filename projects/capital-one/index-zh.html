@@ -361,9 +361,14 @@
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
+            <nav class="flow" aria-label="Agent harness 的组成部分">
+              <a class="flow-node" href="#ah-context">上下文管理</a>
+              <a class="flow-node" href="#ah-tools">工具接口与约束</a>
+              <a class="flow-node" href="#ah-verification">验证与纠正</a>
+            </nav>
             <div class="content">
               <p>本工作的 harness 分为三部分：上下文管理、工具接口与约束、验证与纠正。下面描述的是第 3 版，用于行情任务；财富管理和机器学习任务用第 2 版，它会把较早的工具结果截成摘要。</p>
-              <p class="pipeline-group">上下文管理</p>
+              <p class="pipeline-group" id="ah-context">上下文管理</p>
               <ul>
                 <li><b>System prompt：</b>Harness 用一条消息开始每个任务，写明模型的角色、任务的规则和工具用法。</li>
                 <li><b>Append-only context：</b>Harness 发出消息后不再改动，所以每次请求的消息都是下一次请求和所存轨迹的前缀。这样所存轨迹就是模型每一步看到的内容，SFT 和 RL 用的序列与采样一致。</li>
@@ -373,7 +378,7 @@
                 <li><b>Thinking-preserving chat template：</b>改过的 Qwen3.5 对话模板（把消息渲染成模型输入的规则）保留第一条用户消息之后每个助手轮的思考。在原模板下，nudge 是一条用户消息，它让之前的思考从下一个提示中消失，所存轨迹也就不再是模型看到的内容。</li>
                 <li><b>Token-level logging：</b>Harness 记录每轮的提示 token 数、采样的 token 和它们的 log 概率，以及 <code>prefix_ok</code>，这个标记说明本轮提示是否以上一轮的提示和生成内容开头。这样 RL 可以直接用采样时的 token 和概率，不必再打分一遍，这个标记也能查出渲染得与采样时不同的轮。</li>
               </ul>
-              <p class="pipeline-group">工具接口与约束</p>
+              <p class="pipeline-group" id="ah-tools">工具接口与约束</p>
               <ul>
                 <li><b>Function calling：</b>Harness 用 JSON Schema（一种描述结构化数据的标准格式）向模型描述每个工具的名称和参数，模型按原生函数调用格式调用工具。</li>
                 <li><b>Tool sets：</b>行情环境提供 11 个工具，财富管理 12 个，机器学习 5 个，都含结束任务并交答案的 <code>finish</code>；完整 harness 另加 <code>set_checklist</code>。</li>
@@ -381,7 +386,7 @@
                 <li><b>Sandbox（<code>run_python</code>）：</b>Harness 在 bubblewrap（隔离进程的 Linux 工具）里运行模型写的代码，没有网络，临时目录之外的文件系统只读，限 30 秒、3 GiB，因为模型写的代码不可信、可能死循环，而且运行在共享盘上。</li>
                 <li><b>Constraints：</b>写操作执行前，代码按工具 Schema 和业务规则检查它的参数，拒绝违规操作且不执行，并把原因返回模型，这主要减少违反业务规则和参数错误。</li>
               </ul>
-              <p class="pipeline-group">验证与纠正</p>
+              <p class="pipeline-group" id="ah-verification">验证与纠正</p>
               <ul>
                 <li><b>Answer verification：</b>模型调用 <code>finish</code> 时，harness 检查答案中的数在工具结果或请求中有依据、清单全部完成、环境自己的检查通过；在行情题上，工具结果中的数经千、百万、十亿或百分比换算并按答案的小数位取整后相等，就算有依据。所以单位换算能通过，心算或凭记忆写出的数会被驳回。</li>
                 <li><b>Rejection limit：</b>Harness 在一个任务里最多驳回 2 次 <code>finish</code>，下一次不经验证就接受。</li>
