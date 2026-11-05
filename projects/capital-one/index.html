@@ -67,9 +67,9 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="static/images/teaser.svg" alt="Success rates on the market-data test and FinSearchComp for the base, official, SFT and teacher models" style="display: block; margin: 0 auto; width: 100%;">
+      <img src="static/images/teaser.svg" alt="Success rates on the market-data test, FinSearchComp and DocFinQA for the base, official, SFT and teacher models" style="display: block; margin: 0 auto; width: 100%;">
       <h2 class="subtitle has-text-centered">
-        On tasks of the trained types, multi-turn agent SFT takes the 4B model from 16.7% to 88.7%, past the official Qwen3.5-4B (57.7%). On FinSearchComp tasks written outside the project it reaches 77.6%, past the official model's 64.3%.
+        On tasks of the trained types, multi-turn agent SFT takes the 4B model from 16.7% to 87.3%, past the official Qwen3.5-4B (57.7%). On FinSearchComp tasks written outside the project it reaches 74.5%, past the official model's 64.3%, and on long-document QA it reaches 53.0%, level with the official model.
       </h2>
     </div>
   </div>
@@ -84,7 +84,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            This project post-trains a 4B base model, Qwen3.5-4B-Base, into a tool-using financial agent that looks up market prices, macroeconomic series and company filings, computes over them in a Python sandbox and answers multi-step questions. The official post-trained Qwen3.5-4B already solves 84.7% of our earlier market-retrieval development tasks, so we built a harder offline dataset of 3,148 tasks (2,350 training, 200 development and 598 test tasks). Of these, 2,850 are generated in the style of the public benchmark FinSearchComp over a fixed data snapshot, with answers computed by programs and rechecked by an independent implementation. A teacher, the larger model Qwen3.8-27B, solves the market training tasks of two difficulty tiers inside an agent harness, the code that gives a model its tools and checks its answers, and each attempt is saved as a trajectory, the full record of its messages, tool calls and tool results. These trajectories, after filtering, with filtered wealth-management and machine-learning trajectories and 2,000 samples from a 1:1 mix of finance and general data, train the 4B model with multi-turn agent SFT (supervised fine-tuning, which continues training on examples with known answers). On 300 market-data test tasks from held-out stocks and later periods, the SFT model solves <b>88.7%</b>, against 57.7% for the official Qwen3.5-4B, 16.7% for the base model and 94.7% for the teacher. The next step, reinforcement learning with DAPO from a retrained SFT model, has not started.
+            This project post-trains a 4B base model, Qwen3.5-4B-Base, into a tool-using financial agent that looks up market prices, macroeconomic series and company filings, computes over them in a Python sandbox and answers multi-step questions. The official post-trained Qwen3.5-4B already solves 84.7% of our earlier market-retrieval development tasks, so we built a harder offline dataset of 3,148 tasks (2,350 training, 200 development and 598 test tasks). Of these, 2,850 are generated in the style of the public benchmark FinSearchComp over a fixed data snapshot, with answers computed by programs and rechecked by an independent implementation; the rest are 98 FinSearchComp tasks and 200 DocFinQA questions over full annual reports. A teacher, the larger model Qwen3.8-27B, solves the market training tasks of two difficulty tiers and tasks that read annual reports inside an agent harness, the code that gives a model its tools and checks its answers, and each attempt is saved as a trajectory, the full record of its messages, tool calls and tool results. These trajectories, after filtering, with filtered wealth-management and machine-learning trajectories and 2,000 samples from a 1:1 mix of finance and general data, train the 4B model with multi-turn agent SFT (supervised fine-tuning, which continues training on examples with known answers). On 300 market-data test tasks from held-out stocks and later periods, the SFT model solves <b>87.3%</b>, against 57.7% for the official Qwen3.5-4B, 16.7% for the base model and 94.7% for the teacher. On DocFinQA it solves 53.0%, level with the official model and 14.0 points above the first SFT run, whose data held no trajectory that read a report. The next step is reinforcement learning with DAPO from this SFT model; its training has not started.
           </p>
         </div>
       </div>
@@ -98,7 +98,10 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Data</h2>
 
-    <h3 class="title is-5">The SFT model trains on 12,475 samples, mostly teacher trajectories</h3>
+    <h3 class="title is-5">The SFT model trains on 14,486 samples, mostly teacher trajectories</h3>
+    <div class="content has-text-justified">
+      <p>The reported SFT model comes from a second run. The first run scored 39.0 on DocFinQA against the official model's 53.0, with two faults: it often answered from the search snippet of about 240 characters without reading the full passage, and it wrote a sentence where a single number was required, so the grader read a year from the sentence. Both faults trace to its training data, which held no task that searches an annual report, reads the full passage and then takes a number, while market trajectories showed many answers written as sentences. The second run therefore adds the DocFinQA and <code>t6_report_gate</code> rows below and drops trajectories that answer without reading.</p>
+    </div>
     <table class="table is-narrow data-table">
       <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
@@ -123,13 +126,23 @@
           <td data-label="Why">The model learns to inspect data, train, compare and submit a model through structured tools, and the pass bar makes it learn correct data handling as well.</td>
         </tr>
         <tr>
+          <td><b>DocFinQA training tasks</b></td>
+          <td data-label="What">The teacher attempts 3,075 questions once each, on annual reports that no development or test question uses, and 1,474 trajectories pass filtering.</td>
+          <td data-label="Why">These trajectories show the model searching a report, reading the full passage and taking the number, and they end in the single-number answer the task requires.</td>
+        </tr>
+        <tr>
+          <td><b><code>t6_report_gate</code></b></td>
+          <td data-label="What">The teacher attempts 1,000 tasks once each; a task first searches an annual report to answer a question, then decides a trade from that answer and the business rules, and 540 trajectories pass filtering.</td>
+          <td data-label="Why">These trajectories teach the same reading step inside a multi-step business task.</td>
+        </tr>
+        <tr>
           <td><b>Slice of the 1:1 mix</b></td>
           <td data-label="What">The data builder draws 2,000 samples from the 1:1 mix: 1,019 general Tülu 3 samples and 981 finance QA samples, 115 of them synthetic document QA.</td>
           <td data-label="Why">These samples add plain question answering without tools, which the tool trajectories do not cover.</td>
         </tr>
       </tbody>
     </table>
-    <p class="data-note">These rows hold 10,527 trajectories and 2,000 samples. Packing drops 52 trajectories: 48 exceed their token limit, given under Packing in the Multi-turn agent SFT tab, and 4 hold a second user message, which would make the chat template of those trajectories lose earlier thinking. This takes market trajectories from 4,819 to 4,791 and wealth-management and machine-learning trajectories from 5,708 to 5,684. The remaining 10,475 trajectories and the 2,000 samples make 12,475 samples.</p>
+    <p class="data-note">These rows hold 12,541 trajectories and 2,000 samples. Packing drops 55 trajectories: 48 exceed their token limit, given under Packing in the Multi-turn agent SFT tab, and 7 hold a second user message, which would make the chat template of those trajectories lose earlier thinking. This takes market trajectories from 4,819 to 4,791, wealth-management and machine-learning trajectories from 5,708 to 5,684 and <code>t6_report_gate</code> trajectories from 540 to 537. The remaining 12,486 trajectories and the 2,000 samples make 14,486 samples.</p>
 
     <h3 class="title is-5">Single-turn SFT runs draw 100,000 samples each from four kinds of source</h3>
     <div class="content has-text-justified">
@@ -161,7 +174,7 @@
       </tbody>
     </table>
 
-    <h3 class="title is-5">Test data covers trained task types, outside tasks and filing questions</h3>
+    <h3 class="title is-5">Test data covers trained task types, outside tasks and general ability</h3>
     <table class="table is-narrow data-table">
       <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
@@ -176,6 +189,11 @@
           <td data-label="Why">Outsiders wrote these tasks, so the score measures generalization beyond our task types.</td>
         </tr>
         <tr>
+          <td><b>DocFinQA (200)</b></td>
+          <td data-label="What">The test asks numeric and yes/no questions over a full SEC 10-K annual report, which the model reaches only through search.</td>
+          <td data-label="Why">It measures reading long documents on reports that no agent training task uses.</td>
+        </tr>
+        <tr>
           <td><b>Wealth management (500) + machine learning (50)</b></td>
           <td data-label="What">The test runs on database instance C, and 2 of the 14 wealth-management task types (45 tasks) appear only in the test set.</td>
           <td data-label="Why">It measures business rules and tool use on unseen customers and products, and the test-only task types measure task forms the model has not seen.</td>
@@ -184,6 +202,11 @@
           <td><b>Finance score (1,886)</b></td>
           <td data-label="What">The finance score grades FinQA and TAT-QA test questions.</td>
           <td data-label="Why">It measures how well a single-turn model reads a filing excerpt and computes a number.</td>
+        </tr>
+        <tr>
+          <td><b>MMLU (13,018), GSM8K (1,319), IFEval (541)</b></td>
+          <td data-label="What">These benchmarks test knowledge, math word problems and following checkable instructions.</td>
+          <td data-label="Why">They show whether financial training damaged general ability.</td>
         </tr>
         <tr>
           <td><b>Development set (200, 4 attempts each)</b></td>
@@ -215,9 +238,9 @@
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
             <button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>SFT evaluation</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>DAPO (next)</button>
+            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>DAPO (running)</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL evaluation</button>
+            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL evaluation (next)</button>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
             <nav class="flow" aria-label="Data pipeline stages">
@@ -240,7 +263,7 @@
                 <li><b>Length cap:</b> The converter counts a sample's tokens over its messages and reasoning and drops any sample over 4,096 tokens instead of cutting it, since a cut would keep the reasoning and lose the answer. A token is the unit a model splits text into, about 1–2 per English word.</li>
                 <li><b>Seed split:</b> A salted hash, which hashes an id together with a fixed string so the result is reproducible, sends FinQA training questions by report page and TAT-QA training questions by table into 80% training samples and a 20% hold-out, because a page often carries several questions and a split by question would let the hold-out share excerpts with training.</li>
                 <li><b>Quality tier + rule filter:</b> The document filter takes the English high-quality tier of IndustryCorpus2's finance articles and keeps documents with a <code>num_words</code> field of 200–100,000, at most 30% repeated non-empty lines and no Han character. The word range drops fragments and oversized dumps and the repeated-line limit drops boilerplate, so question writing starts from real English finance text.</li>
-                <li><b>Chunk selection:</b> The chunker joins consecutive lines of a kept document into chunks of 1,000–2,000 characters, takes at most 2 chunks per document and passes on only chunks with at least 4 numbers. A chunk of this size holds enough context for one self-contained question, at least 4 numbers give a calculation its inputs, and the 2-chunk limit spreads the questions across documents. It uses finance articles instead of 10-K filings because finance-score tasks come from listed companies' annual reports, and generating from 10-Ks could put a training question in a report that a test task uses.</li>
+                <li><b>Chunk selection:</b> The chunker joins consecutive lines of a kept document into chunks of 1,000–2,000 characters, takes at most 2 chunks per document and passes on only chunks with at least 4 numbers. A chunk of this size holds enough context for one self-contained question, at least 4 numbers give a calculation its inputs, and the 2-chunk limit spreads the questions across documents. It uses finance articles instead of 10-K filings because finance-score and DocFinQA tasks come from listed companies' annual reports, and generating from 10-Ks could put a training question in a report that a test task uses.</li>
               </ul>
               <p class="pipeline-group" id="dp-synthesis">Synthesis generates tasks, trajectories and questions</p>
               <ul>
@@ -248,26 +271,27 @@
                 <li><b>Market tasks:</b> Templates draw entities and time windows from a fixed data snapshot, as the Offline dataset tab explains.</li>
                 <li><b>Wealth-management tasks:</b> A program builds a SQLite business database of 2,000 customers, 300 products and two years of daily net asset values, and 14 task types draw multi-step tasks on it under 7 business rules. Training, development and test each use their own database, so a test task meets customers and products the model has not seen. The rules forbid about 15% of the tasks so that grading can test whether the agent refuses a violating action.</li>
                 <li><b>Machine-learning tasks:</b> Two templates draw a fresh data table from each task's seed, the agent builds a model through structured tools, and a program scores it on a hidden test table, where it must come close to the score of the model that generated the data, so a task tests correct data handling, not only a finished run.</li>
-                <li><b>Teacher trajectories:</b> Qwen3.8-27B attempts the training tasks in the harness, which records every message and tool call. One attempt per task suffices on the original tier, where the teacher solves nearly every development task; two attempts per task give the hard tier about twice the trajectories; wealth-management and machine-learning tasks get 2 attempts, 4 when fewer than 2 pass and up to 8 when all 4 fail, since tasks the teacher misses at first are often the ones most worth learning.</li>
-                <li><b>Synthetic document QA:</b> A locally hosted LLM writes 1–2 calculation questions per chunk that must use the chunk's financial figures, each with a worked calculation and one numeric answer, and it asks nothing about dates or durations. The task matches the finance score's FinQA and TAT-QA test tasks, given material and compute a number, so the ablation below measures the synthetic data itself and not a different task type.</li>
+                <li><b>Teacher trajectories:</b> Qwen3.8-27B attempts the training tasks in the harness, which records every message and tool call. One attempt per task suffices on the original tier, where the teacher solves nearly every development task; two attempts per task give the hard tier about twice the trajectories; wealth-management and machine-learning tasks get 2 attempts, 4 when fewer than 2 pass and up to 8 when all 4 fail, since tasks the teacher misses at first are often the ones most worth learning; DocFinQA and <code>t6_report_gate</code> tasks get 1 attempt.</li>
+                <li><b>Synthetic document QA:</b> A locally hosted LLM writes 1–2 calculation questions per chunk that must use the chunk's financial figures, each with a worked calculation and one numeric answer, and it asks nothing about dates or durations. The task matches the finance score's FinQA and TAT-QA test tasks, given material and compute a number, so the ablation below measures the synthetic data itself and not a different task type. The SFT model's slice holds 115 of these samples, which the teacher rewrote under the Question checks below, 109 on the same chunks and 6 on replacement chunks; the bge-m3 check could not run on them.</li>
                 <li><b>Question checks:</b> The checker keeps a question only if every number it lists occurs in the chunk, the numbers are not all years, and a second answer from the chunk and question alone agrees within 1%, since these questions have no human reference and the second answer blocks miscalculated or misread ones. A model's spot check judged 93 of 100 kept questions correct.</li>
                 <li><b>Ablation of synthetic document QA:</b> An ablation removes one part to measure what it adds: on Qwen3-4B-Base the 1:1 mix scores 0.05 points below the same mix without synthetic samples on the finance score (95% interval −1.3 to +1.2, p=0.55). Other finance sources filled the freed places, which may offset the effect, but the data shows no measurable gain beyond the existing finance data, so the project adds no new synthetic volume.</li>
               </ul>
               <p class="pipeline-group" id="dp-filtering">Filtering deletes what would mislead a score or teach a bad habit</p>
               <p class="pipeline-subgroup">Sample filters</p>
               <ul>
-                <li><b>Decontamination:</b> Decontamination deletes a training sample from any source when it repeats or closely copies a reference task, because otherwise the finance score could reward memory of a seen task. The reference tasks are the validation and test questions of FinQA, TAT-QA and XFinBench, plus public knowledge, math and instruction-following benchmarks and the 20% seed hold-out. The four checks below are the main triggers, and excerpt sources have further match rules, because copies change a table's layout, copy part of a table or reword the question, and no single check catches them all.</li>
-                <li><b>8-gram decontamination:</b> An 8-gram is a run of 8 consecutive tokens, and decontamination deletes a sample when its 8-grams cover at least 50% of a reference task's tokens. The check ignores 8-grams made of a single number and needs at least 2 distinct 8-grams against XFinBench and those public benchmarks, because number-heavy tasks would otherwise delete thousands of normal samples.</li>
+                <li><b>Decontamination:</b> Decontamination deletes a training sample from any source when it repeats or closely copies a reference task, because otherwise the finance score, MMLU, GSM8K and IFEval could reward memory of a seen task. The reference tasks are the validation and test questions of FinQA, TAT-QA and XFinBench, plus MMLU, GSM8K, IFEval and the 20% seed hold-out. The four checks below are the main triggers, and excerpt sources have further match rules, because copies change a table's layout, copy part of a table or reword the question, and no single check catches them all.</li>
+                <li><b>8-gram decontamination:</b> An 8-gram is a run of 8 consecutive tokens, and decontamination deletes a sample when its 8-grams cover at least 50% of a reference task's tokens. The check ignores 8-grams made of a single number and needs at least 2 distinct 8-grams against MMLU, XFinBench, GSM8K and IFEval, because number-heavy tasks would otherwise delete thousands of normal samples.</li>
                 <li><b>Format-stripped 8-gram:</b> Decontamination repeats the 8-gram check after removing table separators, JSON symbols and other punctuation, because a copy that only changes the table format escapes the plain check.</li>
-                <li><b>Embedding decontamination:</b> An embedding model turns text into a vector, and cosine similarity, the cosine of the angle between two vectors, rises as meanings get closer. Decontamination compares each user turn with the reference tasks and deletes the sample at a bge-m3 cosine similarity of at least 0.90, or at a Nemotron-3-Embed-1B cosine similarity of at least 0.72 against those public benchmarks or 0.845 against other reference tasks, because reworded copies escape 8-grams and each embedding model misses some. The lower cut-off against those benchmarks catches more of their reworded copies, and the higher one against finance references spares samples that only come from another page or year of the same company, which the project keeps.</li>
+                <li><b>Embedding decontamination:</b> An embedding model turns text into a vector, and cosine similarity, the cosine of the angle between two vectors, rises as meanings get closer. Decontamination compares each user turn with the reference tasks and deletes the sample at a bge-m3 cosine similarity of at least 0.90, or at a Nemotron-3-Embed-1B cosine similarity of at least 0.72 against MMLU, GSM8K and IFEval or 0.845 against other reference tasks, because reworded copies escape 8-grams and each embedding model misses some. The lower cut-off against these three benchmarks catches more of their reworded copies, and the higher one against finance references spares samples that only come from another page or year of the same company, which the project keeps.</li>
                 <li><b>Number-overlap matching:</b> On the five sources with report excerpts (FinQA, TAT-QA, DianJin, BizBench, Agentar), decontamination compares a sample with the distinctive numbers of a reference excerpt, which leave out whole numbers under 100 and years. If the excerpt has 8 or more such numbers, a sample holding at least half of them is deleted; if it has 4–7, a sample holding at least 75% of them and at least 4 is deleted. A table rewritten in another layout keeps its numbers, so this catches copies that 8-grams miss.</li>
                 <li><b>Grounding filter:</b> The grounding filter deletes an IndustryInstruction sample when its prompt, under 600 characters, cites an article or data it leaves out, or when its answer has 2 or more specific numbers (above 12 and not a year) missing from the prompt, because such samples teach the model to write numbers that are not in its material.</li>
+                <li><b>Limit of decontamination on DocFinQA:</b> About 43% of the FinQA training samples came from other pages of DocFinQA's annual reports before decontamination, and these samples stayed because FinQA treats different pages as different questions, so the project reports the DocFinQA score and makes no decision on it.</li>
               </ul>
               <p class="pipeline-subgroup">Trajectory filters (8), each reading what the previous one left</p>
               <ul>
                 <li><b>Correct answer:</b> The filter keeps a trajectory only if it passes grading, so the model does not learn a wrong method.</li>
                 <li><b>Normal ending:</b> The filter deletes a trajectory that ended on the step limit, the context limit, or a service or harness error, because such a run stops without a normal finish for the model to imitate.</li>
-                <li><b>No cut output:</b> The filter deletes a market trajectory with a reply that reached the per-call output limit of 4,096 tokens, because imitating a reply that stops mid-text or mid-call teaches unfinished output; only market trajectories record this.</li>
+                <li><b>No cut output:</b> The filter deletes a market or DocFinQA trajectory with a reply that reached the per-call output limit of 4,096 tokens, because imitating a reply that stops mid-text or mid-call teaches unfinished output; only market and DocFinQA trajectories record this.</li>
                 <li><b>Supported answer:</b> The filter deletes a trajectory with 2 or more rejected finishes, because after the second rejection the harness accepts a finish unverified, so its answer has no verified support.</li>
                 <li><b>No loop:</b> The filter deletes a trajectory that repeats a call with the same arguments 3 or more times or drew a loop hint, because repeated identical calls add no information and would teach wasted steps.</li>
                 <li><b>Tool errors:</b> The filter deletes a trajectory with more than 2 tool errors, because a path full of failed calls would teach the model to write calls that fail.</li>
@@ -279,7 +303,12 @@
                 <li><b>Entity-and-window decontamination:</b> The filter deletes a market training task that shares an entity and an overlapping time window with a development, test or FinSearchComp task, mainly to protect FinSearchComp, whose outside tasks do not follow our split. One FinSearchComp task stays out of this check, since its 184 month-end S&amp;P 500 closes would otherwise delete every <code>filing_reaction</code> trajectory.</li>
                 <li><b>Base-model screening:</b> The base model attempts each original-tier training task within 30 turns and repeats the ones it solves, and the filter keeps 10% of the tasks solved twice, within each task type. The base model already knows those tasks: if most stayed, the project could not show that the base model does badly on its training data, and the kept 10% keeps every task type covered. The hard tier skips this filter because the base model scores only 11.2% on its development tasks, which put the expected cut under 5%, and test tasks are never screened, since that would pick tasks it fails.</li>
                 <li><b>Per-task cap:</b> The filter keeps at most 2 trajectories per task, those with the fewest steps first. The cap keeps the hard tier's two attempts per task, which gives that tier about twice the trajectories without new collection.</li>
-                <li><b>Funnel:</b> The pipeline counts what each filter removes, which keeps the effect of every filter on the data traceable: the 11 filters take original-tier trajectories from 3,400 to 2,102; the 10 that apply take hard-tier trajectories from 3,500 to 2,717; the 7 that apply take wealth-management trajectories from 6,000 to 5,300 and machine-learning trajectories from 1,106 to 408. Base-model screening removes the most on the original tier (1,073), and the tool-error filter removes the most on the hard tier (361).</li>
+              </ul>
+              <p class="pipeline-subgroup">Document-task filters (2)</p>
+              <ul>
+                <li><b>Answer format:</b> The filter deletes a trajectory whose final answer breaks its system prompt: a DocFinQA answer must be exactly one number or yes/no, and a <code>t6_report_gate</code> answer must hold a number within 1% of the report's answer. The model imitates the answer form it sees, and the first run learned sentences from market trajectories. The teacher already follows these prompts, so the filter removes 1 trajectory.</li>
+                <li><b>Read passage:</b> The filter deletes a DocFinQA or <code>t6_report_gate</code> trajectory with no <code>read_chunk</code> call, even when it passes, because a search returns only a snippet of about 240 characters, and a kept trajectory that answers from the snippet would teach the first run's habit. It removes 210 DocFinQA and 39 <code>t6_report_gate</code> trajectories, so all 2,011 new samples read a passage after searching.</li>
+                <li><b>Funnel:</b> The pipeline counts what each filter removes, which keeps the effect of every filter on the data traceable: the 11 filters take original-tier trajectories from 3,400 to 2,102; the 10 that apply take hard-tier trajectories from 3,500 to 2,717; the 7 that apply take wealth-management trajectories from 6,000 to 5,300 and machine-learning trajectories from 1,106 to 408; the 10 that apply take DocFinQA trajectories from 3,075 to 1,474; and the 9 that apply take <code>t6_report_gate</code> trajectories from 1,000 to 540. Base-model screening removes the most on the original tier (1,073), and the tool-error filter removes the most on the hard tier (361).</li>
               </ul>
               <p class="pipeline-group" id="dp-dedup">Deduplication keeps one sample per question</p>
               <ul>
@@ -345,7 +374,7 @@
               </ul>
               <p class="pipeline-group" id="od-dataset">The dataset holds 3,148 tasks, with sources and task types chosen on development results</p>
               <ul>
-                <li><b>Composition:</b> The dataset holds 3,148 tasks: 2,350 training, 200 development and 598 test tasks. The test tasks include the 300 market-data test tasks and the 98 FinSearchComp tasks. Development tasks guide the choices and test tasks guide none, so test scores stay a fair final measure.</li>
+                <li><b>Composition:</b> The dataset holds 3,148 tasks: 2,350 training, 200 development and 598 test tasks. The test tasks include the 300 market-data test tasks, the 98 FinSearchComp tasks and the 200 DocFinQA tasks. Development tasks guide the choices and test tasks guide none, so test scores stay a fair final measure.</li>
                 <li><b>Training file:</b> The file holds 250 tasks from each of 7 hard task types and 200 from each of <code>rolling_vol</code>, <code>extreme_period</code> and <code>xbrl_ratio</code>, 2,350 tasks in all. It drops the eighth hard type, <code>div_event_study</code>, because the official model solves 19/20 of its development tasks, which leaves no room to show a gain, and it keeps the original tier's three types the official model does worst on (2/20, 14/20, 14/20). The SFT model also uses trajectories on the other 14 original-tier task types, 2,800 tasks beyond these.</li>
                 <li><b>Development and market-data test files:</b> The files hold 200 and 300 tasks from the same 10 task types, and no test task was picked by any model's result, so the test does not favor a model.</li>
                 <li><b>FinSearchComp file:</b> Of the 203 Global T2 and T3 tasks, the file keeps the 98 on which the snapshot's value agrees with the official answer within tolerance, so a score does not rest on a snapshot value that disagrees with that answer.</li>
@@ -359,12 +388,12 @@
               <a class="flow-node" href="#ah-verification">Verification and correction</a>
             </nav>
             <div class="content">
-              <p>The harness in this work has three parts: context management, tool interface and constraints, and verification and correction. The description below is version 3, used on market tasks; wealth-management and machine-learning tasks use version 2, which truncates older tool results into summaries.</p>
+              <p>The harness in this work has three parts: context management, tool interface and constraints, and verification and correction. The description below is version 3, used on market and DocFinQA tasks; wealth-management, machine-learning and <code>t6_report_gate</code> tasks use version 2, which truncates older tool results into summaries.</p>
               <p class="pipeline-group" id="ah-context">Context management</p>
               <ul>
                 <li><b>System prompt:</b> The harness opens each task with a message that states the model's role, the task's rules and how to use the tools.</li>
                 <li><b>Append-only context:</b> The harness never changes a message after sending it, so each request's messages are a prefix of the next request and of the stored trajectory. The stored trajectory is then exactly what the model saw at each step, and SFT and RL train on the sequence as it was sampled.</li>
-                <li><b>Tool-result cap:</b> The harness cuts each tool result to 8,000 characters when the tool returns it and appends a note on how to ask for less, such as the next page or a shorter date range. Every market tool returns at most 7,500 characters per page, below the cap, so the model does not receive cut-off JSON.</li>
+                <li><b>Tool-result cap:</b> The harness cuts each tool result to 8,000 characters when the tool returns it and appends a note on how to ask for less, such as the next page or a shorter date range. Every market tool returns at most 7,500 characters per page and <code>read_chunk</code> with neighbouring passages about 7,100, below the cap, so the model does not receive cut-off JSON.</li>
                 <li><b>Checklist (<code>set_checklist</code>):</b> The model writes the steps of a request into a checklist and marks them done, the harness restates the list after every tool result, and the model may call the tool at most 20 times in a task. This mainly reduces skipped sub-tasks.</li>
                 <li><b>Step budget:</b> The harness counts only task turns against the limit of 100 steps; checklist-only turns, a turn with a rejected finish and the 10 turns after it stay outside the count, under a hard cap of 142 turns. Checklist upkeep and redoing are actions the harness itself adds, and on long tasks they would use up the step limit.</li>
                 <li><b>Thinking-preserving chat template:</b> A changed Qwen3.5 chat template, the rule that renders messages into model input, keeps the thinking of every assistant turn after the first user message. Under the original template a nudge, which is a user message, removed the earlier thinking from the next prompt, so the stored trajectory was no longer what the model saw.</li>
@@ -373,8 +402,8 @@
               <p class="pipeline-group" id="ah-tools">Tool interface and constraints</p>
               <ul>
                 <li><b>Function calling:</b> The harness describes each tool's name and arguments to the model in JSON Schema, a standard format for structured data, and the model calls tools in the native function-calling format.</li>
-                <li><b>Tool sets:</b> The market environment offers 11 tools, wealth management 12 and machine learning 5, each count including <code>finish</code>, which ends a task with the answer; the full harness adds <code>set_checklist</code>.</li>
-                <li><b>BM25 two-step retrieval:</b> BM25, a keyword ranking algorithm, scores a passage higher when the query's words are frequent in it and rare elsewhere, and the harness uses it alone, with no vector search or reranking. A search of the wealth-management knowledge base of fund prospectuses returns ids, titles and opening text of at most 10 passages, and the model then reads a full passage by its id.</li>
+                <li><b>Tool sets:</b> The market environment offers 11 tools, wealth management 12, machine learning 5, DocFinQA 4 and <code>t6_report_gate</code> (version 2) 14, each count including <code>finish</code>, which ends a task with the answer; the full harness adds <code>set_checklist</code>.</li>
+                <li><b>BM25 two-step retrieval:</b> BM25, a keyword ranking algorithm, scores a passage higher when the query's words are frequent in it and rare elsewhere, and the harness uses it alone, with no vector search or reranking. A search of the wealth-management knowledge base of fund prospectuses returns ids, titles and opening text of at most 10 passages, and the model then reads a full passage by its id. DocFinQA cuts a 10-K into passages of 1,500 characters with 200 characters of overlap, a search there returns snippets of about 240 characters, and only <code>read_chunk</code> gives the full passage.</li>
                 <li><b>Sandbox (<code>run_python</code>):</b> The harness runs the model's code in bubblewrap, a Linux tool that isolates a process, with no network, a read-only file system outside a temporary directory, 30 seconds and 3 GiB.</li>
                 <li><b>Constraints:</b> Before a write action runs, code checks its arguments against the tool schema and the business rules, refuses a violating action unexecuted and returns the reason to the model, which mainly reduces rule violations and bad arguments.</li>
               </ul>
@@ -391,17 +420,17 @@
           <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
             <div class="content">
               <ul>
-                <li><b>Packing:</b> The data builder renders market trajectories with the thinking-preserving chat template up to 32,768 tokens and wealth-management and machine-learning trajectories up to 16,384, then packs the 12,475 samples into 2,439 sequences of at most 32,768 tokens, so short samples fill each sequence's token budget and a step of 12 sequences trains on about 61 samples. The market limit is 32,768 because the median <code>xbrl_ratio</code> trajectory has 17,661 tokens, so 16,384 would lose over half of that task type.</li>
-                <li><b>Settings:</b> Training fine-tunes all parameters of Qwen3.5-4B-Base for 2 epochs (two passes through the data) and 408 steps, on 6 GPUs, at a learning rate of 1e-5 that falls along a cosine curve. It starts from the Base model so that everything the model learns after pre-training comes only from this project's data.</li>
+                <li><b>Packing:</b> The data builder renders market and DocFinQA trajectories with the thinking-preserving chat template up to 32,768 tokens, and <code>t6_report_gate</code> trajectories up to 32,768 and wealth-management and machine-learning trajectories up to 16,384 with Qwen3.5's own template, then packs the 14,486 samples into 2,830 sequences of at most 32,768 tokens, so short samples fill each sequence's token budget and a step of 12 sequences trains on about 61 samples. The market limit is 32,768 because the median <code>xbrl_ratio</code> trajectory has 17,661 tokens, so 16,384 would lose over half of that task type.</li>
+                <li><b>Settings:</b> Training fine-tunes all parameters of Qwen3.5-4B-Base for 2 epochs (two passes through the data) and 472 steps, on 6 GPUs, at a learning rate of 1e-5 that falls along a cosine curve. It starts from the Base model so that everything the model learns after pre-training comes only from this project's data.</li>
                 <li><b>Loss:</b> Training minimizes the cross-entropy between the model's next-token prediction and the label, the standard loss for next-token prediction \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\), where \(x_{&lt;t}\) is the sequence before position \(t\), \(\theta\) the model weights and \(N\) the number of labeled tokens, so the model reproduces the labeled turns token by token. Training computes the loss only at labeled positions, in chunks, which leaves its value and gradients unchanged, because the model's scores for every vocabulary token at every position of a long sequence do not fit in GPU memory.</li>
                 <li><b>Labels:</b> A label is the token itself where the model should learn and &minus;100, which the loss ignores, everywhere else. The labels cover thinking, text and tool calls in a trajectory's assistant turns, because the model later runs under a chat template that keeps past thinking in its context, and they mask system, user and tool turns, because tools produce their own output.</li>
-                <li><b>Masked turns:</b> Market trajectories mask a reply that drew a nudge and a turn with a rejected call but keep them in the context, because a loss there would teach the model to hand in wrong answers first, while the later correction is still learned. Wealth-management and machine-learning trajectories keep the loss on rejected turns, and the builder drops any with a nudge.</li>
-                <li><b>Malformed calls:</b> The current data builder also masks turns with malformed calls, such as unknown tool names, because a loss there teaches wrong names; the SFT model's data predates this rule, and those turns are 0.25% of its labeled tokens.</li>
+                <li><b>Masked turns:</b> Market and DocFinQA trajectories mask a reply that drew a nudge and a turn with a rejected call but keep them in the context, because a loss there would teach the model to hand in wrong answers first, while the later correction is still learned; <code>t6_report_gate</code> trajectories mask rejected turns too. Wealth-management and machine-learning trajectories keep the loss on rejected turns. The builder drops wealth-management, machine-learning and <code>t6_report_gate</code> trajectories with a nudge.</li>
+                <li><b>Malformed calls:</b> The data builder also masks turns with malformed calls, such as unknown tool names, because a loss there teaches wrong names.</li>
                 <li><b>Sample boundaries:</b> Each batch tells the model where every sample in a shared sequence begins and ends, because Qwen3.5's linear-attention layers, an attention variant that carries state along the sequence, would otherwise leak one sample into the next. This cut the largest per-token loss difference from 6.3 to 0.13, which is numerical noise.</li>
               </ul>
             </div>
             <div class="pipeline-facts">
-              <span class="pipeline-fact">24.22M of 79.57M tokens carry loss</span>
+              <span class="pipeline-fact">27.09M of 92.70M tokens carry loss</span>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
@@ -412,13 +441,17 @@
                 <li><b>Success rate:</b> The score counts the share of tasks in the set \(T\) that pass, where \(s_t = 1\) when task \(t\) passes, so only a fully finished task earns credit. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>Paired bootstrap:</b> The comparison subtracts two models' results on the same tasks, where \(a_i\) and \(b_i\) are 100 for a correct task and 0 otherwise, and takes the 95% interval from 10,000 resamples of the \(n\) tasks. Pairing removes task difficulty from the difference, which narrows the interval; it covers task sampling only, since each test task runs once. \[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
               </ul>
-              <p class="pipeline-group">Single-turn SFT runs</p>
+              <p class="pipeline-group">Single-turn scores</p>
               <ul>
-                <li><b>Finance score:</b> The scorer takes the first number after the last "Answer:" and marks the question correct when it is within 1% of the reference, in percent or decimal form. Every model gets the same prompt with 3 worked examples and no chat template, because the base model cannot follow chat format and scores must stay comparable. Here \(D\) is the question set, \(y_i\) the reference, \(\hat{y}_i\) the answer and \(\tau_i = 0.01|y_i|\), or 0.005 when \(y_i = 0\). \[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
+                <li><b>Finance score:</b> The scorer takes the first number after the last "Answer:" and marks the question correct when it is within 1% of the reference, in percent or decimal form. Every model gets the same prompt with 3 worked examples and no chat template, because a base model is not trained on chat format and scores must stay comparable. Here \(D\) is the question set, \(y_i\) the reference, \(\hat{y}_i\) the answer and \(\tau_i = 0.01|y_i|\), or 0.005 when \(y_i = 0\). \[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
+                <li><b>MMLU:</b> The scorer marks a knowledge question correct when the most likely option \(o\) for prompt \(x_q\) is the right option \(o^{*}_q\), over the question set \(Q\). Comparing option probabilities needs no generated format, so the base and SFT models stay comparable, and four economics and accounting subjects are left out, because financial training would raise them and hide declines elsewhere. \[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
+                <li><b>GSM8K:</b> The scorer marks a math word problem correct when \(\hat{a}_q\), the last number in the reply, equals the reference \(a_q\), which shows whether multi-step arithmetic survives outside the filing format. Every model gets the same prompt with 5 worked examples and no chat template, as the finance score does. \[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
+                <li><b>IFEval:</b> The scorer counts a prompt in the set \(P\) only when the reply meets all its program-checkable instructions \(I_p\), such as a word limit or JSON output, where \(f_{p,j}=1\) when instruction \(j\) holds, which measures following stated rules and formats as an agent must. Every model answers through a chat template that lets it reason first, and the scorer reads the text after that reasoning. The base model uses Qwen3.5's native template and a stop rule, and it scores 37.7 without a template. \[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
               </ul>
-              <p class="pipeline-group">Agent SFT model</p>
+              <p class="pipeline-group">Agent tasks</p>
               <ul>
                 <li><b>Market-data test and FinSearchComp:</b> The grader applies key-based grading from the Offline dataset tab and uses the tolerance each FinSearchComp task states.</li>
+                <li><b>DocFinQA:</b> The grader takes the answer's last number and passes it within 1% of the reference, in percent or decimal form, or checks the same word on a yes/no question, which gives a score comparable with outside results.</li>
                 <li><b>State comparison (wealth management):</b> The grader compares the final holdings, cash and trade records with the reference state and the answer's key numbers with their tolerances (amounts ±$0.01, rates ±0.1 percentage points). On a task the rules forbid, it checks that the banned trade did not run and the answer names the rule, because a task counts only when both the trades and the answer are right.</li>
                 <li><b>AUC and \(R^2\) bar (machine learning):</b> The grader requires a submitted model that scores at most 0.015 AUC or 0.03 \(R^2\) below the model that generated the data on a hidden table. This bar demands correct data handling: on the development set a fixed pipeline passes 20 of 20 tasks with a log transform of skewed columns and 1 without it.</li>
                 <li><b>pass@1 and pass@4:</b> The scorer computes both scores over \(T_4\), the development tasks with 4 valid attempts, where \(c_t\) of the \(n_t\) valid attempts at task \(t\) pass. \[P_1 = \frac{100}{|T_4|}\sum_{t \in T_4}\frac{c_t}{n_t}\] \[P_4 = \frac{100}{|T_4|}\sum_{t \in T_4}\mathbf{1}[c_t \ge 1]\]</li>
@@ -427,7 +460,7 @@
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
             <div class="content">
-              <p><span class="status-tag">not started</span> Every value here is planned. DAPO is the next reinforcement learning (RL) method. It builds on GRPO, which samples a group of attempts at each task and scores each attempt against its group. DAPO adds the first four changes below and removes the KL penalty, an extra loss that holds the model close to a frozen copy of itself. Training will use verl's own DAPO implementation and start from a retrained SFT model.</p>
+              <p>Task selection is running; training has not started, and every training value here is planned. DAPO is the next reinforcement learning (RL) method. It builds on GRPO, which samples a group of attempts at each task and scores each attempt against its group. DAPO adds the first four changes below and removes the KL penalty, an extra loss that holds the model close to a frozen copy of itself. Training will use verl's own DAPO implementation and start from the SFT model above.</p>
               <ul>
                 <li><b>Clip-Higher:</b> Training limits how far one update may move a token's probability: the ratio of its new to its old probability may fall by at most 0.2 and rise by at most 0.28.</li>
                 <li><b>Dynamic Sampling:</b> verl's trainer drops a group whose 8 attempts all earn the same grade, all passed or all failed, whatever their lengths, and dispatches 2 refill tasks for it, because such a group holds no pass-or-fail difference and would train only on length. The refill has no cap, so a step takes longer as more groups are dropped.</li>
@@ -435,19 +468,19 @@
                 <li><b>Overlong reward shaping:</b> verl's DAPO reward manager adds a length reward to the grade \(r\): 0 up to \(L_s\), then falling linearly to −1 at the budget \(L_{\max}\). An attempt that fills the budget always fails, so it totals −2, and it carries loss. Here \(L\) counts an attempt's tokens with tool results, the buffer is \(L_c = 4{,}096\) and \(L_s = L_{\max} - L_c = 24{,}576\); the budget \(L_{\max} = 28{,}672\) plus a 4,096-token prompt equals the 32,768-token SFT sequences. \[R = r + \min\Big(-\frac{L - L_s}{L_c},\ 0\Big)\]</li>
                 <li><b>Reward:</b> The grader gives +1 for a pass and −1 otherwise, as DAPO does. With 0/1 grades the same length penalty would weigh twice as much against the gap between right and wrong.</li>
                 <li><b>No KL:</b> Training applies no KL penalty, because with long reasoning the model is expected to move far from where it started; this also saves that copy's memory and forward pass.</li>
-                <li><b>Task selection:</b> The retrained SFT model attempts each pool task 8 times, and selection drops tasks with 0/8 passes, keeps tasks with 1–7/8 and keeps 10% of tasks with 8/8, because a task with the same grade in all attempts gives the group comparison nothing. The kept 10% leaves some solved tasks for the model to keep practicing. If more remain, a draw within each task type, in proportion to the type's share, holds the set to an average of 93.9 tasks per type, which largely sets how many times a run passes over its tasks. The model changes during training, so a selected task can also come to be all passed or all failed, and dynamic sampling keeps dropping such groups at each step.</li>
-                <li><b>Task pool:</b> The market part of the pool holds newly generated tasks, 200 in each of 10 task types, and none of them repeats an SFT training, development or test task.</li>
-                <li><b>Settings:</b> Each step takes 96 tasks with 8 attempts each, in mini-batches of 24 tasks, which gives 4 updates per step; the run lasts 28 steps at a learning rate of 8.7e-7, and an attempt stops at 30 task turns.</li>
+                <li><b>Task selection:</b> The SFT model attempts each pool task 8 times, and selection drops tasks with 0/8 passes, keeps tasks with 1–7/8 and keeps 10% of tasks with 8/8, because a task with the same grade in all attempts gives the group comparison nothing. The kept 10% leaves some solved tasks for the model to keep practicing. If more remain, a draw within each task type, in proportion to the type's share, holds the set to an average of 93.9 tasks per type, which largely sets how many times a run passes over its tasks. The model changes during training, so a selected task can also come to be all passed or all failed, and dynamic sampling keeps dropping such groups at each step.</li>
+                <li><b>Task pool:</b> The market part of the pool holds newly generated tasks, 200 in each of 10 task types, and none of them repeats an SFT training, development or test task. 200 DocFinQA training tasks join as an eleventh type if a short trial run on 2 such tasks passes, because without them RL has no signal to keep the SFT model's reading ability.</li>
+                <li><b>Settings:</b> On 8 GPUs, each step takes 128 tasks with 8 attempts each, in mini-batches of 32 tasks, which gives 4 updates per step; the run lasts 21 steps at a learning rate of 1e-6, and an attempt stops at 30 task turns.</li>
               </ul>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
             <div class="content">
-              <p><span class="status-tag">not started</span> The final DAPO model and the retrained SFT model will run the market-data, FinSearchComp, development, wealth-management and machine-learning sets under the SFT evaluation tab's rules, with three additions.</p>
+              <p><span class="status-tag">not started</span> The final DAPO model will run the market-data, FinSearchComp, DocFinQA, development, wealth-management, machine-learning and general-ability sets under the SFT evaluation tab's rules, for comparison with the base, teacher and SFT models, with three additions.</p>
               <ul>
                 <li><b>Strict grading:</b> The strict grader adds four rules to market-data, FinSearchComp and development answers, and \(r_t = 1\) when all hold. An answer may hold at most 50 numbers outside dates. It may hold at most 40 distinct dates. Each number key must appear outside any date. On a task with candidates, the first company named must be correct and each later company key must be followed by its value. The original grader accepts a key anywhere in the answer: an audit's answers that knew no reference value, only the restated task and grids of numbers, passed 209 of 939 RL training tasks, so an RL gain under the original grader alone could not be trusted. \[S_{\text{strict}} = \frac{100}{|T|}\sum_{t \in T} s_t\, r_t\]</li>
                 <li><b>Reworded test:</b> Rewording rewrites the 300 market-data test tasks with the same parameters and answers and lowers their 5-gram overlap with same-type training tasks from 0.77–0.99 to 0.10–0.32, so a score change shows how much a result depends on wording. \[\Delta_{\text{reword}} = S_{\text{reworded}} - S_{\text{original}}\]</li>
-                <li><b>Paired gain over the SFT model:</b> The comparison takes \(a_i\) from the retrained SFT model and \(b_i\) from the final DAPO model on each task under the paired bootstrap of the SFT evaluation tab.</li>
+                <li><b>Paired gain over the SFT model:</b> The comparison takes \(a_i\) from the SFT model and \(b_i\) from the final DAPO model on each task under the paired bootstrap of the SFT evaluation tab.</li>
               </ul>
             </div>
           </div>
@@ -464,10 +497,10 @@
     <div class="container is-max-desktop">
       <h2 class="title is-3">Quantitative Results</h2>
 
-      <h3 class="title is-5">Agent SFT lifts the 4B model from 16.7% to 88.7% on held-out market-data tasks</h3>
+<h3 class="title is-5">Agent SFT lifts the 4B model from 16.7% to 87.3% on held-out market-data tasks</h3>
       <div class="content has-text-justified">
         <p>
-          Success rate (%) with the same harness, one attempt per task.
+          Success rate (%) with the same harness, one attempt per task. The SFT model is 29.7 points above the official Qwen3.5-4B on the market-data test (95% interval +23.3 to +36.0) and 10.2 points above it on FinSearchComp (+1.0 to +20.4). Against the first run it stands at &minus;1.3 (&minus;6.3 to +3.7) and &minus;3.1 (&minus;10.2 to +3.1); both intervals include zero, so these tasks cannot tell the two runs apart at this sample size. On the 200 development tasks, which guide selection, the SFT model scores pass@1 88.0 and pass@4 100.0, a 12.0-point gap.
         </p>
       </div>
       <p class="table-hint">Scroll the table sideways to see all columns.</p>
@@ -479,17 +512,39 @@
           <tbody>
             <tr><td>Qwen3.5-4B-Base (start)</td><td>16.7</td><td>50.0</td></tr>
             <tr><td>Qwen3.5-4B (official post-trained)</td><td>57.7</td><td>64.3</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><u>88.7</u></td><td><u>77.6</u></td></tr>
+            <tr><td>First SFT run, 4B</td><td><u>88.7</u></td><td><u>77.6</u></td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td>87.3</td><td>74.5</td></tr>
             <tr><td>Qwen3.8-27B (teacher)</td><td><b>94.7</b></td><td><b>83.7</b></td></tr>
           </tbody>
         </table>
       </div>
-
+      <hr>
+      <h3 class="title is-5">The second SFT run lifts DocFinQA from 39.0 to 53.0, level with the official model</h3>
+      <div class="content has-text-justified">
+        <p>
+          The table gives results on 200 questions over full annual reports, one attempt per task. The SFT model is 14.0 points above the first run (95% interval +8.5 to +20.0), level with the official Qwen3.5-4B (+0.0, &minus;5.0 to +5.0) and 6.0 points below the teacher (&minus;10.5 to &minus;1.5). The first run's two faults shrink: the model skips <code>read_chunk</code> on 5 questions against 39, and 191 answers follow the required form against 141. The second run added the new trajectories, the filters, the 115 rewritten samples and the masking of malformed calls together, so this data cannot separate their effects.
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>Model</th><th>Success rate (%)</th><th><code>read_chunk</code> calls per question</th><th>Questions with no <code>read_chunk</code></th><th>Answers in the required form (of 200)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base (start)</td><td>43.5</td><td>2.57</td><td>15</td><td>193</td></tr>
+            <tr><td>Qwen3.5-4B (official post-trained)</td><td><u>53.0</u></td><td>3.02</td><td>8</td><td>193</td></tr>
+            <tr><td>First SFT run, 4B</td><td>39.0</td><td>1.50</td><td>39</td><td>141</td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><u>53.0</u></td><td>1.98</td><td>5</td><td>191</td></tr>
+            <tr><td>Qwen3.8-27B (teacher)</td><td><b>59.0</b></td><td>2.04</td><td>10</td><td>194</td></tr>
+          </tbody>
+        </table>
+      </div>
       <hr>
       <h3 class="title is-5">The gain holds on 550 wealth-management and machine-learning tasks</h3>
       <div class="content has-text-justified">
         <p>
-          Success rate (%) on the test set of a self-built wealth-management environment (500 tasks such as rebalancing, fund switching and rule-constrained trades) and 50 machine-learning tasks, one attempt per task. The SFT model is 6.9 points above the official Qwen3.5-4B (95% interval +3.8 to +10.2).
+          Success rate (%) on the test set of a self-built wealth-management environment (500 tasks such as rebalancing, fund switching and rule-constrained trades) and 50 machine-learning tasks, one attempt per task. On wealth management the SFT model is 8.4 points above the official Qwen3.5-4B (95% interval +5.2 to +11.8). On machine learning it is 14.0 points above it (+0.0 to +28.0), an interval that reaches zero on only 50 tasks. On machine learning the teacher passes 24 of 25 <code>ml_redemption</code> tasks and 1 of 25 <code>ml_volatility</code> tasks, where the SFT model passes 25 and 14.
         </p>
       </div>
       <p class="table-hint">Scroll the table sideways to see all columns.</p>
@@ -501,7 +556,31 @@
           <tbody>
             <tr><td>Qwen3.5-4B-Base (start)</td><td>50.4</td><td>51.0</td><td>44</td></tr>
             <tr><td>Qwen3.5-4B (official post-trained)</td><td>84.2</td><td>86.2</td><td>64</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><b>91.1</b></td><td><b>92.2</b></td><td><b>80</b></td></tr>
+            <tr><td>First SFT run, 4B</td><td>91.1</td><td>92.2</td><td><b>80</b></td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><b>93.1</b></td><td><u>94.6</u></td><td><u>78</u></td></tr>
+            <tr><td>Qwen3.8-27B (teacher)</td><td><b>93.1</b></td><td><b>97.4</b></td><td>50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <hr>
+      <h3 class="title is-5">SFT keeps knowledge and math ability and loses 12.2 points of instruction following against the base model</h3>
+      <div class="content has-text-justified">
+        <p>
+          Against Qwen3.5-4B-Base the SFT model gains 0.8 points on MMLU (95% interval +0.4 to +1.1) and 2.5 on GSM8K (+0.5 to +4.5) and loses 12.2 on IFEval (&minus;16.3 to &minus;8.0, the base model running Qwen3.5's native chat template), where it still stands 11.5 points above the official Qwen3.5-4B (+6.8 to +16.1). The finance score and GSM8K use no chat template, and without one the official and teacher models often write on past their answer or stop without one: 180 and 360 of 1,319 GSM8K replies have no final-answer line (SFT model 34), and the finance scorer reads the last "Answer:", while reading the first one would give them 64.8 and 82.1 (SFT model 77.0), so these two columns understate those two models.
+        </p>
+      </div>
+      <p class="table-hint">Scroll the table sideways to see all columns.</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>Model</th><th>Finance score (1,886)</th><th>MMLU (13,018)</th><th>GSM8K (1,319)</th><th>IFEval (541)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base (start)</td><td><u>76.4</u></td><td>72.8</td><td>80.5</td><td><u>75.2</u></td></tr>
+            <tr><td>Qwen3.5-4B (official post-trained)</td><td>61.9</td><td>70.1</td><td>76.5</td><td>51.6</td></tr>
+            <tr><td>First SFT run, 4B</td><td>75.1</td><td>73.3</td><td><u>81.7</u></td><td>63.6</td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><b>77.0</b></td><td><u>73.6</u></td><td><b>83.0</b></td><td>63.0</td></tr>
+            <tr><td>Qwen3.8-27B (teacher)</td><td>74.0</td><td><b>82.8</b></td><td>72.6</td><td><b>91.7</b></td></tr>
           </tbody>
         </table>
       </div>

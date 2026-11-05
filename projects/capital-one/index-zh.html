@@ -68,9 +68,9 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="static/images/teaser-zh.svg" alt="起点模型、官方模型、SFT 模型和教师在行情测试集和 FinSearchComp 上的成功率" style="display: block; margin: 0 auto; width: 100%;">
+      <img src="static/images/teaser-zh.svg" alt="起点模型、官方模型、SFT 模型和教师在行情测试集、FinSearchComp 和 DocFinQA 上的成功率" style="display: block; margin: 0 auto; width: 100%;">
       <h2 class="subtitle has-text-centered">
-        在训练过的题型上，多轮 agent SFT 把 4B 模型从 16.7% 提升到 88.7%，超过官方 Qwen3.5-4B（57.7%）。在项目之外编写的 FinSearchComp 题上，它做到 77.6%，超过官方模型的 64.3%。
+        在训练过的题型上，多轮 agent SFT 把 4B 模型从 16.7% 提升到 87.3%，超过官方 Qwen3.5-4B（57.7%）。在项目之外编写的 FinSearchComp 题上，它做到 74.5%，超过官方模型的 64.3%；在长文档问答上做到 53.0%，与官方模型持平。
       </h2>
     </div>
   </div>
@@ -85,7 +85,7 @@
         <h2 class="title is-3">摘要</h2>
         <div class="content has-text-justified">
           <p>
-            本项目把 4B 底座模型 Qwen3.5-4B-Base 后训练成会调用工具的金融 agent：它查询行情、宏观序列和公司财报，在 Python 沙箱里计算，并回答多步问题。官方后训练的 Qwen3.5-4B 已经能做对我们早先行情检索开发题的 84.7%，所以我们构建了一套更难的离线数据集，共 3,148 道题（训练 2,350 道、开发 200 道、测试 598 道）。其中 2,850 道参照公开 benchmark FinSearchComp 在固定数据快照上生成，答案由程序计算并由另一套独立实现复核。教师（更大的模型 Qwen3.8-27B）在 agent harness（包在模型外面、提供工具并检查答案的代码）中做两档难度的行情训练题，每次做题存成一条轨迹，即消息、工具调用和工具结果的完整记录。过滤后的这些轨迹，连同过滤后的财富管理和机器学习轨迹，以及取自金融与通用数据 1:1 混合数据的 2,000 条样本，用多轮 agent SFT（监督微调，用带标准答案的样本继续训练）训练 4B 模型。在 300 道来自留出股票和更晚时段的行情测试题上，SFT 模型做对 <b>88.7%</b>，官方 Qwen3.5-4B 为 57.7%，起点模型为 16.7%，教师为 94.7%。下一步是从重新训练的 SFT 模型出发、用 DAPO 做强化学习，尚未开始。
+            本项目把 4B 底座模型 Qwen3.5-4B-Base 后训练成会调用工具的金融 agent：它查询行情、宏观序列和公司财报，在 Python 沙箱里计算，并回答多步问题。官方后训练的 Qwen3.5-4B 已经能做对我们早先行情检索开发题的 84.7%，所以我们构建了一套更难的离线数据集，共 3,148 道题（训练 2,350 道、开发 200 道、测试 598 道）。其中 2,850 道参照公开 benchmark FinSearchComp 在固定数据快照上生成，答案由程序计算并由另一套独立实现复核；其余是 98 道 FinSearchComp 题和 200 道针对整份年报的 DocFinQA 题。教师（更大的模型 Qwen3.8-27B）在 agent harness（包在模型外面、提供工具并检查答案的代码）中做两档难度的行情训练题和读年报的题，每次做题存成一条轨迹，即消息、工具调用和工具结果的完整记录。过滤后的这些轨迹，连同过滤后的财富管理和机器学习轨迹，以及取自金融与通用数据 1:1 混合数据的 2,000 条样本，用多轮 agent SFT（监督微调，用带标准答案的样本继续训练）训练 4B 模型。在 300 道来自留出股票和更晚时段的行情测试题上，SFT 模型做对 <b>87.3%</b>，官方 Qwen3.5-4B 为 57.7%，起点模型为 16.7%，教师为 94.7%。在 DocFinQA 上它做对 53.0%，与官方模型持平，比第一次 SFT 高 14.0 分，第一次 SFT 的数据里没有读年报的轨迹。下一步是从这个 SFT 模型出发、用 DAPO 做强化学习，训练尚未开始。
           </p>
         </div>
       </div>
@@ -99,7 +99,10 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">数据</h2>
 
-    <h3 class="title is-5">SFT 模型用 12,475 条样本训练，主要是教师轨迹</h3>
+    <h3 class="title is-5">SFT 模型用 14,486 条样本训练，主要是教师轨迹</h3>
+    <div class="content has-text-justified">
+      <p>这里报告的 SFT 模型来自第二次训练。第一次 SFT 在 DocFinQA 上得 39.0 分，官方模型是 53.0 分，毛病有两个：一是常不读全文，只凭检索返回的约 240 字符摘要作答；二是该只交一个数时写成句子，判分取到句子里的年份。根源都在训练数据：里面没有针对年报"先检索、再读全文、再取数"的任务，行情题的轨迹又大量示范写句子。所以第二次训练加上下面 DocFinQA 和 <code>t6_report_gate</code> 两行数据，并丢掉不读全文就作答的轨迹。</p>
+    </div>
     <table class="table is-narrow data-table">
       <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
@@ -124,13 +127,23 @@
           <td data-label="Why">模型学会用结构化工具看数据、训练、比较和提交模型，通过门槛还要求它学会把数据处理做对。</td>
         </tr>
         <tr>
+          <td><b>DocFinQA 训练题</b></td>
+          <td data-label="What">教师对 3,075 道题各做 1 次，这些题用的年报不与任何开发题、测试题重叠，1,474 条轨迹通过过滤。</td>
+          <td data-label="Why">这些轨迹示范检索年报、读全文、再取数，并以题目要求的单个数作答。</td>
+        </tr>
+        <tr>
+          <td><b><code>t6_report_gate</code></b></td>
+          <td data-label="What">教师对 1,000 道题各做 1 次；每道题先检索年报回答问题，再按答案和业务规则决定交易，540 条轨迹通过过滤。</td>
+          <td data-label="Why">这些轨迹在多步业务任务里教同样的读取步骤。</td>
+        </tr>
+        <tr>
           <td><b>1:1 混合数据切片</b></td>
           <td data-label="What">建数据的程序从 1:1 混合数据抽取 2,000 条样本：Tülu 3 通用样本 1,019 条，金融问答 981 条，其中合成文档问答 115 条。</td>
           <td data-label="Why">这些样本加入不用工具的直接问答，工具轨迹覆盖不到这类任务。</td>
         </tr>
       </tbody>
     </table>
-    <p class="data-note">这几行共有 10,527 条轨迹和 2,000 条样本。打包时丢掉 52 条轨迹：48 条超过各自的 token 上限（见多轮 agent SFT 一环的 Packing），4 条带第二条用户消息，它会让这些轨迹的对话模板丢掉之前的思考。行情轨迹因此从 4,819 条变为 4,791 条，财富管理和机器学习轨迹从 5,708 条变为 5,684 条。余下 10,475 条轨迹加 2,000 条样本，共 12,475 条样本。</p>
+    <p class="data-note">这几行共有 12,541 条轨迹和 2,000 条样本。打包时丢掉 55 条轨迹：48 条超过各自的 token 上限（见多轮 agent SFT 一环的 Packing），7 条带第二条用户消息，它会让这些轨迹的对话模板丢掉之前的思考。行情轨迹因此从 4,819 条变为 4,791 条，财富管理和机器学习轨迹从 5,708 条变为 5,684 条，<code>t6_report_gate</code> 轨迹从 540 条变为 537 条。余下 12,486 条轨迹加 2,000 条样本，共 14,486 条样本。</p>
 
     <h3 class="title is-5">单轮 SFT 每次从四类来源抽 100,000 条样本</h3>
     <div class="content has-text-justified">
@@ -162,7 +175,7 @@
       </tbody>
     </table>
 
-    <h3 class="title is-5">测试数据覆盖训练过的题型、外部题和财报题</h3>
+    <h3 class="title is-5">测试数据覆盖训练过的题型、外部题和通用能力</h3>
     <table class="table is-narrow data-table">
       <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
@@ -177,6 +190,11 @@
           <td data-label="Why">这些题由外部出，所以分数测的是模型对我们题型之外的题的泛化能力。</td>
         </tr>
         <tr>
+          <td><b>DocFinQA（200）</b></td>
+          <td data-label="What">测试集针对整份 SEC 10-K 年报提数值题和是非题，模型只能通过检索读到年报。</td>
+          <td data-label="Why">它在没有 agent 训练题用过的年报上测读长文档的能力。</td>
+        </tr>
+        <tr>
           <td><b>财富管理（500）+ 机器学习（50）</b></td>
           <td data-label="What">测试集在数据库实例 C 上运行，14 个财富管理题型中有 2 个（45 题）只在测试集出现。</td>
           <td data-label="Why">它测模型在没见过的客户和产品上遵守业务规则、使用工具的能力，只在测试集出现的题型测没见过的任务形式。</td>
@@ -185,6 +203,11 @@
           <td><b>金融分（1,886）</b></td>
           <td data-label="What">金融分给 FinQA 和 TAT-QA 测试题打分。</td>
           <td data-label="Why">它测单轮模型读年报摘录、算出一个数的能力。</td>
+        </tr>
+        <tr>
+          <td><b>MMLU（13,018）、GSM8K（1,319）、IFEval（541）</b></td>
+          <td data-label="What">这些 benchmark 测知识、数学应用题和遵守可检查指令的能力。</td>
+          <td data-label="Why">它们检查金融训练有没有损伤通用能力。</td>
         </tr>
         <tr>
           <td><b>开发集（200，每题 4 次）</b></td>
@@ -216,9 +239,9 @@
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
             <button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>SFT 评测</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>DAPO（下一步）</button>
+            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>DAPO（进行中）</button>
             <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL 评测</button>
+            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL 评测（下一步）</button>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
             <nav class="flow" aria-label="数据管线的阶段">
@@ -241,7 +264,7 @@
                 <li><b>Length cap：</b>转换程序统计样本的消息和推理合计的 token 数，丢弃超过 4,096 token 的样本而不截断，因为截断会留下推理、丢掉答案。token 是模型切分文本的单位，一个英文词约 1–2 个。</li>
                 <li><b>Seed split：</b>加盐哈希（salted hash，把编号加上一个固定字符串再取哈希，结果可复现）把 FinQA 训练题按年报页、TAT-QA 训练题按表格分成 80% 的训练样本和 20% 的留出部分，因为同一页常有几道题，按题划分会让留出部分与训练样本共用摘录。</li>
                 <li><b>Quality tier + rule filter：</b>文档过滤程序取 IndustryCorpus2 财经文章的英文高质量档，保留 <code>num_words</code> 字段在 200–100,000、重复的非空行不超过 30%、不含汉字的文档。字数范围去掉残篇和过长的堆砌文本，重复行上限去掉模板文字，这样出题依据的是真实的英文财经文本。</li>
-                <li><b>Chunk selection：</b>切块程序把留下文档的连续行拼成 1,000–2,000 字符的文档块，每篇最多取 2 块，只把至少含 4 个数的文档块交给下一步。这个长度放得下一道自足的题目需要的上下文，至少 4 个数让计算有输入，每篇 2 块的上限让题目分散到更多文档。这里用财经文章而不用 10-K，因为金融分的题都出自上市公司年报，从 10-K 生成容易让训练题与测试题同出一份年报。</li>
+                <li><b>Chunk selection：</b>切块程序把留下文档的连续行拼成 1,000–2,000 字符的文档块，每篇最多取 2 块，只把至少含 4 个数的文档块交给下一步。这个长度放得下一道自足的题目需要的上下文，至少 4 个数让计算有输入，每篇 2 块的上限让题目分散到更多文档。这里用财经文章而不用 10-K，因为金融分和 DocFinQA 的题都出自上市公司年报，从 10-K 生成容易让训练题与测试题同出一份年报。</li>
               </ul>
               <p class="pipeline-group" id="dp-synthesis">合成生成任务、轨迹和题目</p>
               <ul>
@@ -249,26 +272,27 @@
                 <li><b>Market tasks：</b>模板从固定的数据快照中抽取标的和时间窗口，细节见离线数据集一环。</li>
                 <li><b>Wealth-management tasks：</b>程序生成一个 SQLite 业务数据库，含 2,000 个客户、300 只产品和两年的日净值，14 个题型在 7 条业务规则下从中抽取多步任务。训练、开发和测试各用一个数据库，所以测试题里的客户和产品模型都没见过。约 15% 的任务按规则不能执行，这样判分才能检验 agent 是否拒绝违规操作。</li>
                 <li><b>Machine-learning tasks：</b>两个模板按每道题的随机种子生成一张新数据表，agent 通过结构化工具建模，程序在隐藏的测试表上打分，分数要接近生成数据的那个模型才算通过，所以题目检验的是数据处理是否做对，而不只是跑完流程。</li>
-                <li><b>Teacher trajectories：</b>Qwen3.8-27B 在 harness 中做训练题，harness 记下每条消息和每次工具调用。原有一档每题 1 次就够，因为教师在开发集上几乎全对；难题档每题 2 次让轨迹约多一倍；财富管理和机器学习先做 2 次，通过不足 2 条时加到 4 次，4 次都没通过时逐次加到最多 8 次，因为教师一开始做不对的题往往最值得学。</li>
-                <li><b>Synthetic document QA：</b>本地部署的大模型为每个文档块写 1–2 道必须用块中金融数字的计算题，每题带计算过程和一个数值答案，不问日期和时长。题型与金融分的 FinQA、TAT-QA 测试题相同，都是给材料、算出一个数，所以下面的消融测到的是合成数据本身的作用，而不是题型差异。</li>
+                <li><b>Teacher trajectories：</b>Qwen3.8-27B 在 harness 中做训练题，harness 记下每条消息和每次工具调用。原有一档每题 1 次就够，因为教师在开发集上几乎全对；难题档每题 2 次让轨迹约多一倍；财富管理和机器学习先做 2 次，通过不足 2 条时加到 4 次，4 次都没通过时逐次加到最多 8 次，因为教师一开始做不对的题往往最值得学；DocFinQA 和 <code>t6_report_gate</code> 每题 1 次。</li>
+                <li><b>Synthetic document QA：</b>本地部署的大模型为每个文档块写 1–2 道必须用块中金融数字的计算题，每题带计算过程和一个数值答案，不问日期和时长。题型与金融分的 FinQA、TAT-QA 测试题相同，都是给材料、算出一个数，所以下面的消融测到的是合成数据本身的作用，而不是题型差异。SFT 模型的切片含 115 条这类样本，由教师按下面 Question checks 的规则重写，109 条用原文档块，6 条用替换的文档块；bge-m3 检查没能在这批样本上运行。</li>
                 <li><b>Question checks：</b>检查程序只保留这样的题：列出的数都出现在文档块中、不全是年份，并且只看文档块和问题再答一次的结果相差不超过 1%；这些题没有人工标准答案，再答一次能挡掉算错、读错的题。一个模型抽检保留下来的 100 题，判对 93 题。</li>
                 <li><b>Ablation of synthetic document QA：</b>消融（ablation）去掉一部分来测它的作用：在 Qwen3-4B-Base 上，1:1 混合数据的金融分比去掉合成样本的同一混合数据低 0.05 分（95% 区间 −1.3 到 +1.2，p=0.55）。空出的名额由其他金融来源补足，可能抵消了合成数据的作用，但它在现有金融数据之外没有可测的增益，所以项目不再扩充这批数据。</li>
               </ul>
               <p class="pipeline-group" id="dp-filtering">过滤删掉会误导分数或教坏模型的内容</p>
               <p class="pipeline-subgroup">样本过滤</p>
               <ul>
-                <li><b>Decontamination：</b>去污染（decontamination）删除任何来源中重复或高度相似于参照题的训练样本，否则金融分可能奖励模型记住见过的题。参照题是 FinQA、TAT-QA、XFinBench 的验证和测试题，加上知识、数学和指令遵循方面的公开 benchmark 和种子题留出的 20%。下面四项是主要的触发检查，带摘录的来源另有几条匹配规则，因为副本会改表格写法、只抄一部分表或改写问题，单靠一项认不全。</li>
-                <li><b>8-gram decontamination：</b>8-gram 指连续 8 个 token，样本的 8-gram 覆盖某道参照题至少 50% 的 token 时，去污染删掉这条样本。这项检查不计只由一个数构成的 8-gram，并对 XFinBench 和这些公开 benchmark 要求至少 2 个不同的 8-gram，否则数字多的题会误删几千条正常样本。</li>
+                <li><b>Decontamination：</b>去污染（decontamination）删除任何来源中重复或高度相似于参照题的训练样本，否则金融分、MMLU、GSM8K 和 IFEval 可能奖励模型记住见过的题。参照题是 FinQA、TAT-QA、XFinBench 的验证和测试题，加上 MMLU、GSM8K、IFEval 和种子题留出的 20%。下面四项是主要的触发检查，带摘录的来源另有几条匹配规则，因为副本会改表格写法、只抄一部分表或改写问题，单靠一项认不全。</li>
+                <li><b>8-gram decontamination：</b>8-gram 指连续 8 个 token，样本的 8-gram 覆盖某道参照题至少 50% 的 token 时，去污染删掉这条样本。这项检查不计只由一个数构成的 8-gram，并对 MMLU、XFinBench、GSM8K、IFEval 要求至少 2 个不同的 8-gram，否则数字多的题会误删几千条正常样本。</li>
                 <li><b>Format-stripped 8-gram：</b>去污染去掉表格分隔符、JSON 符号和其他标点后再比一次 8-gram，因为只改表格写法的副本躲得过普通比较。</li>
-                <li><b>Embedding decontamination：</b>嵌入模型把文本变成向量，意思越近，余弦相似度（cosine similarity，两向量夹角的余弦）越大。去污染逐个用户轮与参照题比较，bge-m3 余弦相似度至少 0.90，或 Nemotron-3-Embed-1B 余弦相似度对这些公开 benchmark 至少 0.72、对其他参照题至少 0.845 时删掉样本，因为改写过的副本躲得过 8-gram，两个嵌入模型也各漏掉一部分。对这些 benchmark 用较低的门槛，能抓到更多改写过的副本；对金融参照题用较高的门槛，放过只是出自同一公司其他页或其他年份的样本，项目保留这类样本。</li>
+                <li><b>Embedding decontamination：</b>嵌入模型把文本变成向量，意思越近，余弦相似度（cosine similarity，两向量夹角的余弦）越大。去污染逐个用户轮与参照题比较，bge-m3 余弦相似度至少 0.90，或 Nemotron-3-Embed-1B 余弦相似度对 MMLU、GSM8K、IFEval 至少 0.72、对其他参照题至少 0.845 时删掉样本，因为改写过的副本躲得过 8-gram，两个嵌入模型也各漏掉一部分。对这三个 benchmark 用较低的门槛，能抓到更多改写过的副本；对金融参照题用较高的门槛，放过只是出自同一公司其他页或其他年份的样本，项目保留这类样本。</li>
                 <li><b>Number-overlap matching：</b>在带年报摘录的五个来源（FinQA、TAT-QA、DianJin、BizBench、Agentar）上，去污染把样本与参照摘录中有辨识度的数比较，这些数不计 100 以下的整数和年份。摘录有 8 个以上这样的数时，样本含有其中至少一半就被删掉；摘录有 4–7 个时，样本含有其中至少 75% 且至少 4 个就被删掉。表格换了写法，数字还在，所以这能抓到 8-gram 漏掉的副本。</li>
                 <li><b>Grounding filter：</b>IndustryInstruction 的样本若提示不到 600 字符却提到它不含的文章或数据，或回答中有 2 个以上提示里没有的具体数字（大于 12、不是年份），grounding filter 就删掉它，因为这类样本教模型写出材料里没有的数。</li>
+                <li><b>Limit of decontamination on DocFinQA：</b>去污染前，FinQA 训练样本约 43% 出自 DocFinQA 那些年报的其他页，这些样本保留下来，因为 FinQA 把同一份年报的不同页算作不同的题，所以项目只报告 DocFinQA 的分数，不用它做决定。</li>
               </ul>
               <p class="pipeline-subgroup">轨迹过滤（8 道，每道只看前一道留下的）</p>
               <ul>
                 <li><b>Correct answer：</b>这道过滤只保留通过判分的轨迹，免得把错误的做法教给模型。</li>
                 <li><b>Normal ending：</b>这道过滤删掉因步数上限、上下文上限、服务错误或 harness 错误结束的轨迹，因为这样的轨迹没有正常收尾，模型学不到怎样完成任务。</li>
-                <li><b>No cut output：</b>这道过滤删掉有回复写到每次调用 4,096 token 输出上限的行情轨迹，因为模仿写到一半就断的回复或调用，学到的是没写完的输出；只有行情轨迹记录这一项。</li>
+                <li><b>No cut output：</b>这道过滤删掉有回复写到每次调用 4,096 token 输出上限的行情或 DocFinQA 轨迹，因为模仿写到一半就断的回复或调用，学到的是没写完的输出；只有行情和 DocFinQA 轨迹记录这一项。</li>
                 <li><b>Supported answer：</b>这道过滤删掉 <code>finish</code> 被驳回 2 次及以上的轨迹，因为第 2 次驳回之后 harness 不再验证就接受，这样的答案没有经过验证。</li>
                 <li><b>No loop：</b>这道过滤删掉用同样参数调用同一工具 3 次及以上、或收到过 loop hint 的轨迹，因为重复相同的调用得不到新信息，只会教模型浪费步数。</li>
                 <li><b>Tool errors：</b>这道过滤删掉工具报错超过 2 次的轨迹，因为满是失败调用的轨迹会教模型写出会失败的调用。</li>
@@ -280,7 +304,12 @@
                 <li><b>Entity-and-window decontamination：</b>这道过滤删掉与开发题、测试题或 FinSearchComp 题有同一实体且时间窗重叠的行情训练题，主要保护 FinSearchComp，因为这些外部题不受我们的划分规则约束。有一道 FinSearchComp 题不参与这项检查，否则它的 184 个月末标普 500 收盘价会删掉全部 <code>filing_reaction</code> 轨迹。</li>
                 <li><b>Base-model screening：</b>起点模型在 30 轮内做每道原有一档训练题，做对的题再做一遍，这道过滤在每个题型内只留 10% 两遍都做对的题。这些题起点模型已经会了：大量留着，项目就无法说明起点模型在它的训练数据上做得差；留下的 10% 保住各题型的覆盖面。难题档不筛，因为起点模型在它的开发题上只有 11.2%，估计去掉不到 5%；测试题也不筛，否则就是专挑它不会的题。</li>
                 <li><b>Per-task cap：</b>这道过滤每题最多留 2 条轨迹，步数少的先留。这个上限留住难题档每题 2 次的尝试，不用再采，这一档的轨迹就约多一倍。</li>
-                <li><b>Funnel：</b>管线记下每道过滤去掉多少，这样每道过滤对数据的影响都可追溯：11 道过滤把原有一档轨迹从 3,400 条减到 2,102 条；适用的 10 道把难题档从 3,500 条减到 2,717 条；适用的 7 道把财富管理轨迹从 6,000 条减到 5,300 条，机器学习从 1,106 条减到 408 条。原有一档去掉最多的是起点模型筛选（1,073 条），难题档是工具报错（361 条）。</li>
+              </ul>
+              <p class="pipeline-subgroup">文档题过滤（2 道）</p>
+              <ul>
+                <li><b>Answer format：</b>这道过滤删掉最终答案不符合系统提示的轨迹：DocFinQA 的答案必须正好是一个数或 yes/no，<code>t6_report_gate</code> 的答案必须含一个与年报答案相差 1% 以内的数。模型会模仿它看到的答案形式，第一次 SFT 就从行情轨迹学会了写句子。教师本来就按这些提示作答，所以这道过滤只去掉 1 条轨迹。</li>
+                <li><b>Read passage：</b>这道过滤删掉没有调用 <code>read_chunk</code> 的 DocFinQA 和 <code>t6_report_gate</code> 轨迹，即使答对了也删，因为检索只返回约 240 字符的摘要，留下只凭摘要作答的轨迹就是在教第一次 SFT 的毛病。它去掉 210 条 DocFinQA 轨迹和 39 条 <code>t6_report_gate</code> 轨迹，所以 2,011 条新样本都在检索之后读过全文。</li>
+                <li><b>Funnel：</b>管线记下每道过滤去掉多少，这样每道过滤对数据的影响都可追溯：11 道过滤把原有一档轨迹从 3,400 条减到 2,102 条；适用的 10 道把难题档从 3,500 条减到 2,717 条；适用的 7 道把财富管理轨迹从 6,000 条减到 5,300 条，机器学习从 1,106 条减到 408 条；适用的 10 道把 DocFinQA 轨迹从 3,075 条减到 1,474 条；适用的 9 道把 <code>t6_report_gate</code> 轨迹从 1,000 条减到 540 条。原有一档去掉最多的是起点模型筛选（1,073 条），难题档是工具报错（361 条）。</li>
               </ul>
               <p class="pipeline-group" id="dp-dedup">去重让每道题只留一条样本</p>
               <ul>
@@ -346,7 +375,7 @@
               </ul>
               <p class="pipeline-group" id="od-dataset">数据集共 3,148 题，来源和题型按开发集结果选定</p>
               <ul>
-                <li><b>Composition：</b>数据集共 3,148 题：训练 2,350 题、开发 200 题、测试 598 题。测试题包括 300 道行情测试题和 98 道 FinSearchComp 题。开发题用于做选择，测试题不参与选择，所以测试分数是公正的最终度量。</li>
+                <li><b>Composition：</b>数据集共 3,148 题：训练 2,350 题、开发 200 题、测试 598 题。测试题包括 300 道行情测试题、98 道 FinSearchComp 题和 200 道 DocFinQA 题。开发题用于做选择，测试题不参与选择，所以测试分数是公正的最终度量。</li>
                 <li><b>Training file：</b>训练文件含 7 个难题档题型各 250 题和 <code>rolling_vol</code>、<code>extreme_period</code>、<code>xbrl_ratio</code> 各 200 题，共 2,350 题。它去掉第 8 个难题档题型 <code>div_event_study</code>，因为官方模型在它的开发题上做对 19/20，没有空间显示提升；它保留原有一档中官方做得最差的 3 个题型（2/20、14/20、14/20）。SFT 模型还用了原有一档另外 14 个题型的轨迹，比这 2,350 题多 2,800 题。</li>
                 <li><b>Development and market-data test files：</b>这两个文件分别含同样 10 个题型的 200 题和 300 题，测试题不按任何模型的对错挑选，所以测试不偏向某个模型。</li>
                 <li><b>FinSearchComp file：</b>在 203 道 Global T2、T3 题中，这个文件保留快照算出的值与官方答案在容差内一致的 98 题，这样分数不依赖与官方答案不一致的快照值。</li>
@@ -360,12 +389,12 @@
               <a class="flow-node" href="#ah-verification">验证与纠正</a>
             </nav>
             <div class="content">
-              <p>本工作的 harness 分为三部分：上下文管理、工具接口与约束、验证与纠正。下面描述的是第 3 版，用于行情任务；财富管理和机器学习任务用第 2 版，它会把较早的工具结果截成摘要。</p>
+              <p>本工作的 harness 分为三部分：上下文管理、工具接口与约束、验证与纠正。下面描述的是第 3 版，用于行情和 DocFinQA 任务；财富管理、机器学习和 <code>t6_report_gate</code> 任务用第 2 版，它会把较早的工具结果截成摘要。</p>
               <p class="pipeline-group" id="ah-context">上下文管理</p>
               <ul>
                 <li><b>System prompt：</b>Harness 用一条消息开始每个任务，写明模型的角色、任务的规则和工具用法。</li>
                 <li><b>Append-only context：</b>Harness 发出消息后不再改动，所以每次请求的消息都是下一次请求和所存轨迹的前缀。这样所存轨迹就是模型每一步看到的内容，SFT 和 RL 用的序列与采样一致。</li>
-                <li><b>Tool-result cap：</b>工具返回时，harness 把每个结果截到 8,000 字符，并附一句说明如何少取，比如翻下一页或缩短日期区间。行情工具一页的结果都在 7,500 字符以内，低于这个上限，所以模型不会拿到被截断的 JSON。</li>
+                <li><b>Tool-result cap：</b>工具返回时，harness 把每个结果截到 8,000 字符，并附一句说明如何少取，比如翻下一页或缩短日期区间。行情工具一页的结果都在 7,500 字符以内，<code>read_chunk</code> 带相邻段落约 7,100 字符，都低于这个上限，所以模型不会拿到被截断的 JSON。</li>
                 <li><b>Checklist（<code>set_checklist</code>）：</b>模型把请求的步骤写进清单并勾选，harness 在每次工具返回后复述清单，一个任务最多调用 20 次。这主要减少漏做子任务。</li>
                 <li><b>Step budget：</b>Harness 只把任务轮计入 100 步上限；只维护清单的轮、含被驳回 <code>finish</code> 的轮及其后 10 轮都不计入，总轮数硬上限为 142。清单和重做是 harness 自己加的动作，计入步数时会在长任务上用完步数。</li>
                 <li><b>Thinking-preserving chat template：</b>改过的 Qwen3.5 对话模板（把消息渲染成模型输入的规则）保留第一条用户消息之后每个助手轮的思考。在原模板下，nudge 是一条用户消息，它让之前的思考从下一个提示中消失，所存轨迹也就不再是模型看到的内容。</li>
@@ -374,8 +403,8 @@
               <p class="pipeline-group" id="ah-tools">工具接口与约束</p>
               <ul>
                 <li><b>Function calling：</b>Harness 用 JSON Schema（一种描述结构化数据的标准格式）向模型描述每个工具的名称和参数，模型按原生函数调用格式调用工具。</li>
-                <li><b>Tool sets：</b>行情环境提供 11 个工具，财富管理 12 个，机器学习 5 个，都含结束任务并交答案的 <code>finish</code>；完整 harness 另加 <code>set_checklist</code>。</li>
-                <li><b>BM25 two-step retrieval：</b>BM25 是关键词排序算法：查询词在一段里出现得越多、在其他段里越少见，这一段得分越高；harness 只用它，没有向量检索或重排序。检索财富管理的基金招募说明书知识库时，最多返回 10 段的编号、标题和开头文字，模型再按编号读全文。</li>
+                <li><b>Tool sets：</b>行情环境提供 11 个工具，财富管理 12 个，机器学习 5 个，DocFinQA 4 个，<code>t6_report_gate</code>（第 2 版）14 个，都含结束任务并交答案的 <code>finish</code>；完整 harness 另加 <code>set_checklist</code>。</li>
+                <li><b>BM25 two-step retrieval：</b>BM25 是关键词排序算法：查询词在一段里出现得越多、在其他段里越少见，这一段得分越高；harness 只用它，没有向量检索或重排序。检索财富管理的基金招募说明书知识库时，最多返回 10 段的编号、标题和开头文字，模型再按编号读全文。DocFinQA 把 10-K 切成 1,500 字符的段落，相邻两段重叠 200 字符，检索只返回约 240 字符的摘要，<code>read_chunk</code> 才给全文。</li>
                 <li><b>Sandbox（<code>run_python</code>）：</b>Harness 在 bubblewrap（隔离进程的 Linux 工具）里运行模型写的代码，没有网络，临时目录之外的文件系统只读，限 30 秒、3 GiB。</li>
                 <li><b>Constraints：</b>写操作执行前，代码按工具 Schema 和业务规则检查它的参数，拒绝违规操作且不执行，并把原因返回模型，这主要减少违反业务规则和参数错误。</li>
               </ul>
@@ -392,17 +421,17 @@
           <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
             <div class="content">
               <ul>
-                <li><b>Packing：</b>建数据的程序用保留思考的对话模板渲染 32,768 token 以内的行情轨迹，渲染 16,384 token 以内的财富管理和机器学习轨迹，再把 12,475 条样本拼成 2,439 条不超过 32,768 token 的序列，这样短样本能填满每条序列的 token 预算，每步 12 条序列能训练约 61 条样本。行情上限取 32,768，是因为 <code>xbrl_ratio</code> 轨迹的中位长度有 17,661 token，按 16,384 截会丢掉这个题型一半以上。</li>
-                <li><b>Settings：</b>训练微调 Qwen3.5-4B-Base 的全部参数，2 个 epoch（把数据过两遍）、408 步，用 6 张 GPU，学习率 1e-5，沿余弦曲线下降。从 Base 模型出发，模型在预训练之后学到的东西就都只来自本项目的数据。</li>
+                <li><b>Packing：</b>建数据的程序用保留思考的对话模板渲染 32,768 token 以内的行情和 DocFinQA 轨迹，用 Qwen3.5 自带的模板渲染 32,768 token 以内的 <code>t6_report_gate</code> 轨迹和 16,384 token 以内的财富管理和机器学习轨迹，再把 14,486 条样本拼成 2,830 条不超过 32,768 token 的序列，这样短样本能填满每条序列的 token 预算，每步 12 条序列能训练约 61 条样本。行情上限取 32,768，是因为 <code>xbrl_ratio</code> 轨迹的中位长度有 17,661 token，按 16,384 截会丢掉这个题型一半以上。</li>
+                <li><b>Settings：</b>训练微调 Qwen3.5-4B-Base 的全部参数，2 个 epoch（把数据过两遍）、472 步，用 6 张 GPU，学习率 1e-5，沿余弦曲线下降。从 Base 模型出发，模型在预训练之后学到的东西就都只来自本项目的数据。</li>
                 <li><b>Loss：</b>训练最小化模型下一个 token 的预测与标签之间的交叉熵，也就是下一 token 预测的标准损失 \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\)，其中 \(x_{&lt;t}\) 是位置 \(t\) 之前的序列，\(\theta\) 是模型权重，\(N\) 是带标签的 token 数，所以模型逐 token 复现带标签的轮。训练只在带标签的位置分块计算损失，数值和梯度都不变，因为长序列每个位置对全词表的打分放不进显存。</li>
                 <li><b>Labels：</b>需要模型学习的位置，标签就是该 token 本身；其余位置为 &minus;100，损失会忽略。标签覆盖轨迹助手轮的思考、文本和工具调用，因为模型之后运行的对话模板会把历史思考放进上下文；标签屏蔽系统、用户和工具轮，因为工具输出由工具产生。</li>
-                <li><b>Masked turns：</b>行情轨迹屏蔽招来 nudge 的回复和含被驳回调用的轮，但把它们留在上下文里，因为这些轮计损失等于教模型先交错答案，而之后的改正照样能学。财富管理和机器学习轨迹的被驳回轮仍计损失，带 nudge 的轨迹被整条丢掉。</li>
-                <li><b>Malformed calls：</b>当前的建数据程序还屏蔽调用格式错误的轮，比如不存在的工具名，因为这些轮计损失就是教模型写错名字；SFT 模型的数据建于这条规则之前，这些轮占它带标签 token 的 0.25%。</li>
+                <li><b>Masked turns：</b>行情和 DocFinQA 轨迹屏蔽招来 nudge 的回复和含被驳回调用的轮，但把它们留在上下文里，因为这些轮计损失等于教模型先交错答案，而之后的改正照样能学；<code>t6_report_gate</code> 轨迹同样屏蔽被驳回的轮。财富管理和机器学习轨迹的被驳回轮仍计损失。带 nudge 的财富管理、机器学习和 <code>t6_report_gate</code> 轨迹被整条丢掉。</li>
+                <li><b>Malformed calls：</b>建数据的程序还屏蔽调用格式错误的轮，比如不存在的工具名，因为这些轮计损失就是教模型写错名字。</li>
                 <li><b>Sample boundaries：</b>每个批次都告诉模型同一条序列里每个样本的起止位置，否则 Qwen3.5 的线性注意力层（沿序列传递状态的一种注意力）会把一个样本泄漏到下一个。加上边界后，每 token 损失的最大差异从 6.3 降到 0.13，属于数值噪声。</li>
               </ul>
             </div>
             <div class="pipeline-facts">
-              <span class="pipeline-fact">7,957 万 token 中 2,422 万计损失</span>
+              <span class="pipeline-fact">9,270 万 token 中 2,709 万计损失</span>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
@@ -413,13 +442,17 @@
                 <li><b>Success rate：</b>这个分数统计任务集 \(T\) 中通过的比例，任务 \(t\) 通过时 \(s_t = 1\)，所以只有整个任务做对才得分。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>Paired bootstrap：</b>这项比较按题相减两个模型的结果，\(a_i\)、\(b_i\) 做对为 100、做错为 0，95% 区间来自对 \(n\) 道题的 10,000 次重抽。配对去掉了题目难度的差异，区间因此变窄；每道测试题只跑 1 次，所以区间只计入题目抽样的误差。\[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
               </ul>
-              <p class="pipeline-group">单轮 SFT 的运行</p>
+              <p class="pipeline-group">单轮分数</p>
               <ul>
-                <li><b>金融分：</b>打分程序取最后一个 "Answer:" 之后的第一个数，与标准答案相差 1% 以内算对，百分数和小数两种写法都认。所有模型用同一个不套对话模板、带 3 个示例的提示，因为起点模型不会对话格式，这样分数才可比。其中 \(D\) 是题目集合，\(y_i\) 是标准答案，\(\hat{y}_i\) 是回答，\(\tau_i = 0.01|y_i|\)，\(y_i = 0\) 时为 0.005。\[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
+                <li><b>金融分：</b>打分程序取最后一个 "Answer:" 之后的第一个数，与标准答案相差 1% 以内算对，百分数和小数两种写法都认。所有模型用同一个不套对话模板、带 3 个示例的提示，因为起点模型没有针对对话格式训练过，这样分数才可比。其中 \(D\) 是题目集合，\(y_i\) 是标准答案，\(\hat{y}_i\) 是回答，\(\tau_i = 0.01|y_i|\)，\(y_i = 0\) 时为 0.005。\[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
+                <li><b>MMLU：</b>打分程序在题目集合 \(Q\) 上，把提示 \(x_q\) 下概率最大的选项 \(o\) 与正确选项 \(o^{*}_q\) 比较。比较选项概率不依赖生成格式，所以起点模型和 SFT 模型可比；去掉四个经济和会计科目，因为金融训练会抬高它们，掩盖别处的下降。\[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
+                <li><b>GSM8K：</b>打分程序比较回答中的最后一个数 \(\hat{a}_q\) 和标准答案 \(a_q\)，这说明多步算术推理在财报格式之外有没有保住。所有模型用同一提示，含 5 道示例题，不用对话模板，与金融分相同。\[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
+                <li><b>IFEval：</b>打分程序只在回答满足提示集合 \(P\) 中一条提示的所有可检查指令 \(I_p\)（如字数上限或 JSON 输出）时才计分，指令 \(j\) 成立时 \(f_{p,j}=1\)，这测的正是 agent 必须具备的按规则和格式作答的能力。所有模型都通过允许先推理的对话模板作答，打分程序读推理之后的文字。起点模型用 Qwen3.5 原生模板加停止规则，不用模板时它只有 37.7 分。\[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
               </ul>
-              <p class="pipeline-group">Agent SFT 模型</p>
+              <p class="pipeline-group">Agent 任务</p>
               <ul>
                 <li><b>行情测试集和 FinSearchComp：</b>判分程序按离线数据集一环的 key-based grading 判分，FinSearchComp 用每题写明的容差。</li>
+                <li><b>DocFinQA：</b>判分程序取答案中的最后一个数，与标准答案相差 1% 以内算通过，百分数和小数两种写法都认，是非题要写出同一个词，这样得到的分数能与外部结果比较。</li>
                 <li><b>State comparison（财富管理）：</b>判分程序把最终持仓、现金和交易记录与标准状态比较，并把答案中的关键数值按容差比较（金额 ±0.01 美元，比例 ±0.1 个百分点）。对规则禁止的任务，它检查被禁止的交易没有执行、答案指出了规则，因为交易和答案都对才算完成任务。</li>
                 <li><b>AUC 和 \(R^2\) 门槛（机器学习）：</b>判分程序要求提交模型，且它在隐藏测试表上不低于生成数据的模型减 0.015 AUC 或减 0.03 \(R^2\)。这个门槛要求把数据处理做对：在开发集上，固定流程对偏态列取对数时通过 20/20 题，不取对数时只过 1 题。</li>
                 <li><b>pass@1 和 pass@4：</b>打分程序在 \(T_4\) 上算这两个分数，\(T_4\) 是有 4 次有效尝试的开发集题目，题 \(t\) 的 \(n_t\) 次有效尝试中有 \(c_t\) 次通过。\[P_1 = \frac{100}{|T_4|}\sum_{t \in T_4}\frac{c_t}{n_t}\] \[P_4 = \frac{100}{|T_4|}\sum_{t \in T_4}\mathbf{1}[c_t \ge 1]\]</li>
@@ -428,7 +461,7 @@
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
             <div class="content">
-              <p><span class="status-tag">尚未开始</span> 这里的取值都是计划值。DAPO 是下一步要用的强化学习（RL）方法。它建立在 GRPO 之上，这种方法对每道题采样一组尝试，按组内相对表现给每次尝试打分。DAPO 加上下面前四项改动，并去掉 KL 惩罚，这是把模型拉近自身冻结副本的一项额外损失。训练将用 verl 自带的 DAPO 实现，从重新训练的 SFT 模型出发。</p>
+              <p>选题正在进行，训练尚未开始，这里的训练取值都是计划值。DAPO 是下一步要用的强化学习（RL）方法。它建立在 GRPO 之上，这种方法对每道题采样一组尝试，按组内相对表现给每次尝试打分。DAPO 加上下面前四项改动，并去掉 KL 惩罚，这是把模型拉近自身冻结副本的一项额外损失。训练将用 verl 自带的 DAPO 实现，从上面的 SFT 模型出发。</p>
               <ul>
                 <li><b>Clip-Higher：</b>训练限制一次更新对 token 概率的改变：新旧概率之比最多下降 0.2、最多上升 0.28。</li>
                 <li><b>Dynamic Sampling：</b>verl 的训练程序丢掉 8 次尝试判分全相同（全对或全错）的组，不看长度，并为它补发 2 道题，因为这样的组没有对错之差，留下只会训练长度信号。补题没有上限，所以被丢的组越多，这一步越慢。</li>
@@ -436,19 +469,19 @@
                 <li><b>Overlong reward shaping：</b>verl 的 DAPO reward manager 在判分 \(r\) 上加长度奖励：长度 \(L\) 不超过 \(L_s\) 时为 0，之后线性降到预算 \(L_{\max}\) 处的 −1。写满预算的尝试一定判错，所以总奖励 −2，它也计损失。这里 \(L\) 含工具结果的 token 数，缓冲 \(L_c = 4{,}096\)，\(L_s = L_{\max} - L_c = 24{,}576\)；预算 \(L_{\max} = 28{,}672\) 加 4,096 token 的提示正好等于 32,768 token 的 SFT 序列。\[R = r + \min\Big(-\frac{L - L_s}{L_c},\ 0\Big)\]</li>
                 <li><b>Reward：</b>判分程序通过给 +1、否则给 −1，与 DAPO 相同。若用 0/1，同样的扣分相对于对错之差会重一倍。</li>
                 <li><b>No KL：</b>训练不加 KL 惩罚，因为长推理时模型本来就会明显偏离起点；这也省下这个副本的显存和前向计算。</li>
-                <li><b>Task selection：</b>重新训练的 SFT 模型对题池中每道题做 8 遍，选题去掉 0/8 的题，保留 1–7/8 的题，8/8 的题留 10%，因为所有尝试判分相同的题给不了组内比较任何信息。留下的 10% 让模型继续练一些已经做对的题。如果留下的题更多，再按题型分层、按各题型的占比抽样，把平均每个题型控制在 93.9 题，这个题量大体决定一次运行过这些题的遍数。训练中模型在变，选中的题也可能变成全对或全错，所以动态采样在每一步继续丢掉这样的组。</li>
-                <li><b>Task pool：</b>题池的行情部分是新生成的题，10 个题型各 200 题，没有一道重复 SFT 的训练题、开发题或测试题。</li>
-                <li><b>Settings：</b>每步取 96 道题、每题 8 次尝试，mini-batch 为 24 道题，所以每步更新 4 次；共 28 步，学习率 8.7e-7，一次尝试最多 30 个任务轮。</li>
+                <li><b>Task selection：</b>SFT 模型对题池中每道题做 8 遍，选题去掉 0/8 的题，保留 1–7/8 的题，8/8 的题留 10%，因为所有尝试判分相同的题给不了组内比较任何信息。留下的 10% 让模型继续练一些已经做对的题。如果留下的题更多，再按题型分层、按各题型的占比抽样，把平均每个题型控制在 93.9 题，这个题量大体决定一次运行过这些题的遍数。训练中模型在变，选中的题也可能变成全对或全错，所以动态采样在每一步继续丢掉这样的组。</li>
+                <li><b>Task pool：</b>题池的行情部分是新生成的题，10 个题型各 200 题，没有一道重复 SFT 的训练题、开发题或测试题。在 2 道 DocFinQA 题上的试跑通过时，再加 200 道 DocFinQA 训练题作第 11 个题型，否则 RL 没有信号维持 SFT 模型读文档的能力。</li>
+                <li><b>Settings：</b>用 8 张 GPU 时，每步取 128 道题、每题 8 次尝试，mini-batch 为 32 道题，所以每步更新 4 次；共 21 步，学习率 1e-6，一次尝试最多 30 个任务轮。</li>
               </ul>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
             <div class="content">
-              <p><span class="status-tag">尚未开始</span> 最终的 DAPO 模型和重新训练的 SFT 模型将按 SFT 评测一环的规则跑行情、FinSearchComp、开发集、财富管理和机器学习这些任务集，另加三项。</p>
+              <p><span class="status-tag">尚未开始</span> 最终的 DAPO 模型将按 SFT 评测一环的规则跑行情、FinSearchComp、DocFinQA、开发集、财富管理、机器学习和通用能力这些任务集，与起点模型、教师和 SFT 模型比较，另加三项。</p>
               <ul>
                 <li><b>Strict grading：</b>严格判分给行情、FinSearchComp 和开发集的答案加四条规则，全部满足时 \(r_t = 1\)。答案在日期之外最多有 50 个数字。答案最多有 40 个不同日期。每个数值键都要在日期之外出现。有候选的题上，首先点名的公司要正确，其后每个公司键都要紧跟它的数值。原判分只要键出现在答案任何位置就算对：一次审计中，不知道任何参考值、只复述题面加数值网格的答案通过了 209/939 道 RL 训练题，所以只看原判分，RL 的提升不可信。\[S_{\text{strict}} = \frac{100}{|T|}\sum_{t \in T} s_t\, r_t\]</li>
                 <li><b>Reworded test：</b>换措辞把 300 道行情测试题用新的措辞重写，参数和答案不变，与同题型训练题的 5-gram 重合从 0.77–0.99 降到 0.10–0.32，所以分数变化说明成绩有多依赖措辞。\[\Delta_{\text{reword}} = S_{\text{reworded}} - S_{\text{original}}\]</li>
-                <li><b>Paired gain over the SFT model：</b>这项比较在每道题上取重新训练的 SFT 模型的 \(a_i\) 和最终 DAPO 模型的 \(b_i\)，用 SFT 评测一环的 paired bootstrap。</li>
+                <li><b>Paired gain over the SFT model：</b>这项比较在每道题上取 SFT 模型的 \(a_i\) 和最终 DAPO 模型的 \(b_i\)，用 SFT 评测一环的 paired bootstrap。</li>
               </ul>
             </div>
           </div>
@@ -465,10 +498,10 @@
     <div class="container is-max-desktop">
       <h2 class="title is-3">定量结果</h2>
 
-      <h3 class="title is-5">Agent SFT 让 4B 模型在留出的行情题上从 16.7% 升到 88.7%</h3>
+<h3 class="title is-5">Agent SFT 让 4B 模型在留出的行情题上从 16.7% 升到 87.3%</h3>
       <div class="content has-text-justified">
         <p>
-          成功率（%），使用同一 harness，每题跑 1 次。
+          成功率（%），使用同一 harness，每题跑 1 次。SFT 模型在行情测试集上比官方 Qwen3.5-4B 高 29.7 分（95% 区间 +23.3 到 +36.0），在 FinSearchComp 上高 10.2 分（+1.0 到 +20.4）。与第一次 SFT 相比，两项分别是 &minus;1.3（&minus;6.3 到 +3.7）和 &minus;3.1（&minus;10.2 到 +3.1），两个区间都含 0，所以在这个样本量下，这些题分不出两次训练的高低。在 200 道用于选择的开发题上，SFT 模型的 pass@1 是 88.0，pass@4 是 100.0，差 12.0 分。
         </p>
       </div>
       <p class="table-hint">左右滑动表格可查看所有列。</p>
@@ -480,17 +513,39 @@
           <tbody>
             <tr><td>Qwen3.5-4B-Base（起点）</td><td>16.7</td><td>50.0</td></tr>
             <tr><td>Qwen3.5-4B（官方后训练）</td><td>57.7</td><td>64.3</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><u>88.7</u></td><td><u>77.6</u></td></tr>
+            <tr><td>第一次 SFT，4B</td><td><u>88.7</u></td><td><u>77.6</u></td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td>87.3</td><td>74.5</td></tr>
             <tr><td>Qwen3.8-27B（教师）</td><td><b>94.7</b></td><td><b>83.7</b></td></tr>
           </tbody>
         </table>
       </div>
-
+      <hr>
+      <h3 class="title is-5">第二次 SFT 把 DocFinQA 从 39.0 提到 53.0，与官方模型持平</h3>
+      <div class="content has-text-justified">
+        <p>
+          下表是 200 道针对整份年报的题的结果，每题跑 1 次。SFT 模型比第一次 SFT 高 14.0 分（95% 区间 +8.5 到 +20.0），与官方 Qwen3.5-4B 持平（+0.0，&minus;5.0 到 +5.0），比教师低 6.0 分（&minus;10.5 到 &minus;1.5）。第一次 SFT 的两个毛病减少了：没有调用 <code>read_chunk</code> 的题从 39 道降到 5 道，符合要求形式的答案从 141 个升到 191 个。第二次训练同时加入新轨迹、过滤、重写的 115 条样本和对格式错误调用的屏蔽，这组数据分不开各自的作用。
+        </p>
+      </div>
+      <p class="table-hint">左右滑动表格可查看所有列。</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>模型</th><th>成功率（%）</th><th>每题 <code>read_chunk</code> 次数</th><th>没有调用 <code>read_chunk</code> 的题数</th><th>符合要求形式的答案（共 200）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base（起点）</td><td>43.5</td><td>2.57</td><td>15</td><td>193</td></tr>
+            <tr><td>Qwen3.5-4B（官方后训练）</td><td><u>53.0</u></td><td>3.02</td><td>8</td><td>193</td></tr>
+            <tr><td>第一次 SFT，4B</td><td>39.0</td><td>1.50</td><td>39</td><td>141</td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><u>53.0</u></td><td>1.98</td><td>5</td><td>191</td></tr>
+            <tr><td>Qwen3.8-27B（教师）</td><td><b>59.0</b></td><td>2.04</td><td>10</td><td>194</td></tr>
+          </tbody>
+        </table>
+      </div>
       <hr>
       <h3 class="title is-5">在 550 道财富管理和机器学习任务上，提升同样成立</h3>
       <div class="content has-text-justified">
         <p>
-          自建财富管理环境测试集（500 个任务，如再平衡、基金转换和受规则约束的交易）加 50 道机器学习任务上的成功率（%），每题跑 1 次。SFT 模型比官方 Qwen3.5-4B 高 6.9 分（95% 区间 +3.8 到 +10.2）。
+          自建财富管理环境测试集（500 个任务，如再平衡、基金转换和受规则约束的交易）加 50 道机器学习任务上的成功率（%），每题跑 1 次。在财富管理上，SFT 模型比官方 Qwen3.5-4B 高 8.4 分（95% 区间 +5.2 到 +11.8）。在机器学习上高 14.0 分（+0.0 到 +28.0），只有 50 道题，这个区间碰到 0。在机器学习上，教师做对 25 道 <code>ml_redemption</code> 中的 24 道、25 道 <code>ml_volatility</code> 中的 1 道，SFT 模型分别做对 25 道和 14 道。
         </p>
       </div>
       <p class="table-hint">左右滑动表格可查看所有列。</p>
@@ -502,7 +557,31 @@
           <tbody>
             <tr><td>Qwen3.5-4B-Base（起点）</td><td>50.4</td><td>51.0</td><td>44</td></tr>
             <tr><td>Qwen3.5-4B（官方后训练）</td><td>84.2</td><td>86.2</td><td>64</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><b>91.1</b></td><td><b>92.2</b></td><td><b>80</b></td></tr>
+            <tr><td>第一次 SFT，4B</td><td>91.1</td><td>92.2</td><td><b>80</b></td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><b>93.1</b></td><td><u>94.6</u></td><td><u>78</u></td></tr>
+            <tr><td>Qwen3.8-27B（教师）</td><td><b>93.1</b></td><td><b>97.4</b></td><td>50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <hr>
+      <h3 class="title is-5">SFT 保住知识和数学能力，指令遵循比起点模型低 12.2 分</h3>
+      <div class="content has-text-justified">
+        <p>
+          与 Qwen3.5-4B-Base 相比，SFT 模型在 MMLU 上高 0.8 分（95% 区间 +0.4 到 +1.1），在 GSM8K 上高 2.5 分（+0.5 到 +4.5），在 IFEval 上低 12.2 分（&minus;16.3 到 &minus;8.0，起点模型用 Qwen3.5 原生对话模板），但 IFEval 仍比官方 Qwen3.5-4B 高 11.5 分（+6.8 到 +16.1）。金融分和 GSM8K 不用对话模板，这时官方模型和教师常在答完之后继续写，或者没写出答案就停了：GSM8K 的 1,319 个回复里分别有 180 个和 360 个没有最终答案行（SFT 模型 34 个）；金融分取最后一个 "Answer:"，如果取第一个，它们是 64.8 和 82.1（SFT 模型 77.0），所以这两列低估了这两个模型。
+        </p>
+      </div>
+      <p class="table-hint">左右滑动表格可查看所有列。</p>
+      <div class="table-container">
+        <table class="table is-narrow is-hoverable results-table">
+          <thead>
+            <tr><th>模型</th><th>金融分（1,886）</th><th>MMLU（13,018）</th><th>GSM8K（1,319）</th><th>IFEval（541）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-4B-Base（起点）</td><td><u>76.4</u></td><td>72.8</td><td>80.5</td><td><u>75.2</u></td></tr>
+            <tr><td>Qwen3.5-4B（官方后训练）</td><td>61.9</td><td>70.1</td><td>76.5</td><td>51.6</td></tr>
+            <tr><td>第一次 SFT，4B</td><td>75.1</td><td>73.3</td><td><u>81.7</u></td><td>63.6</td></tr>
+            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><b>77.0</b></td><td><u>73.6</u></td><td><b>83.0</b></td><td>63.0</td></tr>
+            <tr><td>Qwen3.8-27B（教师）</td><td>74.0</td><td><b>82.8</b></td><td>72.6</td><td><b>91.7</b></td></tr>
           </tbody>
         </table>
       </div>
