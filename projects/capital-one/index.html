@@ -96,122 +96,77 @@
 <!-- Data -->
 <section class="section hero data-section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">Data</h2>
+    <h2 class="title is-3 has-text-centered" id="co-data">Data</h2>
 
-    <h3 class="title is-5">The reported SFT batch contains 14,486 samples, mostly teacher trajectories</h3>
+    <h3 class="title is-5">The reported SFT model uses 14,486 samples</h3>
     <div class="content has-text-justified">
-      <p>The reported SFT model comes from a second run. The first run scored 39.0 on DocFinQA against the official model's 53.0, with two faults: it often answered from the search snippet of about 240 characters without reading the full passage, and it wrote a sentence where a single number was required, so the grader read a year from the sentence. Both faults trace to its training data, which held no task that searches an annual report, reads the full passage and then takes a number, while market trajectories showed many answers written as sentences. The second run therefore adds the DocFinQA and <code>t6_report_gate</code> rows below and drops trajectories that answer without reading.</p>
+      <p>The table counts the actual inputs after packing exclusions. These historical batches used source-specific filters, not the common Claude review in the two-branch pipeline; a recorded read call alone did not establish a successful evidence read.</p>
     </div>
     <table class="table is-narrow data-table">
       <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
         <tr>
-          <td><b>Market tasks, original tier</b></td>
-          <td data-label="What">Programs generate 3,400 tasks in 17 task types of difficulty 1–3, and 2,102 teacher trajectories pass filtering.</td>
-          <td data-label="Why">These trajectories teach the basic operations: the model fetches prices, adjusts them for splits and dividends, reads FRED macroeconomic series and SEC XBRL filings (US company reports in a machine-readable format), and computes in <code>run_python</code>.</td>
+          <td><b>Market trajectories (4,791)</b></td>
+          <td data-label="What">The teacher solves original- and hard-tier tasks over prices, macroeconomic series and company filings.</td>
+          <td data-label="Why">These trajectories provide examples of retrieval, adjusting prices for splits and dividends, and multi-step calculations.</td>
         </tr>
         <tr>
-          <td><b>Market tasks, hard tier</b></td>
-          <td data-label="What">Programs generate 1,750 tasks in 7 composite task types of difficulty 4–5, and 2,717 teacher trajectories pass filtering.</td>
-          <td data-label="Why">The base model scores 11.2%, the official Qwen3.5-4B 51.2% and the teacher 90.6% on the development set, so this is the only source where the base model is weak, the official model is far from full marks and the teacher does well; here the model learns to chain several operations.</td>
+          <td><b>Wealth management (5,278)</b></td>
+          <td data-label="What">The teacher completes trading and database tasks under customer and product rules.</td>
+          <td data-label="Why">These trajectories add rule-constrained write actions beyond read-only market tools.</td>
         </tr>
         <tr>
-          <td><b>Wealth management</b></td>
-          <td data-label="What">Programs generate 3,000 training tasks on database instance A, a set of customers and products reserved for training, and 5,300 teacher trajectories pass filtering.</td>
-          <td data-label="Why">The model learns multi-step write actions under business rules, such as refusing or adjusting a trade, which read-only market tools cannot teach.</td>
+          <td><b>Machine learning (406)</b></td>
+          <td data-label="What">The teacher inspects tables, trains candidate models and submits a model through tools.</td>
+          <td data-label="Why">These trajectories add data-processing and model-selection decisions.</td>
         </tr>
         <tr>
-          <td><b>Machine learning</b></td>
-          <td data-label="What">Programs generate 300 tasks that ask for a model scored by AUC (ranking quality, where 0.5 is random and 1 is perfect) or R<sup>2</sup> (the share of the target's variance a model explains), and 408 teacher trajectories pass filtering.</td>
-          <td data-label="Why">The model learns to inspect data, train, compare and submit a model through structured tools, and the pass bar makes it learn correct data handling as well.</td>
+          <td><b>DocFinQA trajectories (1,474)</b></td>
+          <td data-label="What">The teacher answers questions over annual reports.</td>
+          <td data-label="Why">These trajectories provide examples of report search, passage reads and numerical answers.</td>
         </tr>
         <tr>
-          <td><b>DocFinQA training tasks</b></td>
-          <td data-label="What">The teacher attempts 3,075 questions once each, on annual reports that no development or test question uses, and 1,474 trajectories pass filtering.</td>
-          <td data-label="Why">These trajectories show the model searching a report, reading the full passage and taking the number, and they end in the single-number answer the task requires.</td>
+          <td><b>Annual-report-to-trade tasks (537)</b></td>
+          <td data-label="What">The teacher answers a report question before applying trading rules in <code>t6_report_gate</code>.</td>
+          <td data-label="Why">These trajectories connect document evidence to business decisions.</td>
         </tr>
         <tr>
-          <td><b><code>t6_report_gate</code></b></td>
-          <td data-label="What">The teacher attempts 1,000 tasks once each; a task first searches an annual report to answer a question, then decides a trade from that answer and the business rules, and 540 trajectories pass filtering.</td>
-          <td data-label="Why">These trajectories teach the same reading step inside a multi-step business task.</td>
-        </tr>
-        <tr>
-          <td><b>Slice of the 1:1 mix</b></td>
-          <td data-label="What">The data builder draws 2,000 samples from the 1:1 mix: 1,019 general Tülu 3 samples and 981 finance QA samples, 115 of them synthetic document QA.</td>
-          <td data-label="Why">These samples add plain question answering without tools, which the tool trajectories do not cover.</td>
+          <td><b>Direct-QA supplement (2,000)</b></td>
+          <td data-label="What">The builder adds 1,019 general Tülu 3 samples and 981 finance QA samples, including 115 rewritten article-QA samples.</td>
+          <td data-label="Why">These samples add direct answers without tool use alongside the agent trajectories.</td>
         </tr>
       </tbody>
     </table>
-    <p class="data-note">These rows hold 12,541 trajectories and 2,000 samples. Packing drops 55 trajectories: 48 exceed their token limit, given under Packing in the Multi-turn agent SFT tab, and 7 hold a second user message, which would make the chat template of those trajectories lose earlier thinking. This takes market trajectories from 4,819 to 4,791, wealth-management and machine-learning trajectories from 5,708 to 5,684 and <code>t6_report_gate</code> trajectories from 540 to 537. The remaining 12,486 trajectories and the 2,000 samples make 14,486 samples.</p>
+    <p class="data-note">The final inputs contain 12,486 teacher trajectories and 2,000 direct-QA samples. Filtering and packing are explained in the Pipeline section.</p>
 
-    <h3 class="title is-5">Earlier single-turn SFT runs draw 100,000 samples each from four kinds of source</h3>
-    <div class="content has-text-justified">
-      <p>A single-turn sample holds one prompt and one answer, and each run sets its own ratio of finance to general data.</p>
-    </div>
+    <h3 class="title is-5">Evaluation separates task generalization, retained abilities and development choices</h3>
     <table class="table is-narrow data-table">
       <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
         <tr>
-          <td><b>Seed questions</b></td>
-          <td data-label="What">FinQA adds 3,198 samples and TAT-QA adds 4,106 samples to the finance pool, each with a filing excerpt, a question and a worked solution.</td>
-          <td data-label="Why">These samples use the finance score's prompt and task, so the finance score measures what they teach: the model reads an excerpt and computes a number by a calculation a standard program produced.</td>
+          <td><b>Market test (300)</b></td>
+          <td data-label="What">The test covers 10 trained task types on held-out stocks and later time windows.</td>
+          <td data-label="Why">It measures generalization within the trained task families.</td>
         </tr>
         <tr>
-          <td><b>External finance QA</b></td>
-          <td data-label="What">Five public datasets add samples to the finance pool: finance-alpaca 50,441, IndustryInstruction 47,086, Agentar 12,451, BizBench 7,409 and DianJin 192.</td>
-          <td data-label="Why">They teach financial knowledge, terms and text tasks, and give the model more filing-reading tasks in more phrasings.</td>
+          <td><b>External financial tasks</b></td>
+          <td data-label="What">The tests use 98 offline FinSearchComp Global T2/T3 questions and 200 full-report DocFinQA questions.</td>
+          <td data-label="Why">FinSearchComp probes externally authored tasks; DocFinQA probes reports separate from those used in its teacher-training trajectories.</td>
         </tr>
         <tr>
-          <td><b>Synthetic document QA</b></td>
-          <td data-label="What">A locally hosted LLM adds 18,559 calculation questions written from finance articles.</td>
-          <td data-label="Why">They extend read-and-compute practice beyond annual reports; the historical ablation in the Data pipeline tab reports whether this source helped.</td>
+          <td><b>Business and model-building tasks</b></td>
+          <td data-label="What">The tests contain 500 wealth-management tasks and 50 machine-learning tasks.</td>
+          <td data-label="Why">They measure rule-following on new customers and products, and model quality on hidden data, respectively.</td>
         </tr>
         <tr>
-          <td><b>General data</b></td>
-          <td data-label="What">Tülu 3 supplies all 829,947 samples of the general pool.</td>
-          <td data-label="Why">Finance sources cover only finance tasks, so this source gives the pool math, code, conversation and instruction tasks.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h3 class="title is-5">Test data covers trained task types, outside tasks and general ability</h3>
-    <table class="table is-narrow data-table">
-      <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>Market-data test (300)</b></td>
-          <td data-label="What">The test takes 30 tasks from each of 10 trained task types.</td>
-          <td data-label="Why">It measures whether the model generalizes to unseen companies and later periods on task types it trained on.</td>
+          <td><b>Finance and general benchmarks</b></td>
+          <td data-label="What">The evaluation uses FinQA/TAT-QA (1,886), MMLU (13,018), GSM8K (1,319) and IFEval (541).</td>
+          <td data-label="Why">They measure financial calculations, knowledge, math and instruction following, respectively.</td>
         </tr>
         <tr>
-          <td><b>FinSearchComp, offline (98)</b></td>
-          <td data-label="What">The test takes 63 Global T2 and 35 Global T3 tasks of FinSearchComp.</td>
-          <td data-label="Why">Outsiders wrote these tasks, so the score measures generalization beyond our task types.</td>
-        </tr>
-        <tr>
-          <td><b>DocFinQA (200)</b></td>
-          <td data-label="What">The test asks numeric and yes/no questions over a full SEC 10-K annual report, which the model reaches only through search.</td>
-          <td data-label="Why">It measures reading long documents on reports that no agent training task uses.</td>
-        </tr>
-        <tr>
-          <td><b>Wealth management (500) + machine learning (50)</b></td>
-          <td data-label="What">The test runs on database instance C, and 2 of the 14 wealth-management task types (45 tasks) appear only in the test set.</td>
-          <td data-label="Why">It measures business rules and tool use on unseen customers and products, and the test-only task types measure task forms the model has not seen.</td>
-        </tr>
-        <tr>
-          <td><b>Finance score (1,886)</b></td>
-          <td data-label="What">The finance score grades FinQA and TAT-QA test questions.</td>
-          <td data-label="Why">It measures how well a single-turn model reads a filing excerpt and computes a number.</td>
-        </tr>
-        <tr>
-          <td><b>MMLU (13,018), GSM8K (1,319), IFEval (541)</b></td>
-          <td data-label="What">These benchmarks test knowledge, math word problems and following checkable instructions.</td>
-          <td data-label="Why">They show whether financial training damaged general ability.</td>
-        </tr>
-        <tr>
-          <td><b>Development set (200, 4 attempts each)</b></td>
-          <td data-label="What">The SFT model attempts 20 tasks from each of the 10 trained task types 4 times each, scored by pass@1 (the mean pass rate of one attempt) and pass@4 (the share of tasks solved at least once).</td>
-          <td data-label="Why">The gap between the two scores shows how much room SFT leaves for reinforcement learning; this set guides selection and reports that gap, and no test score comes from it.</td>
+          <td><b>Development set (200)</b></td>
+          <td data-label="What">The model makes four attempts per question across 10 task types.</td>
+          <td data-label="Why">These results guide method selection separately from the final test scores.</td>
         </tr>
       </tbody>
     </table>
@@ -251,7 +206,7 @@
               <a class="flow-node" href="#dp-mixing">Mixing and release</a>
             </nav>
             <div class="content">
-              <p>The data architecture combines programmatic generation for known weaknesses with Claude generation for uncovered task structures. Both branches pass the same independent checks and mandatory Claude review. Task approval, demonstration approval and measured training gains are separate questions; the quantitative results elsewhere on this page describe the earlier training batches.</p>
+              <p>The data architecture combines programmatic generation for known weaknesses with Claude generation for uncovered task structures. Both branches pass the same independent checks and mandatory Claude review. Task approval, demonstration approval and measured training gains are separate questions.</p>
               <p class="pipeline-group" id="dp-selection">Fixed sources and four splits keep selection separate from final testing</p>
               <ul>
                 <li><b>Source inventory:</b> Each task records its source snapshot, entities, dates, parent, task family and generation method. Question overlap and report overlap are counted separately, so a new question on a seen report is not presented as a new report.</li>
@@ -261,7 +216,7 @@
               <p class="pipeline-group" id="dp-synthesis">Two branches practise known weaknesses and explore missing task structures</p>
               <ul>
                 <li><b>Program generation + Claude review:</b> Seeded programs vary entities, dates, constraints and dependent operations inside verified task families. This branch supplies reproducible practice where the model is inconsistent or repeatedly fails a valid task, and also supplies simpler intermediate exercises.</li>
-                <li><b>Claude generation + Claude review:</b> A generation conversation receives a capability gap, available data and tool contracts, and proposes a task family and instances with explicit rules. A separate review conversation independently solves and attacks each candidate. Rewording an existing question or adding text does not count as new capability coverage.</li>
+                <li><b>Claude generation + Claude review:</b> A generation conversation receives a capability gap, available data and tool contracts, and proposes a task family and instances with explicit rules. Rewording an existing question or adding text does not count as new capability coverage.</li>
                 <li><b>Trusted task adapters:</b> An adapter maps a structured task into tool execution and an independent answer computation. The market adapter handles price windows, offsetting market exposure and costed holdings; bounded integer allocation states how many lots each account may buy under its own limits and a shared budget. Unsupported proposals stay isolated until their data, tools and validators are established; generated validator code is not trusted by default.</li>
                 <li><b>Family promotion:</b> A Claude-origin family can become a verified program template for repeated expansion. Its original designer and each instance's current generator remain separate provenance fields, and every new instance still passes common review.</li>
               </ul>
@@ -284,11 +239,6 @@
                 <li><b>Cost control:</b> Rules reject obvious failures first, and exact version-bound reviews can use a cache. Accounting includes Claude generation, both branches' task reviews, SFT trajectory reviews and failed attempts. A shared cap reserves the worst-case request cost before sending, and interrupted or unpriced calls block further spending.</li>
                 <li><b>Release contract:</b> Code, snapshots, prompts, model identities, independent references, reviews, task IDs, tokenizer and loss masks are bound to the released data. CPU diagnostic readiness and simulation outputs cannot authorize training. Fresh SFT starts from the Base checkpoint with a new packed dataset and output directory; RL follows the resulting checkpoint and fresh difficulty measurements.</li>
               </ul>
-              <p class="pipeline-group" id="dp-history">Earlier batches explain the reported model's training data</p>
-              <ul>
-                <li><b>Historical document synthesis:</b> Earlier single-turn experiments used locally generated calculation questions over finance articles. On Qwen3-4B-Base, the 1:1 mix with synthetic article QA scored 0.05 points below the refilled mix without it (95% interval −1.3 to +1.2, p=0.55), establishing no measurable added benefit from that source. Separately, the reported agent-SFT batch contains 115 rewritten samples; that count is not the treatment group of this ablation.</li>
-                <li><b>Historical filtering limits:</b> Earlier filtering differed by source, and the presence of a read call alone did not establish a successful evidence read. Historical SFT scores do not establish that those batches passed the per-instance and per-trajectory review described above.</li>
-              </ul>
             </div>
             <div class="pipeline-facts"><span class="pipeline-fact">2 generation branches · common mandatory review</span><span class="pipeline-fact">Separate task and demonstration approval</span></div>
           </div>
@@ -307,10 +257,10 @@
               <a class="flow-node" href="#od-dataset">Dataset</a>
             </nav>
             <div class="content">
-              <p>This tab describes the historical offline batch and three-way split behind the reported SFT results. The two-branch, four-way architecture in the preceding tab does not change these historical counts or scores.</p>
+              <p>The reported model's original program-generated task collection uses fixed snapshots and executable reference answers.</p>
               <p class="pipeline-group" id="od-snapshot">The data snapshot fixes the data, so programs can compute and recheck every answer</p>
               <ul>
-                <li><b>SQLite snapshot:</b> One database file stores daily prices of 565 securities with 35,727 splits and dividends, 68 FRED macroeconomic series and the SEC XBRL filings of 516 companies. Live data would change, so only a fixed snapshot lets a program compute each answer and grade each task.</li>
+                <li><b>SQLite snapshot:</b> One database file stores daily prices of 565 securities with 35,727 splits and dividends, 68 FRED macroeconomic series and the SEC XBRL filings of 516 companies (machine-readable company financial reports). Live data would change, so only a fixed snapshot lets a program compute each answer and grade each task.</li>
                 <li><b>Point-in-time vintage:</b> The snapshot fixes FRED values at its cutoff or latest stored vintage; it does not reconstruct what was known at every earlier decision date, so these tasks do not establish historically available-information backtests.</li>
               </ul>
               <p class="pipeline-group" id="od-split">The split keeps test entities and periods out of training</p>
@@ -334,14 +284,14 @@
               </ul>
               <p class="pipeline-group" id="od-verification">Independent verification checks answers and tools</p>
               <ul>
-                <li><b>Independent verification:</b> A separate implementation in SQL and Python reads only each task's parameters and recomputes its answer, and all answers of both tiers agree, so a generator bug would show up as a disagreement instead of becoming a wrong reference behind the scores.</li>
+                <li><b>Independent verification:</b> A separate SQL and Python implementation recomputes answers from task parameters; all answers in both tiers match. Comparing implementations can expose discrepancies, but shared assumptions or mistakes can still escape this check.</li>
                 <li><b>Golden policy:</b> A scripted solver uses only the tools, one Python call and <code>finish</code>, and solves every task through the same loop, verification and grading as the model, which shows the tools are sufficient for each task.</li>
               </ul>
               <p class="pipeline-group" id="od-dataset">The dataset holds 3,148 tasks, with sources and task types chosen on development results</p>
               <ul>
-                <li><b>Composition:</b> The dataset holds 3,148 tasks: 2,350 training, 200 development and 598 test tasks. The test tasks include the 300 market-data test tasks, the 98 FinSearchComp tasks and the 200 DocFinQA tasks. Development tasks guide the choices and test tasks guide none, so test scores stay a fair final measure.</li>
+                <li><b>Composition:</b> The dataset fixes 2,350 training, 200 development and 598 test tasks, totaling 3,148. The Data section lists the test sources. Development guides method selection; the frozen test reports the selected method.</li>
                 <li><b>Training file:</b> The file holds 250 tasks from each of 7 hard task types and 200 from each of <code>rolling_vol</code>, <code>extreme_period</code> and <code>xbrl_ratio</code>, 2,350 tasks in all. It drops the eighth hard type, <code>div_event_study</code>, because the official model solves 19/20 of its development tasks, which leaves no room to show a gain, and it keeps the original tier's three types the official model does worst on (2/20, 14/20, 14/20). The SFT model also uses trajectories on the other 14 original-tier task types, 2,800 tasks beyond these.</li>
-                <li><b>Development and market-data test files:</b> The files hold 200 and 300 tasks from the same 10 task types, and no test task was picked by any model's result, so the test does not favor a model.</li>
+                <li><b>Development and market-data test files:</b> Both files use the same task types under the entity and time splits above. Test tasks are not selected by whether a model answers them correctly, so models can be compared on the same fixed questions.</li>
                 <li><b>FinSearchComp file:</b> Of the 203 Global T2 and T3 tasks, the file keeps the 98 on which the snapshot's value agrees with the official answer within tolerance, so a score does not rest on a snapshot value that disagrees with that answer.</li>
               </ul>
             </div>
@@ -385,7 +335,7 @@
           <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
             <div class="content">
               <ul>
-                <li><b>Packing:</b> The data builder renders market and DocFinQA trajectories with the thinking-preserving chat template up to 32,768 tokens, and <code>t6_report_gate</code> trajectories up to 32,768 and wealth-management and machine-learning trajectories up to 16,384 with Qwen3.5's own template, then packs the 14,486 samples into 2,830 sequences of at most 32,768 tokens, so short samples fill each sequence's token budget and a step of 12 sequences trains on about 61 samples. The market limit is 32,768 because the median <code>xbrl_ratio</code> trajectory has 17,661 tokens, so 16,384 would lose over half of that task type.</li>
+                <li><b>Packing:</b> The builder drops 48 trajectories over their token limits and 7 multi-user-message trajectories that would lose earlier thinking under the chat template. It renders market and DocFinQA trajectories with the thinking-preserving chat template up to 32,768 tokens, and <code>t6_report_gate</code> trajectories up to 32,768 and wealth-management and machine-learning trajectories up to 16,384 with Qwen3.5's own template, then packs the 14,486 samples into 2,830 sequences of at most 32,768 tokens, so short samples fill each sequence's token budget and a step of 12 sequences trains on about 61 samples. The market limit is 32,768 because the median <code>xbrl_ratio</code> trajectory has 17,661 tokens, so 16,384 would lose over half of that task type.</li>
                 <li><b>Settings:</b> Training fine-tunes all parameters of Qwen3.5-4B-Base for 2 epochs (two passes through the data) and 472 steps, on 6 GPUs, at a learning rate of 1e-5 that falls along a cosine curve. It starts from the Base model so that everything the model learns after pre-training comes only from this project's data.</li>
                 <li><b>Loss:</b> Training minimizes the cross-entropy between the model's next-token prediction and the label, the standard loss for next-token prediction \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\), where \(x_{&lt;t}\) is the sequence before position \(t\), \(\theta\) the model weights and \(N\) the number of labeled tokens, so the model reproduces the labeled turns token by token. Training computes the loss only at labeled positions, in chunks, which leaves its value and gradients unchanged, because the model's scores for every vocabulary token at every position of a long sequence do not fit in GPU memory.</li>
                 <li><b>Labels:</b> A label is the token itself where the model should learn and &minus;100, which the loss ignores, everywhere else. The labels cover thinking, text and tool calls in a trajectory's assistant turns, because the model later runs under a chat template that keeps past thinking in its context, and they mask system, user and tool turns, because tools produce their own output.</li>
@@ -406,7 +356,7 @@
                 <li><b>Success rate:</b> The score counts the share of tasks in the set \(T\) that pass, where \(s_t = 1\) when task \(t\) passes, so only a fully finished task earns credit. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>Paired bootstrap:</b> The comparison subtracts two models' results on the same tasks, where \(a_i\) and \(b_i\) are 100 for a correct task and 0 otherwise, and takes the 95% interval from 10,000 resamples of the \(n\) tasks. Pairing removes task difficulty from the difference, which narrows the interval; it covers task sampling only, since each test task runs once. \[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
               </ul>
-              <p class="pipeline-group">Single-turn scores</p>
+              <p class="pipeline-group">Finance QA and general abilities</p>
               <ul>
                 <li><b>Finance score:</b> The scorer takes the first number after the last "Answer:" and marks the question correct when it is within 1% of the reference, in percent or decimal form. Every model gets the same prompt with 3 worked examples and no chat template, because a base model is not trained on chat format and scores must stay comparable. Here \(D\) is the question set, \(y_i\) the reference, \(\hat{y}_i\) the answer and \(\tau_i = 0.01|y_i|\), or 0.005 when \(y_i = 0\). \[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
                 <li><b>MMLU:</b> The scorer marks a knowledge question correct when the most likely option \(o\) for prompt \(x_q\) is the right option \(o^{*}_q\), over the question set \(Q\). Comparing option probabilities needs no generated format, so the base and SFT models stay comparable, and four economics and accounting subjects are left out, because financial training would raise them and hide declines elsewhere. \[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
@@ -418,7 +368,7 @@
                 <li><b>Market-data test and FinSearchComp:</b> The grader applies key-based grading from the Offline dataset tab and uses the tolerance each FinSearchComp task states.</li>
                 <li><b>DocFinQA:</b> The grader takes the answer's last number and passes it within 1% of the reference, in percent or decimal form, or checks the same word on a yes/no question, which gives a score comparable with outside results.</li>
                 <li><b>State comparison (wealth management):</b> The grader compares the final holdings, cash and trade records with the reference state and the answer's key numbers with their tolerances (amounts ±$0.01, rates ±0.1 percentage points). On a task the rules forbid, it checks that the banned trade did not run and the answer names the rule, because a task counts only when both the trades and the answer are right.</li>
-                <li><b>AUC and \(R^2\) bar (machine learning):</b> The grader requires a submitted model that scores at most 0.015 AUC or 0.03 \(R^2\) below the model that generated the data on a hidden table. This bar demands correct data handling: on the development set a fixed pipeline passes 20 of 20 tasks with a log transform of skewed columns and 1 without it.</li>
+                <li><b>AUC and \(R^2\) bar (machine learning):</b> AUC measures ranking quality (0.5 is random and 1 is perfect); \(R^2\) measures the share of the target's variance a model explains. The grader requires a submitted model that scores at most 0.015 AUC or 0.03 \(R^2\) below the model that generated the data on a hidden table. This bar demands correct data handling: on the development set a fixed pipeline passes 20 of 20 tasks with a log transform of skewed columns and 1 without it.</li>
                 <li><b>pass@1 and pass@4:</b> The scorer computes both scores over \(T_4\), the development tasks with 4 valid attempts, where \(c_t\) of the \(n_t\) valid attempts at task \(t\) pass. \[P_1 = \frac{100}{|T_4|}\sum_{t \in T_4}\frac{c_t}{n_t}\] \[P_4 = \frac{100}{|T_4|}\sum_{t \in T_4}\mathbf{1}[c_t \ge 1]\]</li>
               </ul>
             </div>
@@ -487,7 +437,7 @@
       <h3 class="title is-5">The second SFT run lifts DocFinQA from 39.0 to 53.0, level with the official model</h3>
       <div class="content has-text-justified">
         <p>
-          The table gives results on 200 questions over full annual reports, one attempt per task. The SFT model is 14.0 points above the first run (95% interval +8.5 to +20.0), level with the official Qwen3.5-4B (+0.0, &minus;5.0 to +5.0) and 6.0 points below the teacher (&minus;10.5 to &minus;1.5). The first run's two faults shrink: the model skips <code>read_chunk</code> on 5 questions against 39, and 191 answers follow the required form against 141. The second run added the new trajectories, the filters, the 115 rewritten samples and the masking of malformed calls together, so this data cannot separate their effects.
+          The table gives results on 200 questions over full annual reports, one attempt per task. The SFT model is 14.0 points above the first run (95% interval +8.5 to +20.0), level with the official Qwen3.5-4B (+0.0, &minus;5.0 to +5.0) and 6.0 points below the teacher (&minus;10.5 to &minus;1.5). Across the two runs, tasks without a <code>read_chunk</code> call fall from 39 to 5; answers containing only a number or yes/no rise from 141 to 191, ignoring <code>$</code>, <code>%</code>, commas and whitespace. The second run added DocFinQA and annual-report-to-trade trajectories, filtering, rewritten direct-QA samples and malformed-call masking together, so these results cannot separate their effects.
         </p>
       </div>
       <p class="table-hint">Scroll the table sideways to see all columns.</p>

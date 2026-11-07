@@ -97,122 +97,77 @@
 <!-- Data -->
 <section class="section hero data-section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">数据</h2>
+    <h2 class="title is-3 has-text-centered" id="co-data">数据</h2>
 
-    <h3 class="title is-5">已报告的 SFT 批次含 14,486 条样本，主要是教师轨迹</h3>
+    <h3 class="title is-5">已报告的 SFT 模型使用 14,486 条样本</h3>
     <div class="content has-text-justified">
-      <p>这里报告的 SFT 模型来自第二次训练。第一次 SFT 在 DocFinQA 上得 39.0 分，官方模型是 53.0 分，毛病有两个：一是常不读全文，只凭检索返回的约 240 字符摘要作答；二是该只交一个数时写成句子，判分取到句子里的年份。根源都在训练数据：里面没有针对年报"先检索、再读全文、再取数"的任务，行情题的轨迹又大量示范写句子。所以第二次训练加上下面 DocFinQA 和 <code>t6_report_gate</code> 两行数据，并丢掉不读全文就作答的轨迹。</p>
+      <p>下表统计打包后实际保留的输入。这些历史批次按来源设置过滤规则，未经过双支线管线的共同 Claude 审查；记录了读取调用，也不等于成功读到了依据。</p>
     </div>
     <table class="table is-narrow data-table">
       <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
         <tr>
-          <td><b>行情题：原有一档</b></td>
-          <td data-label="What">程序生成 17 个题型、难度 1–3 的 3,400 道题，2,102 条教师轨迹通过过滤。</td>
-          <td data-label="Why">这些轨迹教基础操作：模型学会取价格、按拆股和分红复权、读 FRED 宏观序列和 SEC XBRL 财报（美国公司机器可读格式的报告），并在 <code>run_python</code> 里计算。</td>
+          <td><b>行情轨迹（4,791）</b></td>
+          <td data-label="What">教师解答原有档和难题档任务，使用价格、宏观序列与公司财报。</td>
+          <td data-label="Why">这些轨迹示范数据检索、按拆股分红调整价格（复权）和多步计算。</td>
         </tr>
         <tr>
-          <td><b>行情题：难题档</b></td>
-          <td data-label="What">程序生成 7 个组合题型、难度 4–5 的 1,750 道题，2,717 条教师轨迹通过过滤。</td>
-          <td data-label="Why">开发集上起点模型 11.2%、官方 Qwen3.5-4B 51.2%、教师 90.6%，所以这是唯一同时满足"起点模型差、官方离满分远、教师做得好"的来源；模型在这里学会把多步操作串起来。</td>
+          <td><b>财富管理（5,278）</b></td>
+          <td data-label="What">教师按客户和产品规则完成交易与数据库操作。</td>
+          <td data-label="Why">这些轨迹补充行情只读工具之外、受业务规则约束的写操作。</td>
         </tr>
         <tr>
-          <td><b>财富管理</b></td>
-          <td data-label="What">程序在只供训练的客户和产品数据库实例 A 上生成 3,000 个训练任务，5,300 条教师轨迹通过过滤。</td>
-          <td data-label="Why">模型学会在业务规则下做多步写操作，比如拒绝或调整一笔交易；行情工具只读数据，教不了这一点。</td>
+          <td><b>机器学习（406）</b></td>
+          <td data-label="What">教师通过工具查看表格、训练候选模型并提交模型。</td>
+          <td data-label="Why">这些轨迹补充数据处理与模型选择的决策。</td>
         </tr>
         <tr>
-          <td><b>机器学习</b></td>
-          <td data-label="What">程序生成 300 道要求交出模型的任务，按 AUC（衡量排序质量，0.5 相当于随机，1 为完美）或 R<sup>2</sup>（模型解释的目标方差比例）评分，408 条教师轨迹通过过滤。</td>
-          <td data-label="Why">模型学会用结构化工具看数据、训练、比较和提交模型，通过门槛还要求它学会把数据处理做对。</td>
+          <td><b>DocFinQA 轨迹（1,474）</b></td>
+          <td data-label="What">教师根据年报回答问题。</td>
+          <td data-label="Why">这些轨迹示范检索年报、读取段落并给出数值答案。</td>
         </tr>
         <tr>
-          <td><b>DocFinQA 训练题</b></td>
-          <td data-label="What">教师对 3,075 道题各做 1 次，这些题用的年报不与任何开发题、测试题重叠，1,474 条轨迹通过过滤。</td>
-          <td data-label="Why">这些轨迹示范检索年报、读全文、再取数，并以题目要求的单个数作答。</td>
+          <td><b>年报交易任务（537）</b></td>
+          <td data-label="What">教师在 <code>t6_report_gate</code> 中先回答年报问题，再按交易规则作决定。</td>
+          <td data-label="Why">这些轨迹把文档依据与业务决策连接起来。</td>
         </tr>
         <tr>
-          <td><b><code>t6_report_gate</code></b></td>
-          <td data-label="What">教师对 1,000 道题各做 1 次；每道题先检索年报回答问题，再按答案和业务规则决定交易，540 条轨迹通过过滤。</td>
-          <td data-label="Why">这些轨迹在多步业务任务里教同样的读取步骤。</td>
-        </tr>
-        <tr>
-          <td><b>1:1 混合数据切片</b></td>
-          <td data-label="What">建数据的程序从 1:1 混合数据抽取 2,000 条样本：Tülu 3 通用样本 1,019 条，金融问答 981 条，其中合成文档问答 115 条。</td>
-          <td data-label="Why">这些样本加入不用工具的直接问答，工具轨迹覆盖不到这类任务。</td>
+          <td><b>直接问答补充（2,000）</b></td>
+          <td data-label="What">构建器加入 Tülu 3 通用样本 1,019 条、金融问答 981 条，后者包含 115 条重写的财经文章问答。</td>
+          <td data-label="Why">这些样本在工具轨迹之外补充不用工具的直接回答。</td>
         </tr>
       </tbody>
     </table>
-    <p class="data-note">这几行共有 12,541 条轨迹和 2,000 条样本。打包时丢掉 55 条轨迹：48 条超过各自的 token 上限（见多轮 agent SFT 一环的 Packing），7 条带第二条用户消息，它会让这些轨迹的对话模板丢掉之前的思考。行情轨迹因此从 4,819 条变为 4,791 条，财富管理和机器学习轨迹从 5,708 条变为 5,684 条，<code>t6_report_gate</code> 轨迹从 540 条变为 537 条。余下 12,486 条轨迹加 2,000 条样本，共 14,486 条样本。</p>
+    <p class="data-note">最终输入共 12,486 条教师轨迹、2,000 条直接问答。过滤和打包方法统一在管线部分说明。</p>
 
-    <h3 class="title is-5">早期单轮 SFT 每次从四类来源抽 100,000 条样本</h3>
-    <div class="content has-text-justified">
-      <p>单轮样本只有一个提示和一个回答，每次运行设定自己的金融数据与通用数据之比。</p>
-    </div>
+    <h3 class="title is-5">评测分别检查任务泛化、能力保持和开发选择</h3>
     <table class="table is-narrow data-table">
       <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
       <tbody>
         <tr>
-          <td><b>种子题</b></td>
-          <td data-label="What">FinQA 向金融池贡献 3,198 条样本，TAT-QA 贡献 4,106 条，每条含年报摘录、问题和写出的解答。</td>
-          <td data-label="Why">这些样本用金融分的提示和题型，金融分测到的才是它们教的能力：模型读摘录，按标准程序得出的计算过程算出一个数。</td>
+          <td><b>行情测试（300）</b></td>
+          <td data-label="What">测试覆盖 10 个训练过的题型，使用留出股票与更晚时段。</td>
+          <td data-label="Why">它测相同题型在新实体和时段上的泛化。</td>
         </tr>
         <tr>
-          <td><b>外部金融问答</b></td>
-          <td data-label="What">五个公开数据集向金融池贡献样本：finance-alpaca 50,441、IndustryInstruction 47,086、Agentar 12,451、BizBench 7,409、DianJin 192。</td>
-          <td data-label="Why">它们教金融知识、术语和文本任务，并让模型见到更多读财报取数的题和写法。</td>
+          <td><b>外部金融任务</b></td>
+          <td data-label="What">评测使用离线 FinSearchComp Global T2/T3 的 98 题与针对整份年报的 DocFinQA 200 题。</td>
+          <td data-label="Why">前者测外部编写的题目，后者测长文档读取；DocFinQA 年报与其教师训练轨迹所用年报分开。</td>
         </tr>
         <tr>
-          <td><b>合成文档问答</b></td>
-          <td data-label="What">本地部署的大模型根据财经文章写出 18,559 道计算题。</td>
-          <td data-label="Why">它们把"读材料、算数"的题型扩到年报之外，题量可按需生成，数据管线一环的消融检验它有没有用。</td>
+          <td><b>业务与建模任务</b></td>
+          <td data-label="What">评测包含 500 道财富管理题和 50 道机器学习题。</td>
+          <td data-label="Why">前者测新客户和产品上的规则执行，后者测隐藏数据上的模型质量。</td>
         </tr>
         <tr>
-          <td><b>通用数据</b></td>
-          <td data-label="What">Tülu 3 提供通用池的全部 829,947 条样本。</td>
-          <td data-label="Why">金融来源只覆盖金融任务，所以这个来源给通用池带来数学、代码、对话和指令类任务。</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h3 class="title is-5">测试数据覆盖训练过的题型、外部题和通用能力</h3>
-    <table class="table is-narrow data-table">
-      <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>行情测试集（300）</b></td>
-          <td data-label="What">测试集从 10 个训练过的题型各取 30 题。</td>
-          <td data-label="Why">它测模型在训练过的题型上，能否泛化到没见过的公司和更晚的时段。</td>
+          <td><b>金融与通用基准</b></td>
+          <td data-label="What">评测使用 FinQA/TAT-QA（1,886）、MMLU（13,018）、GSM8K（1,319）和 IFEval（541）。</td>
+          <td data-label="Why">它们依次衡量金融计算、知识、数学与指令遵循。</td>
         </tr>
         <tr>
-          <td><b>FinSearchComp 离线（98）</b></td>
-          <td data-label="What">测试集取 FinSearchComp 的 Global T2 63 题、T3 35 题。</td>
-          <td data-label="Why">这些题由外部出，所以分数测的是模型对我们题型之外的题的泛化能力。</td>
-        </tr>
-        <tr>
-          <td><b>DocFinQA（200）</b></td>
-          <td data-label="What">测试集针对整份 SEC 10-K 年报提数值题和是非题，模型只能通过检索读到年报。</td>
-          <td data-label="Why">它在没有 agent 训练题用过的年报上测读长文档的能力。</td>
-        </tr>
-        <tr>
-          <td><b>财富管理（500）+ 机器学习（50）</b></td>
-          <td data-label="What">测试集在数据库实例 C 上运行，14 个财富管理题型中有 2 个（45 题）只在测试集出现。</td>
-          <td data-label="Why">它测模型在没见过的客户和产品上遵守业务规则、使用工具的能力，只在测试集出现的题型测没见过的任务形式。</td>
-        </tr>
-        <tr>
-          <td><b>金融分（1,886）</b></td>
-          <td data-label="What">金融分给 FinQA 和 TAT-QA 测试题打分。</td>
-          <td data-label="Why">它测单轮模型读年报摘录、算出一个数的能力。</td>
-        </tr>
-        <tr>
-          <td><b>MMLU（13,018）、GSM8K（1,319）、IFEval（541）</b></td>
-          <td data-label="What">这些 benchmark 测知识、数学应用题和遵守可检查指令的能力。</td>
-          <td data-label="Why">它们检查金融训练有没有损伤通用能力。</td>
-        </tr>
-        <tr>
-          <td><b>开发集（200，每题 4 次）</b></td>
-          <td data-label="What">SFT 模型对 10 个训练过的题型各 20 题各做 4 次，按 pass@1（单次尝试的平均通过率）和 pass@4（至少做对一次的题的比例）打分。</td>
-          <td data-label="Why">两个分数之差说明 SFT 之后留给强化学习的空间；这个集用于选择和报告这个差值，测试分数不用它。</td>
+          <td><b>开发集（200）</b></td>
+          <td data-label="What">模型对 10 个题型的开发题各尝试 4 次。</td>
+          <td data-label="Why">这些结果辅助方案选择，与最终测试分数分开。</td>
         </tr>
       </tbody>
     </table>
@@ -252,7 +207,7 @@
               <a class="flow-node" href="#dp-mixing">配比与发布</a>
             </nav>
             <div class="content">
-              <p>数据架构用程序生成扩充已知薄弱能力，用 Claude 生成探索尚未覆盖的任务结构；两路共用独立核验和强制 Claude 审查。题目合格、示范合格与训练带来提升分别验收；页面其他部分的定量结果对应此前的训练批次。</p>
+              <p>数据架构用程序生成扩充已知薄弱能力，用 Claude 生成探索尚未覆盖的任务结构；两路共用独立核验和强制 Claude 审查。题目合格、示范合格与训练带来提升分别验收。</p>
               <p class="pipeline-group" id="dp-selection">固定来源与四类划分，让方案选择和最终测试各自独立</p>
               <ul>
                 <li><b>Source inventory：</b>每道题记录数据快照、实体、日期、父题、题族与生成方式；原题重叠和年报重叠分别统计，避免把已见年报上的新问题称作新年报。</li>
@@ -262,7 +217,7 @@
               <p class="pipeline-group" id="dp-synthesis">两条支线分别练习已有薄弱点和探索缺失的任务结构</p>
               <ul>
                 <li><b>Program generation + Claude review：</b>带种子的程序在已验证题族内改变实体、日期、约束和相互依赖的计算，为模型表现不稳定或反复做错的合理题提供可复现练习，也生成较简单的递进版本。</li>
-                <li><b>Claude generation + Claude review：</b>生成对话根据能力缺口、可用数据和工具合同提出新题族及具体题目，并明确规则；独立审查对话解题并寻找反例。改写已有题面或增加字数不自动算覆盖新能力。</li>
+                <li><b>Claude generation + Claude review：</b>生成对话根据能力缺口、可用数据和工具合同提出新题族及具体题目，并明确规则；改写已有题面或增加字数不自动算覆盖新能力。</li>
                 <li><b>Trusted task adapters：</b>适配器把结构化题目交给工具和独立答案程序检查；行情适配器处理窗口选择、用反向市场头寸抵消部分波动的对冲计算及计费持仓，有限整数分配合同规定每个账户可以买几手、各自的限制和共同预算。超出合同的提案先隔离，补齐数据、工具与验证器后再接入，模型生成的验证代码不能直接充当标准。</li>
                 <li><b>Family promotion：</b>Claude 探索的题族成熟后可转成经验证的程序模板扩充；题族最初由谁设计、当前实例由谁生成分别记录，每个新实例仍接受共同审查。</li>
               </ul>
@@ -285,11 +240,6 @@
                 <li><b>Cost control：</b>规则先淘汰明显错误，内容和版本完全匹配的审查可用缓存；费用涵盖 Claude 生成、两路题目审查、SFT 轨迹审查与失败尝试，共同上限在发请求前预留最坏费用，中断或无法计费的调用会阻止继续花费。</li>
                 <li><b>Release contract：</b>代码、快照、提示、模型身份、独立参考、审查、题目 ID、分词器和损失掩码共同绑定数据版本；CPU 诊断通过和模拟输出不能批准训练。新一轮 SFT 使用基础模型、新打包数据和新输出目录，RL 再使用其产出的检查点及新测量。</li>
               </ul>
-              <p class="pipeline-group" id="dp-history">历史批次解释已报告模型使用的数据</p>
-              <ul>
-                <li><b>Historical document synthesis：</b>早期单轮实验用本地模型根据金融文章生成计算题；在 Qwen3-4B-Base 上，含这类合成问答的 1:1 混合数据，比去掉它们并用其他金融来源补额的混合数据低 0.05 分（95% 区间 −1.3 到 +1.2，p=0.55），没有测出这一来源的额外收益。另一个已报告的 agent SFT 批次含 115 条重写样本，该数量不属于上述消融的独立处理组。</li>
-                <li><b>Historical filtering limits：</b>旧批次的检查随来源而异，出现读取调用也不等于成功读取了依据；历史 SFT 分数不能证明旧批次满足上文的逐题和逐轨迹审查。</li>
-              </ul>
             </div>
             <div class="pipeline-facts"><span class="pipeline-fact">两条生成支线，共同强制审查</span><span class="pipeline-fact">题目与示范分别验收</span></div>
           </div>
@@ -308,10 +258,10 @@
               <a class="flow-node" href="#od-dataset">组成数据集</a>
             </nav>
             <div class="content">
-              <p>本标签页说明已报告 SFT 结果所用的历史离线批次及其三类划分；上一个标签页的双支线、四类划分架构不改写这些历史数量和结果。</p>
+              <p>已报告模型的原程序题库使用固定快照和可执行的参考答案。</p>
               <p class="pipeline-group" id="od-snapshot">数据快照把数据固定下来，程序才能计算并复核每个答案</p>
               <ul>
-                <li><b>SQLite snapshot：</b>一个数据库文件存放 565 只证券的日线和 35,727 条拆股分红、68 条 FRED 宏观序列，以及 516 家公司的 SEC XBRL 财报。在线数据会变，只有固定快照才能让程序算出每个答案并给每道题判分。</li>
+                <li><b>SQLite snapshot：</b>一个数据库文件存放 565 只证券的日线和 35,727 条拆股分红、68 条 FRED 宏观序列，以及 516 家公司的 SEC XBRL 财报（机器可读的公司财务报告）。在线数据会变，只有固定快照才能让程序算出每个答案并给每道题判分。</li>
                 <li><b>Point-in-time vintage：</b>快照固定 FRED 在截止日或最新存储版本中的数值，不能还原每个更早决策日当时已知的版本，因此这些任务不构成满足历史信息可得条件的回测。</li>
               </ul>
               <p class="pipeline-group" id="od-split">划分让测试的实体和时段不进训练</p>
@@ -335,14 +285,14 @@
               </ul>
               <p class="pipeline-group" id="od-verification">独立复核检查答案和工具</p>
               <ul>
-                <li><b>Independent verification：</b>另一套 SQL 加 Python 的实现只读题目参数，重算每道题的答案，两档全部一致，这样生成器的错误会表现为两边不一致，而不是变成分数背后的错误标准答案。</li>
+                <li><b>Independent verification：</b>另一套 SQL 加 Python 的实现从题目参数重算答案，两档全部一致。比较两套实现可以发现差异，但共享的假设或错误仍可能漏过这项检查。</li>
                 <li><b>Golden policy：</b>标准解策略只用工具（一次 Python 加 <code>finish</code>），经过与模型相同的循环、验证和判分，做对每一道题，说明工具足以解每道题。</li>
               </ul>
               <p class="pipeline-group" id="od-dataset">数据集共 3,148 题，来源和题型按开发集结果选定</p>
               <ul>
-                <li><b>Composition：</b>数据集共 3,148 题：训练 2,350 题、开发 200 题、测试 598 题。测试题包括 300 道行情测试题、98 道 FinSearchComp 题和 200 道 DocFinQA 题。开发题用于做选择，测试题不参与选择，所以测试分数是公正的最终度量。</li>
+                <li><b>Composition：</b>题库固定训练 2,350 题、开发 200 题、测试 598 题，共 3,148 题；测试来源见数据一节。开发集用于方案选择，冻结测试集报告选定方案的结果。</li>
                 <li><b>Training file：</b>训练文件含 7 个难题档题型各 250 题和 <code>rolling_vol</code>、<code>extreme_period</code>、<code>xbrl_ratio</code> 各 200 题，共 2,350 题。它去掉第 8 个难题档题型 <code>div_event_study</code>，因为官方模型在它的开发题上做对 19/20，没有空间显示提升；它保留原有一档中官方做得最差的 3 个题型（2/20、14/20、14/20）。SFT 模型还用了原有一档另外 14 个题型的轨迹，比这 2,350 题多 2,800 题。</li>
-                <li><b>Development and market-data test files：</b>这两个文件分别含同样 10 个题型的 200 题和 300 题，测试题不按任何模型的对错挑选，所以测试不偏向某个模型。</li>
+                <li><b>Development and market-data test files：</b>两个文件使用相同题型，并沿用前述实体与时间划分；测试题不按模型的答题对错筛选，让各模型在同一批固定题目上比较。</li>
                 <li><b>FinSearchComp file：</b>在 203 道 Global T2、T3 题中，这个文件保留快照算出的值与官方答案在容差内一致的 98 题，这样分数不依赖与官方答案不一致的快照值。</li>
               </ul>
             </div>
@@ -386,7 +336,7 @@
           <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
             <div class="content">
               <ul>
-                <li><b>Packing：</b>建数据的程序用保留思考的对话模板渲染 32,768 token 以内的行情和 DocFinQA 轨迹，用 Qwen3.5 自带的模板渲染 32,768 token 以内的 <code>t6_report_gate</code> 轨迹和 16,384 token 以内的财富管理和机器学习轨迹，再把 14,486 条样本拼成 2,830 条不超过 32,768 token 的序列，这样短样本能填满每条序列的 token 预算，每步 12 条序列能训练约 61 条样本。行情上限取 32,768，是因为 <code>xbrl_ratio</code> 轨迹的中位长度有 17,661 token，按 16,384 截会丢掉这个题型一半以上。</li>
+                <li><b>Packing：</b>构建器排除 48 条超过各自 token 上限的轨迹，以及 7 条会使对话模板丢失历史思考的多用户消息轨迹；再用保留思考的对话模板渲染 32,768 token 以内的行情和 DocFinQA 轨迹，用 Qwen3.5 自带的模板渲染 32,768 token 以内的 <code>t6_report_gate</code> 轨迹和 16,384 token 以内的财富管理和机器学习轨迹，再把 14,486 条样本拼成 2,830 条不超过 32,768 token 的序列，这样短样本能填满每条序列的 token 预算，每步 12 条序列能训练约 61 条样本。行情上限取 32,768，是因为 <code>xbrl_ratio</code> 轨迹的中位长度有 17,661 token，按 16,384 截会丢掉这个题型一半以上。</li>
                 <li><b>Settings：</b>训练微调 Qwen3.5-4B-Base 的全部参数，2 个 epoch（把数据过两遍）、472 步，用 6 张 GPU，学习率 1e-5，沿余弦曲线下降。从 Base 模型出发，模型在预训练之后学到的东西就都只来自本项目的数据。</li>
                 <li><b>Loss：</b>训练最小化模型下一个 token 的预测与标签之间的交叉熵，也就是下一 token 预测的标准损失 \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\)，其中 \(x_{&lt;t}\) 是位置 \(t\) 之前的序列，\(\theta\) 是模型权重，\(N\) 是带标签的 token 数，所以模型逐 token 复现带标签的轮。训练只在带标签的位置分块计算损失，数值和梯度都不变，因为长序列每个位置对全词表的打分放不进显存。</li>
                 <li><b>Labels：</b>需要模型学习的位置，标签就是该 token 本身；其余位置为 &minus;100，损失会忽略。标签覆盖轨迹助手轮的思考、文本和工具调用，因为模型之后运行的对话模板会把历史思考放进上下文；标签屏蔽系统、用户和工具轮，因为工具输出由工具产生。</li>
@@ -407,7 +357,7 @@
                 <li><b>Success rate：</b>这个分数统计任务集 \(T\) 中通过的比例，任务 \(t\) 通过时 \(s_t = 1\)，所以只有整个任务做对才得分。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
                 <li><b>Paired bootstrap：</b>这项比较按题相减两个模型的结果，\(a_i\)、\(b_i\) 做对为 100、做错为 0，95% 区间来自对 \(n\) 道题的 10,000 次重抽。配对去掉了题目难度的差异，区间因此变窄；每道测试题只跑 1 次，所以区间只计入题目抽样的误差。\[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
               </ul>
-              <p class="pipeline-group">单轮分数</p>
+              <p class="pipeline-group">金融问答与通用能力</p>
               <ul>
                 <li><b>金融分：</b>打分程序取最后一个 "Answer:" 之后的第一个数，与标准答案相差 1% 以内算对，百分数和小数两种写法都认。所有模型用同一个不套对话模板、带 3 个示例的提示，因为起点模型没有针对对话格式训练过，这样分数才可比。其中 \(D\) 是题目集合，\(y_i\) 是标准答案，\(\hat{y}_i\) 是回答，\(\tau_i = 0.01|y_i|\)，\(y_i = 0\) 时为 0.005。\[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
                 <li><b>MMLU：</b>打分程序在题目集合 \(Q\) 上，把提示 \(x_q\) 下概率最大的选项 \(o\) 与正确选项 \(o^{*}_q\) 比较。比较选项概率不依赖生成格式，所以起点模型和 SFT 模型可比；去掉四个经济和会计科目，因为金融训练会抬高它们，掩盖别处的下降。\[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
@@ -419,7 +369,7 @@
                 <li><b>行情测试集和 FinSearchComp：</b>判分程序按离线数据集一环的 key-based grading 判分，FinSearchComp 用每题写明的容差。</li>
                 <li><b>DocFinQA：</b>判分程序取答案中的最后一个数，与标准答案相差 1% 以内算通过，百分数和小数两种写法都认，是非题要写出同一个词，这样得到的分数能与外部结果比较。</li>
                 <li><b>State comparison（财富管理）：</b>判分程序把最终持仓、现金和交易记录与标准状态比较，并把答案中的关键数值按容差比较（金额 ±0.01 美元，比例 ±0.1 个百分点）。对规则禁止的任务，它检查被禁止的交易没有执行、答案指出了规则，因为交易和答案都对才算完成任务。</li>
-                <li><b>AUC 和 \(R^2\) 门槛（机器学习）：</b>判分程序要求提交模型，且它在隐藏测试表上不低于生成数据的模型减 0.015 AUC 或减 0.03 \(R^2\)。这个门槛要求把数据处理做对：在开发集上，固定流程对偏态列取对数时通过 20/20 题，不取对数时只过 1 题。</li>
+                <li><b>AUC 和 \(R^2\) 门槛（机器学习）：</b>AUC 衡量排序质量，0.5 相当于随机、1 为完美；\(R^2\) 衡量模型解释的目标方差比例。判分程序要求提交模型，且它在隐藏测试表上不低于生成数据的模型减 0.015 AUC 或减 0.03 \(R^2\)。这个门槛要求把数据处理做对：在开发集上，固定流程对偏态列取对数时通过 20/20 题，不取对数时只过 1 题。</li>
                 <li><b>pass@1 和 pass@4：</b>打分程序在 \(T_4\) 上算这两个分数，\(T_4\) 是有 4 次有效尝试的开发集题目，题 \(t\) 的 \(n_t\) 次有效尝试中有 \(c_t\) 次通过。\[P_1 = \frac{100}{|T_4|}\sum_{t \in T_4}\frac{c_t}{n_t}\] \[P_4 = \frac{100}{|T_4|}\sum_{t \in T_4}\mathbf{1}[c_t \ge 1]\]</li>
               </ul>
             </div>
@@ -488,7 +438,7 @@
       <h3 class="title is-5">第二次 SFT 把 DocFinQA 从 39.0 提到 53.0，与官方模型持平</h3>
       <div class="content has-text-justified">
         <p>
-          下表是 200 道针对整份年报的题的结果，每题跑 1 次。SFT 模型比第一次 SFT 高 14.0 分（95% 区间 +8.5 到 +20.0），与官方 Qwen3.5-4B 持平（+0.0，&minus;5.0 到 +5.0），比教师低 6.0 分（&minus;10.5 到 &minus;1.5）。第一次 SFT 的两个毛病减少了：没有调用 <code>read_chunk</code> 的题从 39 道降到 5 道，符合要求形式的答案从 141 个升到 191 个。第二次训练同时加入新轨迹、过滤、重写的 115 条样本和对格式错误调用的屏蔽，这组数据分不开各自的作用。
+          下表是 200 道针对整份年报的题的结果，每题跑 1 次。SFT 模型比第一次 SFT 高 14.0 分（95% 区间 +8.5 到 +20.0），与官方 Qwen3.5-4B 持平（+0.0，&minus;5.0 到 +5.0），比教师低 6.0 分（&minus;10.5 到 &minus;1.5）。从第一次到第二次训练，没有调用 <code>read_chunk</code> 的题从 39 道降到 5 道；忽略 <code>$</code>、<code>%</code>、逗号和空白后，只含一个数或 yes/no 的答案从 141 个升到 191 个。第二次训练同时加入 DocFinQA 和年报交易轨迹、过滤、直接问答样本的重写和对格式错误调用的屏蔽，这组结果分不开各自的作用。
         </p>
       </div>
       <p class="table-hint">左右滑动表格可查看所有列。</p>
