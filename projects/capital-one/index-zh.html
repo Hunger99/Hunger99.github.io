@@ -80,7 +80,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">摘要</h2>
 <div class="content has-text-justified">
-<p>本项目拟用五个数据集，对 Qwen3.5-4B-Base 比较九组后训练设置：原有金融问答与指令遵循任务，加上 FinDeepResearch 公司研究报告和源自 Kaggle 的 MLE-bench 项目子集。多轮监督微调（SFT）让模型学习经过核验的示范，DAPO 再通过工具试答与任务各自的奖励学习。合成增量计划用于 FinSearchComp 及两个新增数据集；DocFinQA 与 IFEval 仅用原题。所有设置共用冻结的原始队列和评测协议，以分别检验在 SFT、DAPO 或两个阶段加入合成任务的作用。新增任务适配器仍待证据、评分与执行资格核验，新一轮训练尚未开始。</p>
+<p>本项目拟用五个数据集，对 Qwen3.5-4B-Base 比较九组后训练设置：原有金融问答与指令遵循任务，加上 FinDeepResearch 公司研究报告和源自 Kaggle 的 MLE-bench 项目子集。多轮监督微调（SFT）让模型学习经过核验的示范，DAPO 再通过工具试答与任务各自的奖励学习。合成增量计划用于 FinSearchComp 及两个新增数据集；DocFinQA 与 IFEval 仅用原题。所有设置将共用冻结的原始队列和评测协议，以分别检验在 SFT、DAPO 或两个阶段加入合成任务的作用。新增任务适配器仍待证据、评分与执行资格核验，新一轮训练尚未开始。</p>
 </div>
 </div>
 </section>
@@ -123,7 +123,7 @@
 <section class="section hero is-light" id="baselines">
 <div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered">九个候选设置共用数据池</h2>
-<p class="data-note">九个候选设置固定共同原题、验证和测试队列。下表区分已冻结的原题、尚待准入的新来源、合成目标和合格示范；新一轮训练尚未开始。</p>
+<p class="data-note">九个候选设置将使用相同的原题、验证与测试版本。下表区分已冻结的原题、尚待准入的新来源、合成目标和合格示范；新一轮训练尚未开始。</p>
 <h3 class="title is-5" id="original-pools">原题数量与新增来源的准入状态</h3>
 <div class="table-container" tabindex="0">
 <table class="table setting-table original-counts">
@@ -401,7 +401,7 @@
 </nav>
 <div class="content">
 <span class="status-tag">尚未开始</span>
-<h4 class="pipeline-group" id="eval-original">各阶段使用同一批原题测量</h4>
+<h4 class="pipeline-group" id="eval-original">各阶段使用同一批原始任务测量</h4>
 <ul>
 <li>
 <b>Native metrics:</b> 每个数据集采用<a href="#co-data">数据集表</a>中的指标定义与公式，分别报告问答准确率、严格指令遵循、报告质量和机器学习竞赛表现，并注明各指标方向及评测队列。</li>
