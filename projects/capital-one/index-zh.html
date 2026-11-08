@@ -80,242 +80,138 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">摘要</h2>
 <div class="content has-text-justified">
-<p>本项目围绕 DocFinQA、FinSearchComp 和 IFEval，对 Qwen3.5-4B-Base 比较九组后训练设置。多轮监督微调（SFT）让模型学习经过核验的示范，DAPO 再通过工具试答与规则奖励学习。额外合成仅用于 FinSearchComp：程序支线扩展可复现的薄弱题型，Claude 支线在可信来源与任务约束内出题，两者共用独立答案计算、真实工具执行、盲解和对抗审查。所有设置保留相同原题并共用评测集，以分别检验在 SFT、DAPO 或两个阶段加入合成题的作用。</p>
+<p>本项目拟用五个数据集，对 Qwen3.5-4B-Base 比较九组后训练设置：原有金融问答与指令遵循任务，加上 FinDeepResearch 公司研究报告和源自 Kaggle 的 MLE-bench 项目子集。多轮监督微调（SFT）让模型学习经过核验的示范，DAPO 再通过工具试答与任务各自的奖励学习。合成增量计划用于 FinSearchComp 及两个新增数据集；DocFinQA 与 IFEval 仅用原题。所有设置共用冻结的原始队列和评测协议，以分别检验在 SFT、DAPO 或两个阶段加入合成任务的作用。新增任务适配器仍待证据、评分与执行资格核验，新一轮训练尚未开始。</p>
 </div>
 </div>
 </section>
 <section class="section hero data-section" id="data-sets">
-<div class="container is-max-desktop">
+<div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered" id="co-data">数据集</h2>
-<table class="table is-narrow data-table">
-<thead>
-<tr>
-<th>数据集与来源</th>
-<th>定义</th>
-</tr>
-</thead>
+<table class="table is-narrow data-table dataset-metrics">
+<thead><tr><th scope="col">数据集与来源</th><th scope="col">定义</th><th scope="col">评测指标定义与公式</th></tr></thead>
 <tbody>
 <tr>
-<td>
-<a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a>
-</td>
-<td data-label="定义">针对完整年度报告的金融问答，需要检索原文并进行数值推理。</td>
+<td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
+<td data-label="定义">模型针对完整年度报告回答金融问题，需要检索原文并进行数值推理。</td>
+<td data-label="评测指标定义与公式" class="metric-cell">当前项目评分器计算数值／布尔答案准确率。数值答案允许 1% 相对误差，标准答案为 0 时允许 0.005 绝对误差，并检查百分数的 ×100／÷100 等价表示；布尔答案须匹配 yes／no。<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 在第 i 题通过评分器时为 1，否则为 0。</td>
 </tr>
 <tr>
-<td>
-<a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a>
-</td>
-<td data-label="定义">由专家编写的金融检索与推理基准，问题涉及市场数据及公司信息。</td>
+<td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
+<td data-label="定义">模型检索市场与公司信息，回答专家编写的金融推理问题；本项目使用有离线来源支持的子集。</td>
+<td data-label="评测指标定义与公式" class="metric-cell">任务成功率要求最终答案满足该题全部参考项，数值容差、日期和文本别名由逐题答案约束指定。<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 表示该题全部要求是否通过；这是项目离线子集的成绩。</td>
 </tr>
 <tr>
-<td>
-<a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a>
-</td>
-<td data-label="定义">包含格式、长度、关键词、语言等可由程序检查的指令遵循任务。</td>
+<td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
+<td data-label="定义">模型完成格式、长度、关键词、语言等可由程序检查的指令；一条提示可包含多条要求。</td>
+<td data-label="评测指标定义与公式" class="metric-cell">严格整题准确率要求同一提示的全部指令通过；严格逐指令准确率统计通过的指令占比。<span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N 是提示数，m<sub>i</sub> 是第 i 条提示的指令数，c<sub>ij</sub> 在第 j 条指令通过严格检查时为 1，否则为 0。</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">官方任务说明</a></td>
+<td data-label="定义">模型按指定分析结构检索、计算并生成完整 Markdown 公司研究报告；原始基准涵盖八个市场、四种语言，每份报告有 247 个评分项，评分项不计作独立任务。</td>
+<td data-label="评测指标定义与公式" class="metric-cell">加权内容质量分别衡量识别、计算、概括与解释；另报结构分。<span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N 是报告数；s<sub>ij</sub> ∈ [0,1] 是官方判官给出的匹配、关键主张覆盖或归一化细项得分；w<sub>j</sub> 为识别／计算项的 1 分或概括／解释项的 2 分，满分 350；f<sub>i</sub> 为标题、子标题与表格的结构得分，满分 42。<a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">评分协议</a>；<a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">权重</a>。</td>
+</tr>
+<tr>
+<td><a href="https://github.com/openai/mle-bench/tree/507f92e1138bb6e40dac5c6ee7a6758e6424bf97" target="_blank" rel="noopener">MLE-bench 项目子集</a><br><a href="https://github.com/openai/mle-bench#dataset" target="_blank" rel="noopener">Kaggle 来源</a></td>
+<td data-label="定义">模型读取竞赛数据、编写与执行机器学习训练代码，并提交竞赛规定的预测 CSV；一个完整竞赛任务不等于一行数据。项目子集仍待资格核验。</td>
+<td data-label="评测指标定义与公式" class="metric-cell">保留各竞赛原生分数及方向：AUC 衡量排序质量，越高越好；log loss 衡量概率误差，RMSLE 衡量对数尺度的回归误差，两者越低越好。<span class="metric-formula">Native score<sub>i</sub> = G<sub>i</sub>(prediction CSV<sub>i</sub>, hidden labels<sub>i</sub>)</span>G<sub>i</sub> 是该竞赛固定的原生评分器，另报有效提交率、达到铜牌线的比例及高于参赛者中位数的比例。<span class="metric-formula">Valid rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub>]</span><span class="metric-formula">Medal rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ⪰<sub>i</sub> b<sub>i</sub>]</span><span class="metric-formula">Above-median rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ≻<sub>i</sub> h<sub>i</sub>]</span>N 是评测任务数，s<sub>i</sub> 是原生分数，b<sub>i</sub>／h<sub>i</sub> 是该竞赛铜牌线／中位数；⪰<sub>i</sub>、≻<sub>i</sub> 按该指标方向比较，1[·] 在条件满足时为 1，否则为 0。</td>
 </tr>
 </tbody>
 </table>
+<p class="data-note">各数据集保留自己的输出与评分含义；公司报告的内容分、机器学习竞赛分数与问答准确率分别报告。</p>
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
 <div class="container is-max-widescreen">
-<h2 class="title is-3 has-text-centered">基线设置</h2>
-<p class="data-note">原始验证集 309 题、原始测试集 620 题已经冻结。目前合格合成题为 0 道。下表合成数是最低验收配额：配额达成后，验证集总数至少为 347 题、测试集总数至少为 680 题。题目池数量不等于合格 SFT 示范数；DocFinQA 与 IFEval 不增加合成题。</p>
-<h3 class="title is-5">共同原题池</h3>
-<div class="table-container">
+<h2 class="title is-3 has-text-centered">九个候选设置共用数据池</h2>
+<p class="data-note">九个候选设置固定共同原题、验证和测试队列。下表区分已冻结的原题、尚待准入的新来源、合成目标和合格示范；新一轮训练尚未开始。</p>
+<h3 class="title is-5" id="original-pools">原题数量与新增来源的准入状态</h3>
+<div class="table-container" tabindex="0">
 <table class="table setting-table original-counts">
-<thead>
-<tr>
-<th>原始数据集</th>
-<th>训练</th>
-<th>验证</th>
-<th>测试</th>
-</tr>
-</thead>
+<thead><tr><th scope="col">数据集</th><th scope="col">来源库存与当前状态</th><th scope="col">原题训练</th><th scope="col">原题验证</th><th scope="col">原题测试</th></tr></thead>
 <tbody>
-<tr>
-<th scope="row">DocFinQA</th>
-<td>942</td>
-<td>182</td>
-<td>373</td>
-</tr>
-<tr>
-<th scope="row">FinSearchComp</th>
-<td>48</td>
-<td>19</td>
-<td>30</td>
-</tr>
-<tr>
-<th scope="row">IFEval</th>
-<td>216</td>
-<td>108</td>
-<td>217</td>
-</tr>
+<tr><th scope="row">DocFinQA</th><td>已选定 1,497 道原题</td><td>942</td><td>182</td><td>373</td></tr>
+<tr><th scope="row">FinSearchComp</th><td>97 道离线支持的 Global T2/T3 原题；上游共 635 题</td><td>48</td><td>19</td><td>30</td></tr>
+<tr><th scope="row">IFEval</th><td>541 道原题</td><td>216</td><td>108</td><td>217</td></tr>
+<tr><th scope="row">FinDeepResearch</th><td>已取得 64 个任务；隔离 1 个来源冲突，冻结 63 个原题；执行资格未就绪</td><td>24</td><td>16</td><td>23</td></tr>
+<tr><th scope="row">MLE-bench 项目子集</th><td>82 个竞赛元数据条目：75 个官方评测＋7 个开发；可运行合格任务 0</td><td>未划分</td><td>未划分</td><td>未划分</td></tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">第 3、5、7 组共用同一份 SFT 合成题；第 6、7、9 组共用另一份 DAPO 合成题。训练、验证、测试按实例、来源与派生关系隔离。两个 SFT 检查点复用于六个 DAPO 作业，共得到九个模型设置。</p>
+<p class="data-note">原有三数据集已冻结训练 1,206／验证 309／测试 620 题；FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 尚无合格原题。原题训练池只定义任务来源，SFT 还须逐条验收示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
+<p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 仅盘点了竞赛元数据，数据访问、竞赛规则、原生评分与代码隔离尚待核验；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
+<h3 class="title is-5" id="synthetic-pools">各阶段共用一份合成增量，当前合格数均为 0</h3>
+<div class="table-container" tabindex="0">
+<table class="table setting-table synthetic-counts">
+<thead><tr><th scope="col">用途</th><th scope="col">FinSearchComp 目标</th><th scope="col">FinDeepResearch 目标</th><th scope="col">MLE-bench 子集目标</th></tr></thead>
+<tbody>
+<tr><th scope="row">SFT 训练（S）</th><td>96</td><td>128</td><td>阶段数量待定</td></tr>
+<tr><th scope="row">DAPO 训练（R）</th><td>96</td><td>128</td><td>阶段数量待定</td></tr>
+<tr><th scope="row">合成验证</th><td>38</td><td>32</td><td>阶段数量待定</td></tr>
+<tr><th scope="row">合成测试</th><td>60</td><td>49</td><td>阶段数量待定</td></tr>
+</tbody>
+</table>
+</div>
+<p class="data-note">FinSearchComp 保持 290 道不同合成题的计划：96＋96＋38＋60；加上 97 道原题共 387 个不同任务，两个训练阶段共用的 48 道原始训练题只计一次。这些是目标，当前正式合格合成题为 0。每个新增数据集的原题＋合成题总目标为 400–800，默认 400；不可行时以接近 387 为回退目标。FinDeepResearch 计划以 63 道原题＋337 道合成题达到 400；MLE-bench 的四阶段数量仍待固定。机器学习任务须有实质不同的任务要求，数据行、随机种子或重复运行不算新任务，独立来源竞赛／数据集数量另报。</p>
+<h3 class="title is-5">两个 SFT 检查点复用于六个 DAPO 作业</h3>
+<p class="data-note">下表 O 表示上方原题训练池，新增来源只在合格并冻结后加入 O；S、R 分别表示上方两份独立合成训练池。SFT 使用 O 或 O＋S 的合格示范，DAPO 使用相应任务与原生奖励；同一行的题目池数量不能代替合格示范数。所有 S1 后续模型复用同一检查点及 S 池，所有 R1 模型共用 R 池。</p>
 <p class="table-hint">左右滑动表格可查看所有列。</p>
 <div class="table-container baseline-scroll" tabindex="0">
 <table class="table setting-table baseline-table">
-<thead>
-<tr>
-<th>模型设置</th>
-<th>SFT 训练</th>
-<th>DAPO 训练</th>
-<th>共同验证集</th>
-<th>共同测试集</th>
-</tr>
-</thead>
+<thead><tr><th scope="col">候选模型</th><th scope="col">SFT 使用的数据</th><th scope="col">DAPO 使用的数据</th><th scope="col">共同验证</th><th scope="col">共同测试</th></tr></thead>
 <tbody>
 <tr>
-<th scope="row">1 · 原始 4B</th>
+<th scope="row">1 · Base · 原始 4B</th>
 <td>不训练</td>
 <td>不训练</td>
-<td rowspan="9" class="common-pool">
-<div class="pool-counts">
-<span>DocFinQA: 182</span>
-<span>FinSearchComp: 19 <b>+ 38 合成</b>
-</span>
-<span>IFEval: 108</span>
-</div>
-<p class="pool-total">验收后最低总数：347</p>
-<p>合成题合格后，统一冻结一个版本供九组共用。</p>
-</td>
-<td rowspan="9" class="common-pool">
-<div class="pool-counts">
-<span>DocFinQA: 373</span>
-<span>FinSearchComp: 30 <b>+ 60 合成</b>
-</span>
-<span>IFEval: 217</span>
-</div>
-<p class="pool-total">验收后最低总数：680</p>
-<p>合成题合格后，统一冻结一个版本供九组共用。</p>
-</td>
+<td rowspan="9" class="common-pool"><p>全九组共用<a href="#original-pools">原题验证队列</a>及<a href="#synthetic-pools">合成验证池</a>。</p><p>原题与合成成绩分报。</p><p>MLE-bench 未划分；完整五数据集总数待定。</p></td>
+<td rowspan="9" class="common-pool"><p>全九组共用<a href="#original-pools">原题测试队列</a>及<a href="#synthetic-pools">合成测试池</a>。</p><p>原题与合成成绩分报。</p><p>MLE-bench 未划分；完整五数据集总数待定。</p></td>
 </tr>
 <tr>
-<th scope="row">2 · 原题 SFT（S0）</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">2 · S0 · 原题 SFT</th>
+<td>O 的合格示范</td>
 <td>不训练</td>
 </tr>
 <tr>
-<th scope="row">3 · 加合成的 SFT（S1）</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 合成</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">3 · S1 · 增强 SFT</th>
+<td>O＋S 的合格示范</td>
 <td>不训练</td>
 </tr>
 <tr>
-<th scope="row">4 · S0 → 原题 DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">4 · S0R0</th>
+<td>复用 S0</td>
+<td>O 任务</td>
 </tr>
 <tr>
-<th scope="row">5 · S1 → 原题 DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 合成</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">5 · S1R0</th>
+<td>复用 S1</td>
+<td>O 任务</td>
 </tr>
 <tr>
-<th scope="row">6 · S0 → 加合成的 DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 合成</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">6 · S0R1</th>
+<td>复用 S0</td>
+<td>O＋R 任务</td>
 </tr>
 <tr>
-<th scope="row">7 · S1 → 加合成的 DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 合成</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 合成</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">7 · S1R1</th>
+<td>复用 S1</td>
+<td>O＋R 任务</td>
 </tr>
 <tr>
-<th scope="row">8 · 原始 4B → 原题 DAPO</th>
+<th scope="row">8 · BaseR0</th>
 <td>不训练</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<td>O 任务</td>
 </tr>
 <tr>
-<th scope="row">9 · 原始 4B → 加合成的 DAPO</th>
+<th scope="row">9 · BaseR1</th>
 <td>不训练</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 合成</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<td>O＋R 任务</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">测试设置保留已冻结的 620 道原题，额外要求至少 60 道经过独立审查的 FinSearchComp 题；这些增量合格后才形成扩展测试集。分别报告原题成绩与合成挑战成绩，再给出合并成绩。FinSearchComp 从上游 635 题中使用可支持的 97 道 Global T2/T3 原题，六道附有背景补充的题仅进入训练。原始 FinSearchComp、IFEval 题已有历史评测使用，因此这些项目子集不能称为全新未见测试。</p>
-<p class="data-note">合成验证与测试的来源、题目及评分器均先于学习者校准及模型选择冻结。验证集随后可用于选择模型与混合配比；测试答案和测试结果不反馈给出题、过滤阈值或检查点选择。</p>
+<p class="data-note">各组固定来源版本、工具条件与训练预算，并记录实际进入更新的题数、示范／试答次数、生成 token 和工具计算开销；混合权重按这些曝光量校准，不能只把原始行数配平。合成题先通过审查，再冻结共享池，不因模型设置不同而重新出题。</p>
+<p class="data-note">原题成绩与合成挑战成绩分开报告。FinSearchComp 的六道背景补充题仅用于训练；现有 FinSearchComp、IFEval 原题有历史评测使用，不能称为全新未见测试。新增基准一旦采用项目训练划分，成绩只代表该项目保留子集，不能直接与官方完整评测成绩比较。</p>
+<p class="data-note">新增原题及合成验证／测试的来源、题目、评分器在学习者校准与模型选择前冻结。验证可用于选择检查点与混合配比；测试答案及结果不反馈给出题、阈值或模型选择。示范、原生评分与共同预算条件齐备前，训练入口保持关闭。</p>
 </div>
 </section>
 <section class="section hero">
@@ -325,7 +221,7 @@
 <div class="pipeline" id="co-pipeline" data-pipeline>
 <div class="pipeline-steps" role="tablist" aria-label="方法管线">
 <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
-<span class="pipeline-step-num">1</span>规范报告与数据划分</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">1</span>来源、任务约束与划分</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
 <span class="pipeline-step-num">2</span>FinSearchComp 合成（进行中）</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
@@ -340,8 +236,8 @@
 <span class="pipeline-step-num">7</span>共同评测</button>
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-<nav class="flow" aria-label="规范报告与数据划分">
-<a class="flow-node" href="#canon-report">规范报告</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">来源隔离</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">冻结题目池</a>
+<nav class="flow" aria-label="来源、任务约束与划分">
+<a class="flow-node" href="#canon-report">规范报告</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#native-contract">任务约束</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">来源隔离</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">冻结题目池</a>
 </nav>
 <div class="content">
 <h4 class="pipeline-group" id="canon-report">每份财报只引用一个原始版本</h4>
@@ -350,6 +246,13 @@
 <b>Canonicalization:</b> 入口按注册主体与财年结束日期归并 DocFinQA 报告，依据来源质量选择一份原文，并保留其他版本及来源哈希，避免等价报告被当成不同材料。</li>
 <li>
 <b>Evidence retention:</b> 选择后的检查隔离丢失必要运算依据的问题；检查不改写报告，也不依据模型成绩选择报告版本。</li>
+</ul>
+<h4 class="pipeline-group" id="native-contract">共同外层接口保留各任务的原生输出</h4>
+<ul>
+<li>
+<b>Task adapter:</b> 计划中的五数据集接口将来源身份与输入文件、隔离的工具轨迹、提交产物及各数据集评分结果绑定起来；共用这份外层记录，让同一运行器管理不同任务，同时保留报告写作和机器学习工程的任务形式。</li>
+<li>
+<b>Qualification:</b> 新适配器须先通过证据访问、原生评分、产物格式与评分端隔离检查，再准入任务；<a href="#co-data">数据集表</a>定义任务输出和指标，<a href="#original-pools">题目池表</a>区分已冻结队列与可执行任务。</li>
 </ul>
 <h4 class="pipeline-group" id="source-split">先核对来源身份，再抽取题目</h4>
 <ul>
@@ -361,7 +264,7 @@
 <h4 class="pipeline-group" id="pool-freeze">一个版本服务所有模型设置</h4>
 <ul>
 <li>
-<b>Immutable inputs:</b> 题目 ID、原始文本、规范报告与评分器绑定到冻结版本；数量只在基线设置中列出，各组共用相同原题。</li>
+<b>Immutable inputs:</b> 现有原题 ID、原始文本、规范报告与评分器绑定到冻结版本；新增队列及适配器通过资格核验后才并入共同版本，数量与状态见<a href="#baselines">候选设置表</a>。</li>
 <li>
 <b>Reserved evaluation:</b> 合成验证、测试题使用隔离的答案支持来源并独立审查；不能用重复题或未审查候选填补验收配额。</li>
 </ul>
@@ -406,7 +309,7 @@
 <h4 class="pipeline-group" id="review-tools">真实工具核对数据可得性</h4>
 <ul>
 <li>
-<b>Sandbox replay:</b> 参考代码通过学习者使用的受限工具运行时查询固定只读快照；实际执行必须与独立答案一致，来源元数据声明不能单独放行题目。</li>
+<b>Sandbox replay:</b> 现有金融问答的参考代码通过学习者的受限工具环境查询固定只读快照，执行结果须与独立答案一致；计划中的报告、机器学习任务须分别通过原生产物及评分检查，元数据声明不能单独证明任务可执行。</li>
 </ul>
 <h4 class="pipeline-group" id="review-cloud">盲解与对抗审查保持独立</h4>
 <ul>
@@ -425,7 +328,7 @@
 <h4 class="pipeline-group" id="collect-harness">框架记录模型实际使用的证据</h4>
 <ul>
 <li>
-<b>Tool interface:</b> 金融任务使用只读市场、SEC、FRED 查询、报告检索与受限 Python 环境；消息、工具调用及返回被保存为轨迹，明确提交完成后结束试答。</li>
+<b>Tool interface:</b> 现有金融问答使用只读市场、SEC、FRED 查询、报告检索与受限 Python 环境，消息、工具调用及返回被保存为轨迹，明确提交后结束试答；计划中的报告与机器学习适配器将挂载来源证据或竞赛文件，并将专家目标和隐藏标签排除在学习者工具之外。</li>
 <li>
 <b>IFEval:</b> 严格指令检查器仅评分最终答案并固定评分随机性；金融数值证据要求不应用于纯指令任务。</li>
 </ul>
@@ -454,7 +357,7 @@
 <h4 class="pipeline-group" id="sft-models">两个监督检查点服务对照</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 使用共同原题示范，S1 加入共用的 FinSearchComp 合成示范；二者从相同 Base 权重开始，并保留相同原题池。</li>
+<b>Supervised fine-tuning:</b> S0 将使用共同原题池的合格示范，S1 将加入共用的 SFT 合成池；二者从相同 Base 权重开始并保留相同原题，<a href="#synthetic-pools">合成池表</a>给出允许扩充的数据及其资格状态。</li>
 </ul>
 <h4 class="pipeline-group" id="sft-loss">仅核验后的助手行为参与损失</h4>
 <ul>
@@ -476,7 +379,7 @@
 <li>
 <b>Matched continuations:</b> 两个 SFT 检查点和原始 Base 模型分别接受原题或加合成的 DAPO 继续训练，共用题目池的关系在基线表中标明。</li>
 <li>
-<b>Dynamic filtering:</b> DAPO 从正确性存在差别的回答组学习；记录真正进入更新的题目、更新次数与生成 token 曝光量，避免名义配额掩盖过滤后的差异。</li>
+<b>Dynamic filtering:</b> DAPO 过滤奖励没有差别的回答组；记录过滤后真正进入更新的任务、更新次数、生成 token 和工具计算曝光量，计划中的报告及机器学习评分到奖励的适配须先通过资格核验。</li>
 </ul>
 <h4 class="pipeline-group" id="dapo-length">软长度惩罚只统计模型生成内容</h4>
 <ul>
@@ -501,16 +404,16 @@
 <h4 class="pipeline-group" id="eval-original">各阶段使用同一批原题测量</h4>
 <ul>
 <li>
-<b>Success rate:</b> FinSearchComp 使用离线答案约束，DocFinQA 核对数值或布尔答案，IFEval 使用严格的整题指令准确率；分别报告各数据集成绩，并采用等权平均，避免报告题量较大而主导结果。</li>
+<b>Native metrics:</b> 每个数据集采用<a href="#co-data">数据集表</a>中的指标定义与公式，分别报告问答准确率、严格指令遵循、报告质量和机器学习竞赛表现，并注明各指标方向及评测队列。</li>
 <li>
 <b>Shared protocol:</b> Base、SFT、DAPO 结果使用相同题目 ID、工具条件、采样规则与评分器版本，以支持阶段之间的比较。</li>
 </ul>
-<h4 class="pipeline-group" id="eval-synthetic">新增测试检验经过审查的 FinSearchComp 题</h4>
+<h4 class="pipeline-group" id="eval-synthetic">新增测试检验独立审查后的合成任务</h4>
 <ul>
 <li>
-<b>Separate reporting:</b> 新增挑战独立审查并与原题成绩分开报告；合并成绩不替代原始基准成绩。</li>
+<b>Separate reporting:</b> 各个合格合成挑战与原题队列分开报告；项目派生的报告或机器学习挑战保留各自任务要求和评分器，其成绩不替代官方原始基准成绩。</li>
 <li>
-<b>Limits:</b> 扩大合成测试增加的是生成题族的覆盖，不单独证明模型已泛化到所有外部金融题。</li>
+<b>Limits:</b> 扩大的合成测试测量生成题族的覆盖；泛化结论限于实际评测过的保留来源、题族与执行预算。</li>
 </ul>
 <h4 class="pipeline-group" id="eval-comparison">配对差异检验声明的数据变化</h4>
 <ul>

@@ -445,6 +445,50 @@ html[lang="zh-CN"] .teaser {
   width: 36%;
 }
 
+.dataset-metrics th:first-child,
+.dataset-metrics td:first-child {
+  width: 17%;
+}
+
+.dataset-metrics th:nth-child(2),
+.dataset-metrics td:nth-child(2) {
+  width: 28%;
+}
+
+.dataset-metrics th:nth-child(3),
+.dataset-metrics td:nth-child(3) {
+  width: 55%;
+}
+
+.metric-cell {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.metric-formula {
+  display: block;
+  margin: .5rem 0;
+  color: #36196f;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.metric-formula sub,
+.metric-formula sup {
+  font-size: .72em;
+}
+
+.original-counts {
+  min-width: 690px;
+}
+
+.original-counts th:nth-child(2) {
+  width: 40%;
+}
+
+.synthetic-counts {
+  min-width: 580px;
+}
+
 .data-note {
   margin-bottom: 1rem;
   color: #4a5565;
