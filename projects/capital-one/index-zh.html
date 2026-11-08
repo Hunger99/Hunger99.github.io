@@ -218,6 +218,7 @@
               <ul>
                 <li><b>Program generation + Claude review：</b>带种子的程序在已验证题族内改变实体、日期、约束和相互依赖的计算，为模型表现不稳定或反复做错的合理题提供可复现练习，也生成较简单的递进版本。</li>
                 <li><b>Claude generation + Claude review：</b>生成对话根据能力缺口、可用数据和工具合同提出新题族及具体题目，并明确规则；改写已有题面或增加字数不自动算覆盖新能力。</li>
+                <li><b>Claude requests：</b>v2 客户端配置为将两路的 Claude 请求统一发往 <a href="https://github.com/router-for-me/CLIProxyAPI">CLIProxyAPI</a> 的原生 Messages 接口，使用自定义提示，各角色的上下文分开。请求指定 Opus 5.5，出题用 Extra High 推理强度，盲解、对抗审查与轨迹审查用 Medium；调用记录将实际返回的模型与请求的推理强度绑定至结果，便于追查审查依据。</li>
                 <li><b>Trusted task adapters：</b>适配器把结构化题目交给工具和独立答案程序检查；行情适配器处理窗口选择、用反向市场头寸抵消部分波动的对冲计算及计费持仓，有限整数分配合同规定每个账户可以买几手、各自的限制和共同预算。超出合同的提案先隔离，补齐数据、工具与验证器后再接入，模型生成的验证代码不能直接充当标准。</li>
                 <li><b>Family promotion：</b>Claude 探索的题族成熟后可转成经验证的程序模板扩充；题族最初由谁设计、当前实例由谁生成分别记录，每个新实例仍接受共同审查。</li>
               </ul>
