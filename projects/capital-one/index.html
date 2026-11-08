@@ -136,7 +136,7 @@
 </tbody>
 </table>
 </div>
-<p class="data-note">The original three datasets retain 1,206 training / 309 validation / 620 test questions. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench has no qualified originals. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories, and no complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
+<p class="data-note">The original three datasets retain 1,206 training / 309 validation / 620 test questions. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench has no qualified originals. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories: recorded solutions containing model messages, tool calls and results. No complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
 <p class="data-note">FinDeepResearch still needs an independent evidence corpus and grader integration; expert reports are evaluator targets, not retrieval evidence. Its project split is not an official training split. MLE-bench inventory contains metadata only: data access, competition rules, native grading and code isolation remain unqualified. The official 22-competition Lite set is not this project’s low-cost runnable subset.</p>
 <h3 class="title is-5" id="synthetic-pools">One shared synthetic pool per stage; all qualified counts are currently 0</h3>
 <div class="table-container" tabindex="0">
@@ -151,6 +151,7 @@
 </table>
 </div>
 <p class="data-note">FinSearchComp retains its plan for 290 distinct synthetic tasks: 96 + 96 + 38 + 60. Together with 97 originals, this is a planned inventory of 387 distinct tasks; the 48 original training questions reused at both stages count once. These are targets; formally qualified synthetic tasks are currently 0. Each new dataset targets 400–800 original plus synthetic tasks, defaulting to 400, with a fallback near 387 if infeasible. FinDeepResearch plans 63 originals + 337 synthetic tasks to reach 400; MLE-bench stage counts remain unset. ML additions must change meaningful task requirements: data rows, random seeds and repeated runs do not count as new tasks, and independently sourced competitions/datasets are counted separately.</p>
+<p class="data-note">A checkpoint is a saved set of model weights that later jobs can continue training.</p>
 <h3 class="title is-5">Two SFT checkpoints serve six DAPO jobs</h3>
 <p class="data-note">In the table, O means the original training pool above; new sources join O only after qualification and freezing. S and R mean the two separate synthetic training pools above. SFT consumes admitted demonstrations for O or O + S; DAPO consumes the corresponding tasks and native rewards. A task count is not a qualified demonstration count. Every S1 descendant reuses the same checkpoint and S pool; every R1 candidate shares the R pool.</p>
 <p class="table-hint">Scroll the table sideways to see all columns.</p>
@@ -333,6 +334,8 @@
 </ul>
 <h4 class="pipeline-group" id="collect-difficulty">Local models measure solvability before training</h4>
 <ul>
+<li>
+<b>DAPO comparison:</b> Multiple attempts at the same task form a group. DAPO compares their scores to favor better attempts; when the task scores are all equal, the group cannot distinguish better attempts and is filtered.</li>
 <li>
 <b>Teacher and student:</b> A larger local teacher supplies candidate demonstrations, while student trials measure success patterns. Always-unsolved tasks need diagnosis or SFT support; they do not automatically supply a DAPO learning signal.</li>
 <li>

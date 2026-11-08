@@ -137,7 +137,7 @@
 </tbody>
 </table>
 </div>
-<p class="data-note">原有三数据集已冻结训练 1,206／验证 309／测试 620 题；FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 尚无合格原题。原题训练池只定义任务来源，SFT 还须逐条验收示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
+<p class="data-note">原有三数据集已冻结训练 1,206／验证 309／测试 620 题；FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 尚无合格原题。原题训练池只定义任务来源，SFT 还须逐条验收记录了解题消息、工具调用及返回的示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
 <p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 仅盘点了竞赛元数据，数据访问、竞赛规则、原生评分与代码隔离尚待核验；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
 <h3 class="title is-5" id="synthetic-pools">各阶段共用一份合成增量，当前合格数均为 0</h3>
 <div class="table-container" tabindex="0">
@@ -152,6 +152,7 @@
 </table>
 </div>
 <p class="data-note">FinSearchComp 保持 290 道不同合成题的计划：96＋96＋38＋60；加上 97 道原题共 387 个不同任务，两个训练阶段共用的 48 道原始训练题只计一次。这些是目标，当前正式合格合成题为 0。每个新增数据集的原题＋合成题总目标为 400–800，默认 400；不可行时以接近 387 为回退目标。FinDeepResearch 计划以 63 道原题＋337 道合成题达到 400；MLE-bench 的四阶段数量仍待固定。机器学习任务须有实质不同的任务要求，数据行、随机种子或重复运行不算新任务，独立来源竞赛／数据集数量另报。</p>
+<p class="data-note">检查点是一份保存下来的模型权重，后续作业从这份权重继续训练。</p>
 <h3 class="title is-5">两个 SFT 检查点复用于六个 DAPO 作业</h3>
 <p class="data-note">下表 O 表示上方原题训练池，新增来源只在合格并冻结后加入 O；S、R 分别表示上方两份独立合成训练池。SFT 使用 O 或 O＋S 的合格示范，DAPO 使用相应任务与原生奖励；同一行的题目池数量不能代替合格示范数。所有 S1 后续模型复用同一检查点及 S 池，所有 R1 模型共用 R 池。</p>
 <p class="table-hint">左右滑动表格可查看所有列。</p>
@@ -334,6 +335,8 @@
 </ul>
 <h4 class="pipeline-group" id="collect-difficulty">本地模型在训练前测量可解性</h4>
 <ul>
+<li>
+<b>DAPO comparison:</b> 同一道题的多次试答组成一组，DAPO 比较它们的得分以鼓励较好的回答；任务得分全部相同时，无法据此区分哪次回答更好，该组被过滤。</li>
 <li>
 <b>Teacher and student:</b> 较大的本地教师提供候选示范，学生多次试答测量成功模式；始终不会的题先诊断或补充 SFT 示范，不自动视为有效 DAPO 训练信号。</li>
 <li>
