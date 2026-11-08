@@ -79,242 +79,139 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Abstract</h2>
 <div class="content has-text-justified">
-<p>This project compares nine post-training settings for Qwen3.5-4B-Base using DocFinQA, FinSearchComp and IFEval. Multi-turn supervised fine-tuning (SFT) teaches the model from verified demonstrations; DAPO then learns from tool-assisted attempts and rule-based rewards. Only FinSearchComp receives additional synthetic questions. Programmatic expansion targets reproducible weaknesses, while Claude proposes questions within source-bound task contracts; both branches share independent computation, executable tool checks, blind solving and adversarial review. All settings retain identical original questions and a common evaluation set, so the comparison can distinguish synthetic-data gains at SFT, DAPO or both stages.</p>
+<p>This project plans nine post-training settings for Qwen3.5-4B-Base across five datasets: the existing financial question-answering and instruction-following tasks, FinDeepResearch company reports, and a Kaggle-derived MLE-bench project subset. Multi-turn supervised fine-tuning (SFT) teaches verified demonstrations; DAPO then learns from tool-assisted attempts and task-specific rewards. Augmentation is planned for FinSearchComp and the two new datasets; DocFinQA and IFEval retain original tasks only. Every setting will share frozen original cohorts and an evaluation protocol, separating the effect of adding synthetic tasks at SFT, DAPO or both stages. The new task adapters still need evidence, grading and execution qualification; the new training experiment has not started.</p>
 </div>
 </div>
 </section>
 <section class="section hero data-section" id="data-sets">
-<div class="container is-max-desktop">
+<div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered" id="co-data">Data Sets</h2>
-<table class="table is-narrow data-table">
-<thead>
-<tr>
-<th>Dataset and source</th>
-<th>Definition</th>
-</tr>
-</thead>
+<table class="table is-narrow data-table dataset-metrics">
+<thead><tr><th scope="col">Dataset and source</th><th scope="col">Definition</th><th scope="col">Evaluation metric: definition and formula</th></tr></thead>
 <tbody>
 <tr>
-<td>
-<a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a>
-</td>
-<td data-label="Definition">Financial question answering over full annual reports, requiring passage retrieval and numerical reasoning.</td>
+<td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
+<td data-label="Definition">The model answers financial questions over full annual reports by retrieving passages and reasoning with numbers.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell">The current project grader measures numeric/boolean answer accuracy. It allows 1% relative numerical error (0.005 absolute error for a zero reference), checks ×100/÷100 percentage equivalents, and requires a matching yes/no answer.<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> is 1 when question i passes the grader and 0 otherwise.</td>
 </tr>
 <tr>
-<td>
-<a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a>
-</td>
-<td data-label="Definition">An expert-authored benchmark for financial search and reasoning over market and company information.</td>
+<td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
+<td data-label="Definition">The model searches market and company information to solve expert-authored financial reasoning questions; this project uses an offline-supported subset.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell">Task success requires every reference item in the final answer to pass its task-specific numeric tolerance, date or text-alias contract.<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> indicates that all required items pass. This score describes the project’s offline subset.</td>
 </tr>
 <tr>
-<td>
-<a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a>
-</td>
-<td data-label="Definition">Instruction-following prompts with programmatically checkable requirements such as format, length, keywords and language.</td>
+<td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
+<td data-label="Definition">The model follows programmatically checkable requirements for format, length, keywords or language; one prompt may contain several instructions.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell">Prompt-level strict accuracy requires all instructions in a prompt to pass; instruction-level strict accuracy measures the fraction of instructions passed.<span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N is the number of prompts, m<sub>i</sub> the instruction count for prompt i, and c<sub>ij</sub> is 1 when instruction j passes its strict check and 0 otherwise.</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">Official task</a></td>
+<td data-label="Definition">The model retrieves evidence, calculates metrics and writes a full Markdown company report in a prescribed structure. The source benchmark spans eight markets and four languages; its 247 grading items per report are not separate tasks.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell">Weighted content quality measures recognition, calculation, abstraction and interpretation; structure is scored separately.<span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N is the number of reports; s<sub>ij</sub> ∈ [0,1] is native judge attainment from matching, claim coverage or normalized criterion points. The weights w<sub>j</sub> are 1 for recognition/calculation and 2 for abstraction/interpretation, totaling 350; f<sub>i</sub> is the header, subsection and table structure score out of 42. <a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">Scoring protocol</a>; <a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">weights</a>.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/openai/mle-bench/tree/507f92e1138bb6e40dac5c6ee7a6758e6424bf97" target="_blank" rel="noopener">MLE-bench project subset</a><br><a href="https://github.com/openai/mle-bench#dataset" target="_blank" rel="noopener">Kaggle sources</a></td>
+<td data-label="Definition">The model reads competition data, writes and runs machine-learning training code, and submits the required prediction CSV. One complete competition task is not one data row. The project subset awaits qualification.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell">Retain each competition’s native score and direction: AUC measures ranking quality (higher is better), log loss measures probability error, and RMSLE measures regression error on a logarithmic scale (both lower are better).<span class="metric-formula">Native score<sub>i</sub> = G<sub>i</sub>(prediction CSV<sub>i</sub>, hidden labels<sub>i</sub>)</span>G<sub>i</sub> is the competition’s fixed native grader. Also report valid submissions, bronze-medal attainment and above-median performance.<span class="metric-formula">Valid rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub>]</span><span class="metric-formula">Medal rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ⪰<sub>i</sub> b<sub>i</sub>]</span><span class="metric-formula">Above-median rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ≻<sub>i</sub> h<sub>i</sub>]</span>N is the number of evaluated tasks; s<sub>i</sub> is the native score, and b<sub>i</sub>/h<sub>i</sub> are that competition’s bronze threshold/median. The comparisons ⪰<sub>i</sub> and ≻<sub>i</sub> follow its metric direction; 1[·] is 1 when the condition holds and 0 otherwise.</td>
 </tr>
 </tbody>
 </table>
+<p class="data-note">Each dataset retains its native output and grading meaning. Report content quality, ML competition scores and question-answer accuracy are reported separately.</p>
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
 <div class="container is-max-widescreen">
-<h2 class="title is-3 has-text-centered">Baselines</h2>
-<p class="data-note">The original validation pool (309 questions) and original test pool (620) are already frozen. Currently 0 synthetic questions have qualified. Synthetic counts below are minimum acceptance quotas: validation totals 347 and test totals 680 only after those quotas are met. Question-pool counts are not qualified SFT-demonstration counts. DocFinQA and IFEval receive no synthetic questions.</p>
-<h3 class="title is-5">Original question pools</h3>
-<div class="table-container">
+<h2 class="title is-3 has-text-centered">Nine Candidates Share the Data Pools</h2>
+<p class="data-note">The nine candidates will share one original, validation and test release. The tables distinguish frozen originals, new sources awaiting admission, synthetic targets and qualified demonstrations. The new training experiment has not started.</p>
+<h3 class="title is-5" id="original-pools">Original task counts and admission of new sources</h3>
+<div class="table-container" tabindex="0">
 <table class="table setting-table original-counts">
-<thead>
-<tr>
-<th>Original dataset</th>
-<th>Training</th>
-<th>Validation</th>
-<th>Test</th>
-</tr>
-</thead>
+<thead><tr><th scope="col">Dataset</th><th scope="col">Source inventory and current state</th><th scope="col">Original train</th><th scope="col">Original validation</th><th scope="col">Original test</th></tr></thead>
 <tbody>
-<tr>
-<th scope="row">DocFinQA</th>
-<td>942</td>
-<td>182</td>
-<td>373</td>
-</tr>
-<tr>
-<th scope="row">FinSearchComp</th>
-<td>48</td>
-<td>19</td>
-<td>30</td>
-</tr>
-<tr>
-<th scope="row">IFEval</th>
-<td>216</td>
-<td>108</td>
-<td>217</td>
-</tr>
+<tr><th scope="row">DocFinQA</th><td>1,497 selected original questions</td><td>942</td><td>182</td><td>373</td></tr>
+<tr><th scope="row">FinSearchComp</th><td>97 offline-supported Global T2/T3 originals from the 635-question source release</td><td>48</td><td>19</td><td>30</td></tr>
+<tr><th scope="row">IFEval</th><td>541 original prompts</td><td>216</td><td>108</td><td>217</td></tr>
+<tr><th scope="row">FinDeepResearch</th><td>64 source tasks acquired; 1 source conflict held, 63 originals frozen; execution not qualified</td><td>24</td><td>16</td><td>23</td></tr>
+<tr><th scope="row">MLE-bench project subset</th><td>82 competition metadata entries: 75 official evaluation + 7 development; 0 qualified runnable tasks</td><td>Unset</td><td>Unset</td><td>Unset</td></tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">The SFT synthetic set is shared by settings 3, 5 and 7; the separate DAPO synthetic set is shared by settings 6, 7 and 9. Training, validation and test instances and their source support are kept separate. Two SFT checkpoints are reused across six DAPO jobs, producing nine model settings in total.</p>
+<p class="data-note">The original three datasets retain 1,206 training / 309 validation / 620 test questions. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench has no qualified originals. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories: recorded solutions containing model messages, tool calls and results. No complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
+<p class="data-note">FinDeepResearch still needs an independent evidence corpus and grader integration; expert reports are evaluator targets, not retrieval evidence. Its project split is not an official training split. MLE-bench inventory contains metadata only: data access, competition rules, native grading and code isolation remain unqualified. The official 22-competition Lite set is not this project’s low-cost runnable subset.</p>
+<h3 class="title is-5" id="synthetic-pools">One shared synthetic pool per stage; all qualified counts are currently 0</h3>
+<div class="table-container" tabindex="0">
+<table class="table setting-table synthetic-counts">
+<thead><tr><th scope="col">Use</th><th scope="col">FinSearchComp target</th><th scope="col">FinDeepResearch target</th><th scope="col">MLE-bench subset target</th></tr></thead>
+<tbody>
+<tr><th scope="row">SFT training (S)</th><td>96</td><td>128</td><td>Stage count pending</td></tr>
+<tr><th scope="row">DAPO training (R)</th><td>96</td><td>128</td><td>Stage count pending</td></tr>
+<tr><th scope="row">Synthetic validation</th><td>38</td><td>32</td><td>Stage count pending</td></tr>
+<tr><th scope="row">Synthetic test</th><td>60</td><td>49</td><td>Stage count pending</td></tr>
+</tbody>
+</table>
+</div>
+<p class="data-note">FinSearchComp retains its plan for 290 distinct synthetic tasks: 96 + 96 + 38 + 60. Together with 97 originals, this is a planned inventory of 387 distinct tasks; the 48 original training questions reused at both stages count once. These are targets; formally qualified synthetic tasks are currently 0. Each new dataset targets 400–800 original plus synthetic tasks, defaulting to 400, with a fallback near 387 if infeasible. FinDeepResearch plans 63 originals + 337 synthetic tasks to reach 400; MLE-bench stage counts remain unset. ML additions must change meaningful task requirements: data rows, random seeds and repeated runs do not count as new tasks, and independently sourced competitions/datasets are counted separately.</p>
+<p class="data-note">A checkpoint is a saved set of model weights that later jobs can continue training.</p>
+<h3 class="title is-5">Two SFT checkpoints serve six DAPO jobs</h3>
+<p class="data-note">In the table, O means the original training pool above; new sources join O only after qualification and freezing. S and R mean the two separate synthetic training pools above. SFT consumes admitted demonstrations for O or O + S; DAPO consumes the corresponding tasks and native rewards. A task count is not a qualified demonstration count. Every S1 descendant reuses the same checkpoint and S pool; every R1 candidate shares the R pool.</p>
 <p class="table-hint">Scroll the table sideways to see all columns.</p>
 <div class="table-container baseline-scroll" tabindex="0">
 <table class="table setting-table baseline-table">
-<thead>
-<tr>
-<th>Model setting</th>
-<th>SFT training</th>
-<th>DAPO training</th>
-<th>Common validation</th>
-<th>Common test</th>
-</tr>
-</thead>
+<thead><tr><th scope="col">Candidate</th><th scope="col">SFT data used</th><th scope="col">DAPO data used</th><th scope="col">Common validation</th><th scope="col">Common test</th></tr></thead>
 <tbody>
 <tr>
-<th scope="row">1 · Original 4B</th>
+<th scope="row">1 · Base · Original 4B</th>
 <td>No training</td>
 <td>No training</td>
-<td rowspan="9" class="common-pool">
-<div class="pool-counts">
-<span>DocFinQA: 182</span>
-<span>FinSearchComp: 19 <b>+ 38 synthetic</b>
-</span>
-<span>IFEval: 108</span>
-</div>
-<p class="pool-total">Minimum after qualification: 347</p>
-<p>After qualification, freeze one shared release for all nine settings.</p>
-</td>
-<td rowspan="9" class="common-pool">
-<div class="pool-counts">
-<span>DocFinQA: 373</span>
-<span>FinSearchComp: 30 <b>+ 60 synthetic</b>
-</span>
-<span>IFEval: 217</span>
-</div>
-<p class="pool-total">Minimum after qualification: 680</p>
-<p>After qualification, freeze one shared release for all nine settings.</p>
-</td>
+<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original validation cohorts</a> and <a href="#synthetic-pools">synthetic validation pool</a>.</p><p>Report original and synthetic scores separately.</p><p>MLE-bench split unset; full five-dataset total pending.</p></td>
+<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original test cohorts</a> and <a href="#synthetic-pools">synthetic test pool</a>.</p><p>Report original and synthetic scores separately.</p><p>MLE-bench split unset; full five-dataset total pending.</p></td>
 </tr>
 <tr>
-<th scope="row">2 · Original SFT (S0)</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">2 · S0 · Original SFT</th>
+<td>Admitted O demonstrations</td>
 <td>No training</td>
 </tr>
 <tr>
-<th scope="row">3 · Augmented SFT (S1)</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">3 · S1 · Augmented SFT</th>
+<td>Admitted O + S demonstrations</td>
 <td>No training</td>
 </tr>
 <tr>
-<th scope="row">4 · S0 → original DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">4 · S0R0</th>
+<td>Reuse S0</td>
+<td>O tasks</td>
 </tr>
 <tr>
-<th scope="row">5 · S1 → original DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">5 · S1R0</th>
+<td>Reuse S1</td>
+<td>O tasks</td>
 </tr>
 <tr>
-<th scope="row">6 · S0 → augmented DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">6 · S0R1</th>
+<td>Reuse S0</td>
+<td>O + R tasks</td>
 </tr>
 <tr>
-<th scope="row">7 · S1 → augmented DAPO</th>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<th scope="row">7 · S1R1</th>
+<td>Reuse S1</td>
+<td>O + R tasks</td>
 </tr>
 <tr>
-<th scope="row">8 · Original 4B → original DAPO</th>
+<th scope="row">8 · BaseR0</th>
 <td>No training</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<td>O tasks</td>
 </tr>
 <tr>
-<th scope="row">9 · Original 4B → augmented DAPO</th>
+<th scope="row">9 · BaseR1</th>
 <td>No training</td>
-<td>
-<div class="pool-counts">
-<span>DocFinQA: 942</span>
-<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
-</span>
-<span>IFEval: 216</span>
-</div>
-</td>
+<td>O + R tasks</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">The test setting retains 620 frozen original questions and requires at least 60 independently reviewed FinSearchComp additions before the expanded test is available. Report original-only scores and the synthetic challenge score separately, alongside any combined score. FinSearchComp uses 97 supported Global T2/T3 original questions from the 635-question release; six questions with added background are training-only. The original FinSearchComp and IFEval questions have historical evaluation exposure; these project subsets are not fresh, untouched confirmation sets.</p>
-<p class="data-note">Freeze both synthetic validation and test sources, questions and graders before learner calibration or model selection. Validation may subsequently guide model and mixture selection; test answers and test outcomes do not feed generation, filtering thresholds or checkpoint choice.</p>
+<p class="data-note">Fix source versions, tool conditions and training budgets across candidates, and record tasks actually used in updates, demonstration/attempt counts, generated tokens and tool-compute costs. Calibrate mixture weights against this exposure rather than equalizing raw row counts. Freeze shared synthetic pools after review instead of regenerating them for each candidate.</p>
+<p class="data-note">Report original-only and synthetic-challenge scores separately. Six FinSearchComp questions with background additions are training-only. Existing FinSearchComp and IFEval originals have historical evaluation exposure, so they are not untouched confirmation sets. Once a new benchmark uses a project training split, its scores describe the held-out project subset and are not directly comparable with official full-benchmark evaluation.</p>
+<p class="data-note">Freeze new original and synthetic validation/test sources, tasks and graders before learner calibration or model selection. Validation can select checkpoints and mixture weights; test answers and outcomes do not feed generation, thresholds or model selection. Training entry stays closed until demonstrations, native grading and common budget controls are ready.</p>
 </div>
 </section>
 <section class="section hero">
@@ -324,7 +221,7 @@
 <div class="pipeline" id="co-pipeline" data-pipeline>
 <div class="pipeline-steps" role="tablist" aria-label="Method Pipeline">
 <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
-<span class="pipeline-step-num">1</span>Canonical reports and splits</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">1</span>Sources, task contracts and splits</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
 <span class="pipeline-step-num">2</span>FinSearchComp synthesis (running)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
@@ -339,8 +236,8 @@
 <span class="pipeline-step-num">7</span>Shared evaluation</button>
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-<nav class="flow" aria-label="Canonical reports and splits">
-<a class="flow-node" href="#canon-report">Canonical reports</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">Source isolation</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">Frozen pools</a>
+<nav class="flow" aria-label="Sources, task contracts and splits">
+<a class="flow-node" href="#canon-report">Canonical reports</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#native-contract">Task contracts</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">Source isolation</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">Frozen pools</a>
 </nav>
 <div class="content">
 <h4 class="pipeline-group" id="canon-report">One original report version represents each filing</h4>
@@ -349,6 +246,13 @@
 <b>Canonicalization:</b> The entry filter groups DocFinQA reports by registrant and fiscal end, selects one verbatim version by source quality and preserves the alternatives and source hashes. This keeps equivalent reports from appearing as different source documents.</li>
 <li>
 <b>Evidence retention:</b> Post-selection checks quarantine questions that lose required source operands; they do not rewrite reports or choose versions by model scores.</li>
+</ul>
+<h4 class="pipeline-group" id="native-contract">A common outer interface preserves each task’s native output</h4>
+<ul>
+<li>
+<b>Task adapter:</b> The planned five-dataset interface will bind source identities and input artifacts, an isolated tool trajectory, a submitted artifact and a dataset-specific grader result. Sharing this outer record lets one runner manage different tasks without converting report writing or ML engineering into question answering.</li>
+<li>
+<b>Qualification:</b> New adapters must pass evidence-access, native-grader, artifact-validation and evaluator-isolation checks before admission. The <a href="#co-data">Data Sets table</a> defines the task outputs and metrics; the <a href="#original-pools">pool table</a> distinguishes frozen cohorts from runnable tasks.</li>
 </ul>
 <h4 class="pipeline-group" id="source-split">Source identities precede question sampling</h4>
 <ul>
@@ -360,7 +264,7 @@
 <h4 class="pipeline-group" id="pool-freeze">One release serves every model setting</h4>
 <ul>
 <li>
-<b>Immutable inputs:</b> Question IDs, original text, canonical sources and graders are bound to a frozen release. The Baselines section specifies the counts; the same originals serve every setting.</li>
+<b>Immutable inputs:</b> Existing original task IDs, text, canonical sources and graders are bound to a frozen release. New cohorts and adapters will join the same shared release only after qualification; the <a href="#baselines">candidate tables</a> hold their counts and state.</li>
 <li>
 <b>Reserved evaluation:</b> Synthetic validation and test items use separate source support and independent review. Their acceptance quotas do not authorize filling a shortfall with duplicates or unreviewed candidates.</li>
 </ul>
@@ -405,7 +309,7 @@
 <h4 class="pipeline-group" id="review-tools">Real tools check source availability</h4>
 <ul>
 <li>
-<b>Sandbox replay:</b> Reference code queries the fixed read-only snapshot through the same restricted tool runtime available to the learner. Actual execution must match the independent answer; metadata claims alone cannot pass a task.</li>
+<b>Sandbox replay:</b> For current financial QA, reference code queries the fixed read-only snapshot through the learner’s restricted tool runtime and must match the independent answer. Planned report and ML tasks must instead pass their native artifact and grader checks; metadata claims alone cannot qualify execution.</li>
 </ul>
 <h4 class="pipeline-group" id="review-cloud">Blind solving and adversarial review remain independent</h4>
 <ul>
@@ -424,12 +328,14 @@
 <h4 class="pipeline-group" id="collect-harness">The harness records the evidence used by the model</h4>
 <ul>
 <li>
-<b>Tool interface:</b> Financial tasks use read-only market, SEC and FRED queries, report retrieval and a restricted Python runtime. Messages, tool calls and results are saved as trajectories; explicit completion ends an attempt.</li>
+<b>Tool interface:</b> Current financial QA uses read-only market, SEC and FRED queries, report retrieval and restricted Python. Messages, tool calls and results are saved as trajectories; explicit submission ends an attempt. Planned report and ML adapters will attach source evidence or competition artifacts and keep expert targets and hidden labels outside the learner’s tools.</li>
 <li>
 <b>IFEval:</b> Its final answer is scored by the strict instruction checker with fixed scoring randomness. Financial evidence requirements are not applied to instruction-only answers.</li>
 </ul>
 <h4 class="pipeline-group" id="collect-difficulty">Local models measure solvability before training</h4>
 <ul>
+<li>
+<b>DAPO comparison:</b> Multiple attempts at the same task form a group. DAPO compares their scores to favor better attempts; when the task scores are all equal, the group cannot distinguish better attempts and is filtered.</li>
 <li>
 <b>Teacher and student:</b> A larger local teacher supplies candidate demonstrations, while student trials measure success patterns. Always-unsolved tasks need diagnosis or SFT support; they do not automatically supply a DAPO learning signal.</li>
 <li>
@@ -453,7 +359,7 @@
 <h4 class="pipeline-group" id="sft-models">Two supervised checkpoints serve the comparison</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 trains the common original demonstrations; S1 adds the shared FinSearchComp synthetic demonstrations. Both start from the same Base weights and retain the same original question pool.</li>
+<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add the shared SFT augmentation pool. Both will start from the same Base weights, with the same original tasks; the <a href="#synthetic-pools">pool table</a> defines eligible augmentation and its qualification state.</li>
 </ul>
 <h4 class="pipeline-group" id="sft-loss">Only verified assistant behavior contributes to loss</h4>
 <ul>
@@ -475,7 +381,7 @@
 <li>
 <b>Matched continuations:</b> Each SFT checkpoint and the original Base model receives an original-only or augmented DAPO continuation. The Baselines table identifies the shared task pools.</li>
 <li>
-<b>Dynamic filtering:</b> DAPO learns from groups with different correctness outcomes. Actual retained questions, updates and generated-token exposure are recorded so nominal quotas do not hide filtering differences.</li>
+<b>Dynamic filtering:</b> DAPO filters groups without reward variation. Record tasks retained after filtering, updates, generated tokens and tool-compute exposure; planned report and ML grading-to-reward adapters must be qualified before those tasks enter training.</li>
 </ul>
 <h4 class="pipeline-group" id="dapo-length">The soft penalty counts model-generated tokens</h4>
 <ul>
@@ -497,19 +403,19 @@
 </nav>
 <div class="content">
 <span class="status-tag">not started</span>
-<h4 class="pipeline-group" id="eval-original">Every stage is measured on the same original questions</h4>
+<h4 class="pipeline-group" id="eval-original">Every stage is measured on the same original tasks</h4>
 <ul>
 <li>
-<b>Success rate:</b> FinSearchComp uses the offline answer contract, DocFinQA checks numeric or boolean answers, and IFEval uses strict prompt-level accuracy. Per-dataset scores retain their own meaning; an equal-weight mean prevents the larger report set from dominating.</li>
+<b>Native metrics:</b> Evaluate each dataset with the definitions and formulas in the <a href="#co-data">Data Sets table</a>. Report QA accuracy, strict instruction following, report quality and ML competition performance separately, with each native metric’s direction and evaluation cohort.</li>
 <li>
 <b>Shared protocol:</b> Base, SFT and DAPO outputs use the same task IDs, tool conditions, sampling policy and grader versions. This makes stage-to-stage comparisons possible.</li>
 </ul>
-<h4 class="pipeline-group" id="eval-synthetic">The added test probes reviewed FinSearchComp questions</h4>
+<h4 class="pipeline-group" id="eval-synthetic">The added test probes independently reviewed synthetic tasks</h4>
 <ul>
 <li>
-<b>Separate reporting:</b> The added challenge is reviewed independently and reported separately from original-only scores. A combined score does not replace the original benchmark result.</li>
+<b>Separate reporting:</b> Report each qualified synthetic challenge separately from its original cohort. A project-derived report or ML challenge retains its own task requirements and grader; its result does not replace the official source benchmark score.</li>
 <li>
-<b>Limits:</b> A larger synthetic test increases coverage of generated task families; it does not by itself establish generalization to all externally authored financial tasks.</li>
+<b>Limits:</b> A larger synthetic test measures coverage of generated task families. Generalization claims remain limited to the held-out sources, task families and execution budgets actually evaluated.</li>
 </ul>
 <h4 class="pipeline-group" id="eval-comparison">Paired differences isolate the declared intervention</h4>
 <ul>
