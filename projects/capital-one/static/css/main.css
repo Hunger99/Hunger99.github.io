@@ -4,6 +4,68 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
+.setting-table {
+  width: 100%;
+  margin: .75rem auto 1.25rem;
+  background: transparent;
+  font-size: .84rem;
+}
+
+.setting-table th,
+.setting-table td {
+  padding: .65rem .7rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.baseline-table {
+  min-width: 1120px;
+}
+
+.baseline-table th:first-child {
+  min-width: 220px;
+}
+
+.baseline-table td {
+  min-width: 210px;
+}
+
+.pool-counts span {
+  display: block;
+  white-space: nowrap;
+  line-height: 1.7;
+}
+
+.pool-counts b {
+  color: #6b3695;
+  font-weight: 600;
+}
+
+.pool-total {
+  font-weight: 700;
+  margin: .5rem 0;
+}
+
+.common-pool {
+  background: #f4effb;
+}
+
+.common-pool > p:last-child {
+  max-width: 210px;
+  margin-top: .5rem;
+  color: #555;
+  font-size: .8rem;
+}
+
+.pipeline-panel .content h4.pipeline-group {
+  font-size: 1rem;
+}
+
+.baseline-scroll:focus-visible {
+  outline: 2px solid #6d3fc8;
+  outline-offset: 3px;
+}
+
 .footer .icon-link {
   font-size: 25px;
   color: #000;

@@ -13,7 +13,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>金融 LLM Agent：SFT 与 DAPO</title>
-  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text></svg>">
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
+<text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text>
+</svg>">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -21,8 +23,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js">
+</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
+</script>
   <link rel="stylesheet" href="static/css/main.css">
 </head>
 <body>
@@ -40,9 +44,14 @@
             基于多轮 Agent SFT 与 DAPO
           </h1>
           <div class="is-size-5 publication-authors">
-            <span class="sponsor-line"><img src="../../assets/images/badges/Capital-One.png" alt="Capital One"><small>赞助实践项目</small></span>
+            <span class="sponsor-line">
+<img src="../../assets/images/badges/Capital-One.png" alt="Capital One">
+<small>赞助实践项目</small>
+</span>
             <br>
-            <span class="eql-cntrb"><small>2026 年 9 月 – 预计 11 月中旬</small></span>
+            <span class="eql-cntrb">
+<small>2026 年 9 月 – 预计 11 月中旬</small>
+</span>
           </div>
 
           <span class="venue-text">进行中的项目</span>
@@ -50,9 +59,12 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
-                <a href="https://github.com/Hunger99/fin-agent-posttrain" target="_blank"
+                <a href="https://github.com/Hunger99/llm-pipeline" target="_blank"
                    class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span class="icon">
+<i class="fab fa-github">
+</i>
+</span>
                   <span>代码</span>
                 </a>
               </span>
@@ -64,448 +76,454 @@
   </div>
 </section>
 
-<!-- Teaser figure -->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img src="static/images/teaser-zh.svg" alt="起点模型、官方模型、SFT 模型和教师在行情测试集、FinSearchComp 和 DocFinQA 上的成功率" style="display: block; margin: 0 auto; width: 100%;">
-      <h2 class="subtitle has-text-centered">
-        在训练过的题型上，多轮 agent SFT 把 4B 模型从 16.7% 提升到 87.3%，超过官方 Qwen3.5-4B（57.7%）。在项目之外编写的 FinSearchComp 题上，它做到 74.5%，超过官方模型的 64.3%；在长文档问答上做到 53.0%，与官方模型持平。
-      </h2>
-    </div>
-  </div>
-</section>
-<!-- End teaser figure -->
-
-<!-- Abstract -->
 <section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">摘要</h2>
-        <div class="content has-text-justified">
-          <p>
-            本项目把 4B 底座模型 Qwen3.5-4B-Base 后训练成会调用工具的金融 agent：它查询行情、宏观序列和公司财报，在 Python 沙箱里计算，并回答多步问题。官方后训练的 Qwen3.5-4B 已经能做对我们早先行情检索开发题的 84.7%，所以我们构建了一套更难的离线数据集，共 3,148 道题（训练 2,350 道、开发 200 道、测试 598 道）。其中 2,850 道参照公开 benchmark FinSearchComp 在固定数据快照上生成，答案由程序计算并由另一套独立实现复核；其余是 98 道 FinSearchComp 题和 200 道针对整份年报的 DocFinQA 题。教师（更大的模型 Qwen3.8-27B）在 agent harness（包在模型外面、提供工具并检查答案的代码）中做两档难度的行情训练题和读年报的题，每次做题存成一条轨迹，即消息、工具调用和工具结果的完整记录。过滤后的这些轨迹，连同过滤后的财富管理和机器学习轨迹，以及取自金融与通用数据 1:1 混合数据的 2,000 条样本，用多轮 agent SFT（监督微调，用带标准答案的样本继续训练）训练 4B 模型。在 300 道来自留出股票和更晚时段的行情测试题上，SFT 模型做对 <b>87.3%</b>，官方 Qwen3.5-4B 为 57.7%，起点模型为 16.7%，教师为 94.7%。在 DocFinQA 上它做对 53.0%，与官方模型持平，比第一次 SFT 高 14.0 分，第一次 SFT 的数据里没有读年报的轨迹。项目以 SFT 检查点为起点，用 DAPO 做强化学习；这些已报告的 SFT 结果对应历史数据批次，下文的数据架构将程序扩充与 Claude 探索分开，并采用共同审查。
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered">摘要</h2>
+<div class="content has-text-justified">
+<p>本项目围绕 DocFinQA、FinSearchComp 和 IFEval，对 Qwen3.5-4B-Base 比较九组后训练设置。多轮监督微调（SFT）让模型学习经过核验的示范，DAPO 再通过工具试答与规则奖励学习。额外合成仅用于 FinSearchComp：程序支线扩展可复现的薄弱题型，Claude 支线在可信来源与任务约束内出题，两者共用独立答案计算、真实工具执行、盲解和对抗审查。所有设置保留相同原题并共用评测集，以分别检验在 SFT、DAPO 或两个阶段加入合成题的作用。</p>
+</div>
+</div>
 </section>
-<!-- End abstract -->
-
-<!-- Data -->
-<section class="section hero data-section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered" id="co-data">数据</h2>
-
-    <h3 class="title is-5">已报告的 SFT 模型使用 14,486 条样本</h3>
-    <div class="content has-text-justified">
-      <p>下表统计打包后实际保留的输入。这些历史批次按来源设置过滤规则，未经过双支线管线的共同 Claude 审查；记录了读取调用，也不等于成功读到了依据。</p>
-    </div>
-    <table class="table is-narrow data-table">
-      <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>行情轨迹（4,791）</b></td>
-          <td data-label="What">教师解答原有档和难题档任务，使用价格、宏观序列与公司财报。</td>
-          <td data-label="Why">这些轨迹示范数据检索、按拆股分红调整价格（复权）和多步计算。</td>
-        </tr>
-        <tr>
-          <td><b>财富管理（5,278）</b></td>
-          <td data-label="What">教师按客户和产品规则完成交易与数据库操作。</td>
-          <td data-label="Why">这些轨迹补充行情只读工具之外、受业务规则约束的写操作。</td>
-        </tr>
-        <tr>
-          <td><b>机器学习（406）</b></td>
-          <td data-label="What">教师通过工具查看表格、训练候选模型并提交模型。</td>
-          <td data-label="Why">这些轨迹补充数据处理与模型选择的决策。</td>
-        </tr>
-        <tr>
-          <td><b>DocFinQA 轨迹（1,474）</b></td>
-          <td data-label="What">教师根据年报回答问题。</td>
-          <td data-label="Why">这些轨迹示范检索年报、读取段落并给出数值答案。</td>
-        </tr>
-        <tr>
-          <td><b>年报交易任务（537）</b></td>
-          <td data-label="What">教师在 <code>t6_report_gate</code> 中先回答年报问题，再按交易规则作决定。</td>
-          <td data-label="Why">这些轨迹把文档依据与业务决策连接起来。</td>
-        </tr>
-        <tr>
-          <td><b>直接问答补充（2,000）</b></td>
-          <td data-label="What">构建器加入 Tülu 3 通用样本 1,019 条、金融问答 981 条，后者包含 115 条重写的财经文章问答。</td>
-          <td data-label="Why">这些样本在工具轨迹之外补充不用工具的直接回答。</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="data-note">最终输入共 12,486 条教师轨迹、2,000 条直接问答。过滤和打包方法统一在管线部分说明。</p>
-
-    <h3 class="title is-5">评测分别检查任务泛化、能力保持和开发选择</h3>
-    <table class="table is-narrow data-table">
-      <thead><tr><th>数据</th><th>What</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>行情测试（300）</b></td>
-          <td data-label="What">测试覆盖 10 个训练过的题型，使用留出股票与更晚时段。</td>
-          <td data-label="Why">它测相同题型在新实体和时段上的泛化。</td>
-        </tr>
-        <tr>
-          <td><b>外部金融任务</b></td>
-          <td data-label="What">评测使用离线 FinSearchComp Global T2/T3 的 98 题与针对整份年报的 DocFinQA 200 题。</td>
-          <td data-label="Why">前者测外部编写的题目，后者测长文档读取；DocFinQA 年报与其教师训练轨迹所用年报分开。</td>
-        </tr>
-        <tr>
-          <td><b>业务与建模任务</b></td>
-          <td data-label="What">评测包含 500 道财富管理题和 50 道机器学习题。</td>
-          <td data-label="Why">前者测新客户和产品上的规则执行，后者测隐藏数据上的模型质量。</td>
-        </tr>
-        <tr>
-          <td><b>金融与通用基准</b></td>
-          <td data-label="What">评测使用 FinQA/TAT-QA（1,886）、MMLU（13,018）、GSM8K（1,319）和 IFEval（541）。</td>
-          <td data-label="Why">它们依次衡量金融计算、知识、数学与指令遵循。</td>
-        </tr>
-        <tr>
-          <td><b>开发集（200）</b></td>
-          <td data-label="What">模型对 10 个题型的开发题各尝试 4 次。</td>
-          <td data-label="Why">这些结果辅助方案选择，与最终测试分数分开。</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<section class="section hero data-section" id="data-sets">
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered" id="co-data">数据集</h2>
+<table class="table is-narrow data-table">
+<thead>
+<tr>
+<th>数据集与来源</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a>
+</td>
+<td data-label="定义">针对完整年度报告的金融问答，需要检索原文并进行数值推理。</td>
+</tr>
+<tr>
+<td>
+<a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a>
+</td>
+<td data-label="定义">由专家编写的金融检索与推理基准，问题涉及市场数据及公司信息。</td>
+</tr>
+<tr>
+<td>
+<a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a>
+</td>
+<td data-label="定义">包含格式、长度、关键词、语言等可由程序检查的指令遵循任务。</td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<!-- End data -->
-
-<!-- Pipeline -->
+<section class="section hero is-light" id="baselines">
+<div class="container is-max-widescreen">
+<h2 class="title is-3 has-text-centered">基线设置</h2>
+<p class="data-note">原始验证集 309 题、原始测试集 620 题已经冻结。目前合格合成题为 0 道。下表合成数是最低验收配额：配额达成后，验证集总数至少为 347 题、测试集总数至少为 680 题。题目池数量不等于合格 SFT 示范数；DocFinQA 与 IFEval 不增加合成题。</p>
+<h3 class="title is-5">共同原题池</h3>
+<div class="table-container">
+<table class="table setting-table original-counts">
+<thead>
+<tr>
+<th>原始数据集</th>
+<th>训练</th>
+<th>验证</th>
+<th>测试</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">DocFinQA</th>
+<td>942</td>
+<td>182</td>
+<td>373</td>
+</tr>
+<tr>
+<th scope="row">FinSearchComp</th>
+<td>48</td>
+<td>19</td>
+<td>30</td>
+</tr>
+<tr>
+<th scope="row">IFEval</th>
+<td>216</td>
+<td>108</td>
+<td>217</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="data-note">第 3、5、7 组共用同一份 SFT 合成题；第 6、7、9 组共用另一份 DAPO 合成题。训练、验证、测试按实例、来源与派生关系隔离。两个 SFT 检查点复用于六个 DAPO 作业，共得到九个模型设置。</p>
+<p class="table-hint">左右滑动表格可查看所有列。</p>
+<div class="table-container baseline-scroll" tabindex="0">
+<table class="table setting-table baseline-table">
+<thead>
+<tr>
+<th>模型设置</th>
+<th>SFT 训练</th>
+<th>DAPO 训练</th>
+<th>共同验证集</th>
+<th>共同测试集</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1 · 原始 4B</th>
+<td>不训练</td>
+<td>不训练</td>
+<td rowspan="9" class="common-pool">
+<div class="pool-counts">
+<span>DocFinQA: 182</span>
+<span>FinSearchComp: 19 <b>+ 38 合成</b>
+</span>
+<span>IFEval: 108</span>
+</div>
+<p class="pool-total">验收后最低总数：347</p>
+<p>合成题合格后，统一冻结一个版本供九组共用。</p>
+</td>
+<td rowspan="9" class="common-pool">
+<div class="pool-counts">
+<span>DocFinQA: 373</span>
+<span>FinSearchComp: 30 <b>+ 60 合成</b>
+</span>
+<span>IFEval: 217</span>
+</div>
+<p class="pool-total">验收后最低总数：680</p>
+<p>合成题合格后，统一冻结一个版本供九组共用。</p>
+</td>
+</tr>
+<tr>
+<th scope="row">2 · 原题 SFT（S0）</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>不训练</td>
+</tr>
+<tr>
+<th scope="row">3 · 加合成的 SFT（S1）</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 合成</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>不训练</td>
+</tr>
+<tr>
+<th scope="row">4 · S0 → 原题 DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">5 · S1 → 原题 DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 合成</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">6 · S0 → 加合成的 DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 合成</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">7 · S1 → 加合成的 DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 合成</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 合成</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">8 · 原始 4B → 原题 DAPO</th>
+<td>不训练</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">9 · 原始 4B → 加合成的 DAPO</th>
+<td>不训练</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 合成</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="data-note">测试设置保留已冻结的 620 道原题，额外要求至少 60 道经过独立审查的 FinSearchComp 题；这些增量合格后才形成扩展测试集。分别报告原题成绩与合成挑战成绩，再给出合并成绩。FinSearchComp 从上游 635 题中使用可支持的 97 道 Global T2/T3 原题，六道附有背景补充的题仅进入训练。原始 FinSearchComp、IFEval 题已有历史评测使用，因此这些项目子集不能称为全新未见测试。</p>
+<p class="data-note">合成验证与测试的来源、题目及评分器均先于学习者校准及模型选择冻结。验证集随后可用于选择模型与混合配比；测试答案和测试结果不反馈给出题、过滤阈值或检查点选择。</p>
+</div>
+</section>
 <section class="section hero">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column">
-        <h3 class="title is-3">管线</h3>
-        <div class="content"><p>点击下面的环节查看它做什么。</p></div>
-        <div class="pipeline" id="co-pipeline" data-pipeline>
-          <div class="pipeline-steps" role="tablist" aria-label="项目管线的环节">
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-selected="true" aria-controls="co-panel-1"><span class="pipeline-step-num">1</span>数据管线</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>离线数据集</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>Agent harness</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>多轮 agent SFT</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>SFT 评测</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>DAPO（进行中）</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL 评测（下一步）</button>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-            <nav class="flow" aria-label="数据管线的阶段">
-              <a class="flow-node" href="#dp-selection">来源与划分</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-synthesis">两条生成支线</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-filtering">共同核验与审查</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-dedup">SFT 与 RL 分流</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-mixing">配比与发布</a>
-            </nav>
-            <div class="content">
-              <p>数据架构用程序生成扩充已知薄弱能力，用 Claude 生成探索尚未覆盖的任务结构；两路共用独立核验和强制 Claude 审查。题目合格、示范合格与训练带来提升分别验收。</p>
-              <p class="pipeline-group" id="dp-selection">固定来源与四类划分，让方案选择和最终测试各自独立</p>
-              <ul>
-                <li><b>Source inventory：</b>每道题记录数据快照、实体、日期、父题、题族与生成方式；原题重叠和年报重叠分别统计，避免把已见年报上的新问题称作新年报。</li>
-                <li><b>Four-way split：</b>训练集提供学习样本，校准集固定格式与难度测量，开发集选择配比和检查点，冻结测试集只报告最终方案；派生题继承来源划分，测试题及其答案不进入生成反馈。</li>
-                <li><b>Failure analysis：</b>训练与校准上的有效失败揭示缺失操作、不稳定决策和未覆盖约束；工具故障与题目错误单独诊断，避免把运行问题当作需要扩充的难题。</li>
-              </ul>
-              <p class="pipeline-group" id="dp-synthesis">两条支线分别练习已有薄弱点和探索缺失的任务结构</p>
-              <ul>
-                <li><b>Program generation + Claude review：</b>带种子的程序在已验证题族内改变实体、日期、约束和相互依赖的计算，为模型表现不稳定或反复做错的合理题提供可复现练习，也生成较简单的递进版本。</li>
-                <li><b>Claude generation + Claude review：</b>生成对话根据能力缺口、可用数据和工具合同提出新题族及具体题目，并明确规则；改写已有题面或增加字数不自动算覆盖新能力。</li>
-                <li><b>Claude requests：</b>v2 客户端配置为将两路的 Claude 请求统一发往 <a href="https://github.com/router-for-me/CLIProxyAPI">CLIProxyAPI</a> 的原生 Messages 接口，使用自定义提示，各角色的上下文分开。请求指定 Opus 5.5，出题用 Extra High 推理强度，盲解、对抗审查与轨迹审查用 Medium；调用记录将实际返回的模型与请求的推理强度绑定至结果，便于追查审查依据。</li>
-                <li><b>Trusted task adapters：</b>适配器把结构化题目交给工具和独立答案程序检查；行情适配器处理窗口选择、用反向市场头寸抵消部分波动的对冲计算及计费持仓，有限整数分配合同规定每个账户可以买几手、各自的限制和共同预算。超出合同的提案先隔离，补齐数据、工具与验证器后再接入，模型生成的验证代码不能直接充当标准。</li>
-                <li><b>Family promotion：</b>Claude 探索的题族成熟后可转成经验证的程序模板扩充；题族最初由谁设计、当前实例由谁生成分别记录，每个新实例仍接受共同审查。</li>
-              </ul>
-              <p class="pipeline-group" id="dp-filtering">独立计算与 Claude 审查分别检查不同错误</p>
-              <ul>
-                <li><b>Rules and tool execution：</b>模型审查之前先检查格式、单位、重复和划分边界；分开的计算实现重新得到标准答案，参考解法再通过实际工具执行，避免题目依赖学生无法取得的依据。</li>
-                <li><b>Blind solution：</b>新的 Claude 对话只看学生可见的题目、材料和工具约定，并写出解法；解法在相同 CPU 工具沙箱中执行，输出通过独立评分后才进入对抗审查。</li>
-                <li><b>Adversarial review：</b>另一独立对话检查题目与参考解法是否存在歧义、矛盾、不可得信息、单位错误、未来信息和评分漏洞；每个收录实例都要有带依据的通过结论，缺失、失败或超预算的审查保持未决。分开对话不能保证同一模型不会重复相同误解。</li>
-              </ul>
-              <p class="pipeline-group" id="dp-dedup">实测成功模式决定题目的训练用途</p>
-              <ul>
-                <li><b>SFT candidates：</b>教师成功的一次尝试只产生示范候选，通过该轨迹的检查与审查后才进入监督微调（SFT），让学生模仿可靠过程。</li>
-                <li><b>Demonstration review：</b>每条收录的 SFT 示范还要检查成功读取、计算依据、被接受的最终交卷及实际解题方法，并通过 Claude 审查；被驳回动作留在上下文，其 token 不计入模仿损失，使正确恢复的过程可以保留。</li>
-                <li><b>RL candidates：</b>当前学生多次回答有对有错的题，能为 DAPO 提供组内奖励差异；全错题先诊断、补可靠示范或递进练习，全对题可以维持已有能力。有限次试答估计当前表现，不能证明训练收益。</li>
-                <li><b>Deduplication and reuse：</b>跨训练和保留池核对原题及相关来源实例；新的 RL 题池排除上一批 SFT 已用题。在线 RL 奖励继续由程序计算，不为每条探索轨迹增加 Claude 判官。</li>
-              </ul>
-              <p class="pipeline-group" id="dp-mixing">按合格题目配比，并固定所有实际训练输入</p>
-              <ul>
-                <li><b>Accepted-instance mixture：</b>两路比例按共同审查通过的独立题目计算，不按生成尝试或同题多条轨迹计算；合格数量不足时停止发布，不用重复或不合格题补额，SFT token 和有效 RL 回答组另行统计。</li>
-                <li><b>Cost control：</b>规则先淘汰明显错误，内容和版本完全匹配的审查可用缓存；费用涵盖 Claude 生成、两路题目审查、SFT 轨迹审查与失败尝试，共同上限在发请求前预留最坏费用，中断或无法计费的调用会阻止继续花费。</li>
-                <li><b>Release contract：</b>代码、快照、提示、模型身份、独立参考、审查、题目 ID、分词器和损失掩码共同绑定数据版本；CPU 诊断通过和模拟输出不能批准训练。新一轮 SFT 使用基础模型、新打包数据和新输出目录，RL 再使用其产出的检查点及新测量。</li>
-              </ul>
-            </div>
-            <div class="pipeline-facts"><span class="pipeline-fact">两条生成支线，共同强制审查</span><span class="pipeline-fact">题目与示范分别验收</span></div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
-            <nav class="flow" aria-label="离线数据集的阶段">
-              <a class="flow-node" href="#od-snapshot">数据快照</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-split">划分</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-generation">程序出题</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-answers">计算答案</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-verification">独立复核</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-dataset">组成数据集</a>
-            </nav>
-            <div class="content">
-              <p>已报告模型的原程序题库使用固定快照和可执行的参考答案。</p>
-              <p class="pipeline-group" id="od-snapshot">数据快照把数据固定下来，程序才能计算并复核每个答案</p>
-              <ul>
-                <li><b>SQLite snapshot：</b>一个数据库文件存放 565 只证券的日线和 35,727 条拆股分红、68 条 FRED 宏观序列，以及 516 家公司的 SEC XBRL 财报（机器可读的公司财务报告）。在线数据会变，只有固定快照才能让程序算出每个答案并给每道题判分。</li>
-                <li><b>Point-in-time vintage：</b>快照固定 FRED 在截止日或最新存储版本中的数值，不能还原每个更早决策日当时已知的版本，因此这些任务不构成满足历史信息可得条件的回测。</li>
-              </ul>
-              <p class="pipeline-group" id="od-split">划分让测试的实体和时段不进训练</p>
-              <ul>
-                <li><b>Entity split：</b>股票代码的哈希把每只股票分到训练、开发或测试（约 70/10/20），财报题跟着公司走，所以行情测试集测的是模型没见过的公司。</li>
-                <li><b>Temporal split：</b>指数、ETF（像股票一样交易的基金）、汇率和 FRED 序列按时间分成训练 2000–2016、开发 2017–2019、测试 2020 年起，所以行情测试集测的是训练时间窗之后的时段。</li>
-                <li><b>Limit of the split：</b>开发集只有 47 只股票、测试集 99 只，标普 500 成分股用的是 2026 年的名单，所以只含存续到那一年的公司。</li>
-              </ul>
-              <p class="pipeline-group" id="od-generation">原程序生成批次复用 FinSearchComp 的操作，并增加难题档</p>
-              <ul>
-                <li><b>Need for harder tasks：</b>官方 Qwen3.5-4B 在财富管理 14 个题型中的 11 个上已接近满分，这些题主要考按规矩调用工具，所以项目需要官方模型也做不好的题。</li>
-                <li><b>Operations from FinSearchComp：</b>逐题标注 FinSearchComp 的 T2、T3 题时，不复权价格、某日之后第 N 个交易日、阈值扫描、区间极值、按月重采样、最大回撤、滚动标准差反复出现，生成器据此定题型，因为这个 benchmark 的难度来自取很多期数据、复权、换算单位和多步汇总。</li>
-                <li><b>Original tier：</b>生成器抽取实体和时间窗，构建 17 个难度 1–3 的题型，每个题型 200 道训练题、20 道开发题、30 道测试题，这样训练能单独练到上面这些操作。</li>
-                <li><b>Hard tier：</b>教师在原有一档开发题上做对 99.7%，因此生成器增加 8 个难度 4–5 的组合题型探索更高难度；学生能否获得强化学习信号还需单独测量。组合题把多个操作串起来，一步出错就答错，难度来自步骤和约定，而不是生僻的数据。</li>
-                <li><b>One round of hardening：</b>生成器重写教师在开发集上做对至少 95% 的 5 个难题档题型：只给公司名、改用标准术语、增加键，教师在这些题上从 98/100 降到 93/100，因为这一档需要教师也会做错的题。这一步只做一次，因为反复修改就等于在开发集上调题目。</li>
-              </ul>
-              <p class="pipeline-group" id="od-answers">计算答案让每道题都有程序能核对的标准答案</p>
-              <ul>
-                <li><b>Computed answers：</b>生成器从快照算出每道题的标准答案，并去掉容易误判的候选，比如答案落在四舍五入边界附近或日子贴近阈值的题，这样分数不取决于四舍五入的边界。</li>
-                <li><b>Key-based grading：</b>判分程序把标准答案拆成键（容差内的数值、日期、文本或集合），每个键都在最终答案中正确出现才算通过，所以分数不需要模型裁判，也能重算。计数键仍可能被答案里别处的同一个小整数碰上。</li>
-              </ul>
-              <p class="pipeline-group" id="od-verification">独立复核检查答案和工具</p>
-              <ul>
-                <li><b>Independent verification：</b>另一套 SQL 加 Python 的实现从题目参数重算答案，两档全部一致。比较两套实现可以发现差异，但共享的假设或错误仍可能漏过这项检查。</li>
-                <li><b>Golden policy：</b>标准解策略只用工具（一次 Python 加 <code>finish</code>），经过与模型相同的循环、验证和判分，做对每一道题，说明工具足以解每道题。</li>
-              </ul>
-              <p class="pipeline-group" id="od-dataset">数据集共 3,148 题，来源和题型按开发集结果选定</p>
-              <ul>
-                <li><b>Composition：</b>题库固定训练 2,350 题、开发 200 题、测试 598 题，共 3,148 题；测试来源见数据一节。开发集用于方案选择，冻结测试集报告选定方案的结果。</li>
-                <li><b>Training file：</b>训练文件含 7 个难题档题型各 250 题和 <code>rolling_vol</code>、<code>extreme_period</code>、<code>xbrl_ratio</code> 各 200 题，共 2,350 题。它去掉第 8 个难题档题型 <code>div_event_study</code>，因为官方模型在它的开发题上做对 19/20，没有空间显示提升；它保留原有一档中官方做得最差的 3 个题型（2/20、14/20、14/20）。SFT 模型还用了原有一档另外 14 个题型的轨迹，比这 2,350 题多 2,800 题。</li>
-                <li><b>Development and market-data test files：</b>两个文件使用相同题型，并沿用前述实体与时间划分；测试题不按模型的答题对错筛选，让各模型在同一批固定题目上比较。</li>
-                <li><b>FinSearchComp file：</b>在 203 道 Global T2、T3 题中，这个文件保留快照算出的值与官方答案在容差内一致的 98 题，这样分数不依赖与官方答案不一致的快照值。</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
-            <nav class="flow" aria-label="Agent harness 的组成部分">
-              <a class="flow-node" href="#ah-context">上下文管理</a>
-              <a class="flow-node" href="#ah-tools">工具接口与约束</a>
-              <a class="flow-node" href="#ah-verification">验证与纠正</a>
-            </nav>
-            <div class="content">
-              <p>本工作的 harness 分为三部分：上下文管理、工具接口与约束、验证与纠正。下面描述的是第 3 版，用于行情和 DocFinQA 任务；财富管理、机器学习和 <code>t6_report_gate</code> 任务用第 2 版，它会把较早的工具结果截成摘要。</p>
-              <p class="pipeline-group" id="ah-context">上下文管理</p>
-              <ul>
-                <li><b>System prompt：</b>Harness 用一条消息开始每个任务，写明模型的角色、任务的规则和工具用法。</li>
-                <li><b>Append-only context：</b>Harness 发出消息后不再改动，所以每次请求的消息都是下一次请求和所存轨迹的前缀。这样所存轨迹就是模型每一步看到的内容，SFT 和 RL 用的序列与采样一致。</li>
-                <li><b>Tool-result cap：</b>工具返回时，harness 把每个结果截到 8,000 字符，并附一句说明如何少取，比如翻下一页或缩短日期区间。行情工具一页的结果都在 7,500 字符以内，<code>read_chunk</code> 带相邻段落约 7,100 字符，都低于这个上限，所以模型不会拿到被截断的 JSON。</li>
-                <li><b>Checklist（<code>set_checklist</code>）：</b>模型把请求的步骤写进清单并勾选，harness 在每次工具返回后复述清单，一个任务最多调用 20 次。这主要减少漏做子任务。</li>
-                <li><b>Step budget：</b>Harness 只把任务轮计入 100 步上限；只维护清单的轮、含被驳回 <code>finish</code> 的轮及其后 10 轮都不计入，总轮数硬上限为 142。清单和重做是 harness 自己加的动作，计入步数时会在长任务上用完步数。</li>
-                <li><b>Thinking-preserving chat template：</b>改过的 Qwen3.5 对话模板（把消息渲染成模型输入的规则）保留第一条用户消息之后每个助手轮的思考。在原模板下，nudge 是一条用户消息，它让之前的思考从下一个提示中消失，所存轨迹也就不再是模型看到的内容。</li>
-                <li><b>Token-level logging：</b>Harness 记录每轮的提示 token 数、采样的 token 和它们的 log 概率，以及 <code>prefix_ok</code>，这个标记说明本轮提示是否以上一轮的提示和生成内容开头。这样 RL 可以直接用采样时的 token 和概率，不必再打分一遍，这个标记也能查出渲染得与采样时不同的轮。</li>
-              </ul>
-              <p class="pipeline-group" id="ah-tools">工具接口与约束</p>
-              <ul>
-                <li><b>Function calling：</b>Harness 用 JSON Schema（一种描述结构化数据的标准格式）向模型描述每个工具的名称和参数，模型按原生函数调用格式调用工具。</li>
-                <li><b>Tool sets：</b>行情环境提供 11 个工具，财富管理 12 个，机器学习 5 个，DocFinQA 4 个，<code>t6_report_gate</code>（第 2 版）14 个，都含结束任务并交答案的 <code>finish</code>；完整 harness 另加 <code>set_checklist</code>。</li>
-                <li><b>BM25 two-step retrieval：</b>BM25 是关键词排序算法：查询词在一段里出现得越多、在其他段里越少见，这一段得分越高；harness 只用它，没有向量检索或重排序。检索财富管理的基金招募说明书知识库时，最多返回 10 段的编号、标题和开头文字，模型再按编号读全文。DocFinQA 把 10-K 切成 1,500 字符的段落，相邻两段重叠 200 字符，检索只返回约 240 字符的摘要，<code>read_chunk</code> 才给全文。</li>
-                <li><b>Sandbox（<code>run_python</code>）：</b>Harness 在 bubblewrap（隔离进程的 Linux 工具）里运行模型写的代码，没有网络，临时目录之外的文件系统只读，限 30 秒、3 GiB。</li>
-                <li><b>Constraints：</b>写操作执行前，代码按工具 Schema 和业务规则检查它的参数，拒绝违规操作且不执行，并把原因返回模型，这主要减少违反业务规则和参数错误。</li>
-              </ul>
-              <p class="pipeline-group" id="ah-verification">验证与纠正</p>
-              <ul>
-                <li><b>Answer verification：</b>模型调用 <code>finish</code> 时，harness 检查答案中的数在工具结果或请求中有依据、清单全部完成、环境自己的检查通过；在行情题上，工具结果中的数经千、百万、十亿或百分比换算并按答案的小数位取整后相等，就算有依据。所以单位换算能通过，心算或凭记忆写出的数会被驳回。</li>
-                <li><b>Rejection limit：</b>Harness 在一个任务里最多驳回 2 次 <code>finish</code>，下一次不经验证就接受。</li>
-                <li><b>Correction messages：</b>Harness 在驳回 <code>finish</code> 后返回未通过的检查项，在工具报错后返回一个正确调用的示例，这主要减少陷入循环和步数用尽。</li>
-                <li><b>Loop hint：</b>Harness 在第 3 次相同调用时提示模型换思路。</li>
-                <li><b>Nudge：</b>回复没有调用工具时，harness 追加一条提醒。</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
-            <div class="content">
-              <ul>
-                <li><b>Packing：</b>构建器排除 48 条超过各自 token 上限的轨迹，以及 7 条会使对话模板丢失历史思考的多用户消息轨迹；再用保留思考的对话模板渲染 32,768 token 以内的行情和 DocFinQA 轨迹，用 Qwen3.5 自带的模板渲染 32,768 token 以内的 <code>t6_report_gate</code> 轨迹和 16,384 token 以内的财富管理和机器学习轨迹，再把 14,486 条样本拼成 2,830 条不超过 32,768 token 的序列，这样短样本能填满每条序列的 token 预算，每步 12 条序列能训练约 61 条样本。行情上限取 32,768，是因为 <code>xbrl_ratio</code> 轨迹的中位长度有 17,661 token，按 16,384 截会丢掉这个题型一半以上。</li>
-                <li><b>Settings：</b>训练微调 Qwen3.5-4B-Base 的全部参数，2 个 epoch（把数据过两遍）、472 步，用 6 张 GPU，学习率 1e-5，沿余弦曲线下降。从 Base 模型出发，模型在预训练之后学到的东西就都只来自本项目的数据。</li>
-                <li><b>Loss：</b>训练最小化模型下一个 token 的预测与标签之间的交叉熵，也就是下一 token 预测的标准损失 \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\)，其中 \(x_{&lt;t}\) 是位置 \(t\) 之前的序列，\(\theta\) 是模型权重，\(N\) 是带标签的 token 数，所以模型逐 token 复现带标签的轮。训练只在带标签的位置分块计算损失，数值和梯度都不变，因为长序列每个位置对全词表的打分放不进显存。</li>
-                <li><b>Labels：</b>需要模型学习的位置，标签就是该 token 本身；其余位置为 &minus;100，损失会忽略。标签覆盖轨迹助手轮的思考、文本和工具调用，因为模型之后运行的对话模板会把历史思考放进上下文；标签屏蔽系统、用户和工具轮，因为工具输出由工具产生。</li>
-                <li><b>Masked turns：</b>行情和 DocFinQA 轨迹屏蔽招来 nudge 的回复和含被驳回调用的轮，但把它们留在上下文里，因为这些轮计损失等于教模型先交错答案，而之后的改正照样能学；<code>t6_report_gate</code> 轨迹同样屏蔽被驳回的轮。财富管理和机器学习轨迹的被驳回轮仍计损失。带 nudge 的财富管理、机器学习和 <code>t6_report_gate</code> 轨迹被整条丢掉。</li>
-                <li><b>Malformed calls：</b>建数据的程序还屏蔽调用格式错误的轮，比如不存在的工具名，因为这些轮计损失就是教模型写错名字。</li>
-                <li><b>Sample boundaries：</b>每个批次都告诉模型同一条序列里每个样本的起止位置，否则 Qwen3.5 的线性注意力层（沿序列传递状态的一种注意力）会把一个样本泄漏到下一个。加上边界后，每 token 损失的最大差异从 6.3 降到 0.13，属于数值噪声。</li>
-              </ul>
-            </div>
-            <div class="pipeline-facts">
-              <span class="pipeline-fact">9,270 万 token 中 2,709 万计损失</span>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
-            <div class="content">
-              <p>所有模型都由程序打分；任务集见"数据"一节。</p>
-              <p class="pipeline-group">分数与比较</p>
-              <ul>
-                <li><b>Success rate：</b>这个分数统计任务集 \(T\) 中通过的比例，任务 \(t\) 通过时 \(s_t = 1\)，所以只有整个任务做对才得分。\[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
-                <li><b>Paired bootstrap：</b>这项比较按题相减两个模型的结果，\(a_i\)、\(b_i\) 做对为 100、做错为 0，95% 区间来自对 \(n\) 道题的 10,000 次重抽。配对去掉了题目难度的差异，区间因此变窄；每道测试题只跑 1 次，所以区间只计入题目抽样的误差。\[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
-              </ul>
-              <p class="pipeline-group">金融问答与通用能力</p>
-              <ul>
-                <li><b>金融分：</b>打分程序取最后一个 "Answer:" 之后的第一个数，与标准答案相差 1% 以内算对，百分数和小数两种写法都认。所有模型用同一个不套对话模板、带 3 个示例的提示，因为起点模型没有针对对话格式训练过，这样分数才可比。其中 \(D\) 是题目集合，\(y_i\) 是标准答案，\(\hat{y}_i\) 是回答，\(\tau_i = 0.01|y_i|\)，\(y_i = 0\) 时为 0.005。\[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
-                <li><b>MMLU：</b>打分程序在题目集合 \(Q\) 上，把提示 \(x_q\) 下概率最大的选项 \(o\) 与正确选项 \(o^{*}_q\) 比较。比较选项概率不依赖生成格式，所以起点模型和 SFT 模型可比；去掉四个经济和会计科目，因为金融训练会抬高它们，掩盖别处的下降。\[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
-                <li><b>GSM8K：</b>打分程序比较回答中的最后一个数 \(\hat{a}_q\) 和标准答案 \(a_q\)，这说明多步算术推理在财报格式之外有没有保住。所有模型用同一提示，含 5 道示例题，不用对话模板，与金融分相同。\[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
-                <li><b>IFEval：</b>打分程序只在回答满足提示集合 \(P\) 中一条提示的所有可检查指令 \(I_p\)（如字数上限或 JSON 输出）时才计分，指令 \(j\) 成立时 \(f_{p,j}=1\)，这测的正是 agent 必须具备的按规则和格式作答的能力。所有模型都通过允许先推理的对话模板作答，打分程序读推理之后的文字。起点模型用 Qwen3.5 原生模板加停止规则，不用模板时它只有 37.7 分。\[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
-              </ul>
-              <p class="pipeline-group">Agent 任务</p>
-              <ul>
-                <li><b>行情测试集和 FinSearchComp：</b>判分程序按离线数据集一环的 key-based grading 判分，FinSearchComp 用每题写明的容差。</li>
-                <li><b>DocFinQA：</b>判分程序取答案中的最后一个数，与标准答案相差 1% 以内算通过，百分数和小数两种写法都认，是非题要写出同一个词，这样得到的分数能与外部结果比较。</li>
-                <li><b>State comparison（财富管理）：</b>判分程序把最终持仓、现金和交易记录与标准状态比较，并把答案中的关键数值按容差比较（金额 ±0.01 美元，比例 ±0.1 个百分点）。对规则禁止的任务，它检查被禁止的交易没有执行、答案指出了规则，因为交易和答案都对才算完成任务。</li>
-                <li><b>AUC 和 \(R^2\) 门槛（机器学习）：</b>AUC 衡量排序质量，0.5 相当于随机、1 为完美；\(R^2\) 衡量模型解释的目标方差比例。判分程序要求提交模型，且它在隐藏测试表上不低于生成数据的模型减 0.015 AUC 或减 0.03 \(R^2\)。这个门槛要求把数据处理做对：在开发集上，固定流程对偏态列取对数时通过 20/20 题，不取对数时只过 1 题。</li>
-                <li><b>pass@1 和 pass@4：</b>打分程序在 \(T_4\) 上算这两个分数，\(T_4\) 是有 4 次有效尝试的开发集题目，题 \(t\) 的 \(n_t\) 次有效尝试中有 \(c_t\) 次通过。\[P_1 = \frac{100}{|T_4|}\sum_{t \in T_4}\frac{c_t}{n_t}\] \[P_4 = \frac{100}{|T_4|}\sum_{t \in T_4}\mathbf{1}[c_t \ge 1]\]</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
-            <div class="content">
-              <p>选题正在进行，训练尚未开始，这里的训练取值都是计划值。DAPO 是下一步要用的强化学习（RL）方法。它建立在 GRPO 之上，这种方法对每道题采样一组尝试，按组内相对表现给每次尝试打分。DAPO 加上下面前四项改动，并去掉 KL 惩罚，这是把模型拉近自身冻结副本的一项额外损失。训练将用 verl 自带的 DAPO 实现，从上面的 SFT 模型出发。</p>
-              <ul>
-                <li><b>Clip-Higher：</b>训练限制一次更新对 token 概率的改变：新旧概率之比最多下降 0.2、最多上升 0.28。</li>
-                <li><b>Dynamic Sampling：</b>verl 的训练程序丢掉 8 次尝试判分全相同（全对或全错）的组，不看长度，并为它补发 2 道题，因为这样的组没有对错之差，留下只会训练长度信号。补题没有上限，所以被丢的组越多，这一步越慢。</li>
-                <li><b>Token-level loss：</b><code>token-mean</code> 直接对所有 token 平均损失，所以长回答里每个 token 的权重不被摊薄。</li>
-                <li><b>Overlong reward shaping：</b>verl 的 DAPO reward manager 在判分 \(r\) 上加长度奖励：长度 \(L\) 不超过 \(L_s\) 时为 0，之后线性降到预算 \(L_{\max}\) 处的 −1。写满预算的尝试一定判错，所以总奖励 −2，它也计损失。这里 \(L\) 含工具结果的 token 数，缓冲 \(L_c = 4{,}096\)，\(L_s = L_{\max} - L_c = 24{,}576\)；预算 \(L_{\max} = 28{,}672\) 加 4,096 token 的提示正好等于 32,768 token 的 SFT 序列。\[R = r + \min\Big(-\frac{L - L_s}{L_c},\ 0\Big)\]</li>
-                <li><b>Reward：</b>判分程序通过给 +1、否则给 −1，与 DAPO 相同。若用 0/1，同样的扣分相对于对错之差会重一倍。</li>
-                <li><b>No KL：</b>训练不加 KL 惩罚，因为长推理时模型本来就会明显偏离起点；这也省下这个副本的显存和前向计算。</li>
-                <li><b>Task selection：</b>SFT 模型对题池中每道题做 8 遍，选题去掉 0/8 的题，保留 1–7/8 的题，8/8 的题留 10%，因为所有尝试判分相同的题给不了组内比较任何信息。留下的 10% 让模型继续练一些已经做对的题。如果留下的题更多，再按题型分层、按各题型的占比抽样，把平均每个题型控制在 93.9 题，这个题量大体决定一次运行过这些题的遍数。训练中模型在变，选中的题也可能变成全对或全错，所以动态采样在每一步继续丢掉这样的组。</li>
-                <li><b>Task pool：</b>题池的行情部分是新生成的题，10 个题型各 200 题，没有一道重复 SFT 的训练题、开发题或测试题。在 2 道 DocFinQA 题上的试跑通过时，再加 200 道 DocFinQA 训练题作第 11 个题型，否则 RL 没有信号维持 SFT 模型读文档的能力。</li>
-                <li><b>Settings：</b>用 8 张 GPU 时，每步取 128 道题、每题 8 次尝试，mini-batch 为 32 道题，所以每步更新 4 次；共 21 步，学习率 1e-6，一次尝试最多 30 个任务轮。</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
-            <div class="content">
-              <p><span class="status-tag">尚未开始</span> 最终的 DAPO 模型将按 SFT 评测一环的规则跑行情、FinSearchComp、DocFinQA、开发集、财富管理、机器学习和通用能力这些任务集，与起点模型、教师和 SFT 模型比较，另加三项。</p>
-              <ul>
-                <li><b>Strict grading：</b>严格判分给行情、FinSearchComp 和开发集的答案加四条规则，全部满足时 \(r_t = 1\)。答案在日期之外最多有 50 个数字。答案最多有 40 个不同日期。每个数值键都要在日期之外出现。有候选的题上，首先点名的公司要正确，其后每个公司键都要紧跟它的数值。原判分只要键出现在答案任何位置就算对：一次审计中，不知道任何参考值、只复述题面加数值网格的答案通过了 209/939 道 RL 训练题，所以只看原判分，RL 的提升不可信。\[S_{\text{strict}} = \frac{100}{|T|}\sum_{t \in T} s_t\, r_t\]</li>
-                <li><b>Reworded test：</b>换措辞把 300 道行情测试题用新的措辞重写，参数和答案不变，与同题型训练题的 5-gram 重合从 0.77–0.99 降到 0.10–0.32，所以分数变化说明成绩有多依赖措辞。\[\Delta_{\text{reword}} = S_{\text{reworded}} - S_{\text{original}}\]</li>
-                <li><b>Paired gain over the SFT model：</b>这项比较在每道题上取 SFT 模型的 \(a_i\) 和最终 DAPO 模型的 \(b_i\)，用 SFT 评测一环的 paired bootstrap。</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered">方法管线</h2>
+<p class="has-text-centered">点击下面的环节查看它做什么。</p>
+<div class="pipeline" id="co-pipeline" data-pipeline>
+<div class="pipeline-steps" role="tablist" aria-label="方法管线">
+<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
+<span class="pipeline-step-num">1</span>规范报告与数据划分</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
+<span class="pipeline-step-num">2</span>FinSearchComp 合成（进行中）</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
+<span class="pipeline-step-num">3</span>共同题目审查（进行中）</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4">
+<span class="pipeline-step-num">4</span>难度校准与示范（进行中）</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5">
+<span class="pipeline-step-num">5</span>多轮监督微调（下一步）</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6">
+<span class="pipeline-step-num">6</span>DAPO 强化学习</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7">
+<span class="pipeline-step-num">7</span>共同评测</button>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
+<nav class="flow" aria-label="规范报告与数据划分">
+<a class="flow-node" href="#canon-report">规范报告</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">来源隔离</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">冻结题目池</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="canon-report">每份财报只引用一个原始版本</h4>
+<ul>
+<li>
+<b>Canonicalization:</b> 入口按注册主体与财年结束日期归并 DocFinQA 报告，依据来源质量选择一份原文，并保留其他版本及来源哈希，避免等价报告被当成不同材料。</li>
+<li>
+<b>Evidence retention:</b> 选择后的检查隔离丢失必要运算依据的问题；检查不改写报告，也不依据模型成绩选择报告版本。</li>
+</ul>
+<h4 class="pipeline-group" id="source-split">先核对来源身份，再抽取题目</h4>
+<ul>
+<li>
+<b>Decontamination:</b> 划分器跨集合核对报告身份、规范化题面、题目派生关系及金融答案支持期间；身份未识别的报告留在合格题目池之外。</li>
+<li>
+<b>Stratification:</b> DocFinQA 保留官方划分归属，按数值／布尔类别比例各保留一半；FinSearchComp 与 IFEval 使用确定性的类别分层项目划分，以保留类别覆盖及足够的测试题。</li>
+</ul>
+<h4 class="pipeline-group" id="pool-freeze">一个版本服务所有模型设置</h4>
+<ul>
+<li>
+<b>Immutable inputs:</b> 题目 ID、原始文本、规范报告与评分器绑定到冻结版本；数量只在基线设置中列出，各组共用相同原题。</li>
+<li>
+<b>Reserved evaluation:</b> 合成验证、测试题使用隔离的答案支持来源并独立审查；不能用重复题或未审查候选填补验收配额。</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
+<nav class="flow" aria-label="FinSearchComp 合成">
+<a class="flow-node" href="#gen-program">程序支线</a> <a class="flow-node" href="#gen-claude">Claude 支线</a> <a class="flow-node" href="#gen-native">原生请求</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="gen-program">程序扩展可复现的薄弱题型</h4>
+<ul>
+<li>
+<b>Programmatic generation:</b> 生成器在可信金融事实和明确期间、单位、计算约束内改变题目参数，为解题不稳定或持续出错的能力提供可重复练习，不复制保留题。</li>
+</ul>
+<h4 class="pipeline-group" id="gen-claude">Claude 在已验证约束内选择题目</h4>
+<ul>
+<li>
+<b>Source-bound generation:</b> Claude 从可信来源实例与训练能力中选择支持的题目结构及参数；编译器控制学习者题面与参考计算，防止生成文本暗中引入事实或权威答案。</li>
+<li>
+<b>Scope:</b> 当前有类型约束的适配器覆盖有限的 SEC 检索与债务计算题；不支持的结构被拒绝，适配器不宣称覆盖整个 FinSearchComp。</li>
+</ul>
+<h4 class="pipeline-group" id="gen-native">各角色使用独立的原生 Messages 请求</h4>
+<ul>
+<li>
+<b>Native proxy:</b> 客户端通过 CLIProxyAPI 的原生 Messages 接口使用明确的自定义提示，每个角色使用独立对话；Opus 5.5 出题采用 Extra High，盲解、对抗审查及轨迹审查采用 Medium。</li>
+<li>
+<b>Accounting:</b> 共享的追加式账本约束总额度、调用次数与各角色单次上限；失败请求仍被记录，缺失计量时阻止后续调用。</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
+<nav class="flow" aria-label="共同题目审查">
+<a class="flow-node" href="#review-gold">独立答案</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#review-tools">工具执行</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#review-cloud">盲解与对抗审查</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="review-gold">独立计算核对答案约束</h4>
+<ul>
+<li>
+<b>Reference agreement:</b> 独立算术实现必须在答案、单位与所需来源期间上相符；等价数学实例先去重，再计入配额。</li>
+</ul>
+<h4 class="pipeline-group" id="review-tools">真实工具核对数据可得性</h4>
+<ul>
+<li>
+<b>Sandbox replay:</b> 参考代码通过学习者使用的受限工具运行时查询固定只读快照；实际执行必须与独立答案一致，来源元数据声明不能单独放行题目。</li>
+</ul>
+<h4 class="pipeline-group" id="review-cloud">盲解与对抗审查保持独立</h4>
+<ul>
+<li>
+<b>Blind solve:</b> 独立 Claude 对话只接收学习者题面与工具约束，不接收私有答案；其求解程序随后被实际执行并独立评分。</li>
+<li>
+<b>Adversarial review:</b> 另一独立对话检查题目、参考答案、程序及执行结果中的歧义、期间、单位和评分漏洞，不接收前次审查结论；两种审查均通过后才准入题目。</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
+<nav class="flow" aria-label="难度校准与示范">
+<a class="flow-node" href="#collect-harness">智能体框架</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-difficulty">难度测量</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-demo">示范准入</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="collect-harness">框架记录模型实际使用的证据</h4>
+<ul>
+<li>
+<b>Tool interface:</b> 金融任务使用只读市场、SEC、FRED 查询、报告检索与受限 Python 环境；消息、工具调用及返回被保存为轨迹，明确提交完成后结束试答。</li>
+<li>
+<b>IFEval:</b> 严格指令检查器仅评分最终答案并固定评分随机性；金融数值证据要求不应用于纯指令任务。</li>
+</ul>
+<h4 class="pipeline-group" id="collect-difficulty">本地模型在训练前测量可解性</h4>
+<ul>
+<li>
+<b>Teacher and student:</b> 较大的本地教师提供候选示范，学生多次试答测量成功模式；始终不会的题先诊断或补充 SFT 示范，不自动视为有效 DAPO 训练信号。</li>
+<li>
+<b>Reserved tasks:</b> 校准只使用训练或校准材料，封存测试不参与难度筛选。</li>
+</ul>
+<h4 class="pipeline-group" id="collect-demo">仅有正确最终答案不足以准入</h4>
+<ul>
+<li>
+<b>Trace qualification:</b> 准入核对成功的证据读取、工具格式、事实依据、单位、完成状态与来源凭据；历史轨迹不能在缺少匹配来源证据时自动换绑到新报告。</li>
+<li>
+<b>Separate products:</b> 合格题、合格示范与打包训练数据是不同输出；缺少示范或仍未审查的候选会使训练入口保持关闭。</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
+<nav class="flow" aria-label="多轮监督微调">
+<a class="flow-node" href="#sft-models">共用检查点</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">损失与发布</a>
+</nav>
+<div class="content">
+<span class="status-tag">尚未开始</span>
+<h4 class="pipeline-group" id="sft-models">两个监督检查点服务对照</h4>
+<ul>
+<li>
+<b>Supervised fine-tuning:</b> S0 使用共同原题示范，S1 加入共用的 FinSearchComp 合成示范；二者从相同 Base 权重开始，并保留相同原题池。</li>
+</ul>
+<h4 class="pipeline-group" id="sft-loss">仅核验后的助手行为参与损失</h4>
+<ul>
+<li>
+<b>Loss masking:</b> 打包器屏蔽用户文本、工具返回与无效助手内容，并将示范来源、分词器身份绑定到训练导出。</li>
+<li>
+<b>Launch gates:</b> 新一轮 SFT 尚未开始；所需示范、合成配额及共同训练预算的执行检查通过后才能启动。</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
+<nav class="flow" aria-label="DAPO 强化学习">
+<a class="flow-node" href="#dapo-models">六个继续训练作业</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-length">生成长度</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-mask">未完成回合</a>
+</nav>
+<div class="content">
+<span class="status-tag">尚未开始</span>
+<h4 class="pipeline-group" id="dapo-models">六个强化学习作业补全九组设置</h4>
+<ul>
+<li>
+<b>Matched continuations:</b> 两个 SFT 检查点和原始 Base 模型分别接受原题或加合成的 DAPO 继续训练，共用题目池的关系在基线表中标明。</li>
+<li>
+<b>Dynamic filtering:</b> DAPO 从正确性存在差别的回答组学习；记录真正进入更新的题目、更新次数与生成 token 曝光量，避免名义配额掩盖过滤后的差异。</li>
+</ul>
+<h4 class="pipeline-group" id="dapo-length">软长度惩罚只统计模型生成内容</h4>
+<ul>
+<li>
+<b>Generated-token penalty:</b> 项目奖励管理器从软长度惩罚中排除工具返回、插入上下文与填充；硬响应预算仍包含全部上下文，保留明确的资源上限。</li>
+</ul>
+<h4 class="pipeline-group" id="dapo-mask">未完成试答不参与策略损失</h4>
+<ul>
+<li>
+<b>Whole-rollout masking:</b> 未完成的截断或中止回合整条策略掩码归零；完成但答错的回合仍可训练，全掩码小批次保持有限损失与梯度。</li>
+<li>
+<b>Launch gates:</b> 两项修复已实现并通过 CPU 检查，新一轮六个强化学习作业尚未开始；共同数据、检查点与可执行预算控制就绪后才能启动。</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
+<nav class="flow" aria-label="共同评测">
+<a class="flow-node" href="#eval-original">原始基准</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#eval-synthetic">合成挑战</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#eval-comparison">配对比较</a>
+</nav>
+<div class="content">
+<span class="status-tag">尚未开始</span>
+<h4 class="pipeline-group" id="eval-original">各阶段使用同一批原题测量</h4>
+<ul>
+<li>
+<b>Success rate:</b> FinSearchComp 使用离线答案约束，DocFinQA 核对数值或布尔答案，IFEval 使用严格的整题指令准确率；分别报告各数据集成绩，并采用等权平均，避免报告题量较大而主导结果。</li>
+<li>
+<b>Shared protocol:</b> Base、SFT、DAPO 结果使用相同题目 ID、工具条件、采样规则与评分器版本，以支持阶段之间的比较。</li>
+</ul>
+<h4 class="pipeline-group" id="eval-synthetic">新增测试检验经过审查的 FinSearchComp 题</h4>
+<ul>
+<li>
+<b>Separate reporting:</b> 新增挑战独立审查并与原题成绩分开报告；合并成绩不替代原始基准成绩。</li>
+<li>
+<b>Limits:</b> 扩大合成测试增加的是生成题族的覆盖，不单独证明模型已泛化到所有外部金融题。</li>
+</ul>
+<h4 class="pipeline-group" id="eval-comparison">配对差异检验声明的数据变化</h4>
+<ul>
+<li>
+<b>Stage comparisons:</b> 比较 S1 与 S0 检验 SFT 增量；从同一检查点比较加合成与原题 DAPO 检验 DAPO 增量；将 DAPO 结果与自身起点比较检验额外训练的作用。</li>
+<li>
+<b>Selection:</b> 只有验证集用于选择检查点和混合配比；最终配对置信区间使用相同冻结测试，不反馈给出题器。</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 </section>
-<!-- End pipeline -->
-
-<!-- Quantitative results -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3">定量结果</h2>
-
-<h3 class="title is-5">Agent SFT 让 4B 模型在留出的行情题上从 16.7% 升到 87.3%</h3>
-      <div class="content has-text-justified">
-        <p>
-          成功率（%），使用同一 harness，每题跑 1 次。SFT 模型在行情测试集上比官方 Qwen3.5-4B 高 29.7 分（95% 区间 +23.3 到 +36.0），在 FinSearchComp 上高 10.2 分（+1.0 到 +20.4）。与第一次 SFT 相比，两项分别是 &minus;1.3（&minus;6.3 到 +3.7）和 &minus;3.1（&minus;10.2 到 +3.1），两个区间都含 0，所以在这个样本量下，这些题分不出两次训练的高低。在 200 道用于选择的开发题上，SFT 模型的 pass@1 是 88.0，pass@4 是 100.0，差 12.0 分。
-        </p>
-      </div>
-      <p class="table-hint">左右滑动表格可查看所有列。</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>模型</th><th>行情测试集（300）</th><th>FinSearchComp 离线（98）</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base（起点）</td><td>16.7</td><td>50.0</td></tr>
-            <tr><td>Qwen3.5-4B（官方后训练）</td><td>57.7</td><td>64.3</td></tr>
-            <tr><td>第一次 SFT，4B</td><td><u>88.7</u></td><td><u>77.6</u></td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td>87.3</td><td>74.5</td></tr>
-            <tr><td>Qwen3.8-27B（教师）</td><td><b>94.7</b></td><td><b>83.7</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <hr>
-      <h3 class="title is-5">第二次 SFT 把 DocFinQA 从 39.0 提到 53.0，与官方模型持平</h3>
-      <div class="content has-text-justified">
-        <p>
-          下表是 200 道针对整份年报的题的结果，每题跑 1 次。SFT 模型比第一次 SFT 高 14.0 分（95% 区间 +8.5 到 +20.0），与官方 Qwen3.5-4B 持平（+0.0，&minus;5.0 到 +5.0），比教师低 6.0 分（&minus;10.5 到 &minus;1.5）。从第一次到第二次训练，没有调用 <code>read_chunk</code> 的题从 39 道降到 5 道；忽略 <code>$</code>、<code>%</code>、逗号和空白后，只含一个数或 yes/no 的答案从 141 个升到 191 个。第二次训练同时加入 DocFinQA 和年报交易轨迹、过滤、直接问答样本的重写和对格式错误调用的屏蔽，这组结果分不开各自的作用。
-        </p>
-      </div>
-      <p class="table-hint">左右滑动表格可查看所有列。</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>模型</th><th>成功率（%）</th><th>每题 <code>read_chunk</code> 次数</th><th>没有调用 <code>read_chunk</code> 的题数</th><th>符合要求形式的答案（共 200）</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base（起点）</td><td>43.5</td><td>2.57</td><td>15</td><td>193</td></tr>
-            <tr><td>Qwen3.5-4B（官方后训练）</td><td><u>53.0</u></td><td>3.02</td><td>8</td><td>193</td></tr>
-            <tr><td>第一次 SFT，4B</td><td>39.0</td><td>1.50</td><td>39</td><td>141</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><u>53.0</u></td><td>1.98</td><td>5</td><td>191</td></tr>
-            <tr><td>Qwen3.8-27B（教师）</td><td><b>59.0</b></td><td>2.04</td><td>10</td><td>194</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <hr>
-      <h3 class="title is-5">在 550 道财富管理和机器学习任务上，提升同样成立</h3>
-      <div class="content has-text-justified">
-        <p>
-          自建财富管理环境测试集（500 个任务，如再平衡、基金转换和受规则约束的交易）加 50 道机器学习任务上的成功率（%），每题跑 1 次。在财富管理上，SFT 模型比官方 Qwen3.5-4B 高 8.4 分（95% 区间 +5.2 到 +11.8）。在机器学习上高 14.0 分（+0.0 到 +28.0），只有 50 道题，这个区间碰到 0。在机器学习上，教师做对 25 道 <code>ml_redemption</code> 中的 24 道、25 道 <code>ml_volatility</code> 中的 1 道，SFT 模型分别做对 25 道和 14 道。
-        </p>
-      </div>
-      <p class="table-hint">左右滑动表格可查看所有列。</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>模型</th><th>全部（550）</th><th>财富管理（500）</th><th>机器学习（50）</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base（起点）</td><td>50.4</td><td>51.0</td><td>44</td></tr>
-            <tr><td>Qwen3.5-4B（官方后训练）</td><td>84.2</td><td>86.2</td><td>64</td></tr>
-            <tr><td>第一次 SFT，4B</td><td>91.1</td><td>92.2</td><td><b>80</b></td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><b>93.1</b></td><td><u>94.6</u></td><td><u>78</u></td></tr>
-            <tr><td>Qwen3.8-27B（教师）</td><td><b>93.1</b></td><td><b>97.4</b></td><td>50</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <hr>
-      <h3 class="title is-5">SFT 保住知识和数学能力，指令遵循比起点模型低 12.2 分</h3>
-      <div class="content has-text-justified">
-        <p>
-          与 Qwen3.5-4B-Base 相比，SFT 模型在 MMLU 上高 0.8 分（95% 区间 +0.4 到 +1.1），在 GSM8K 上高 2.5 分（+0.5 到 +4.5），在 IFEval 上低 12.2 分（&minus;16.3 到 &minus;8.0，起点模型用 Qwen3.5 原生对话模板），但 IFEval 仍比官方 Qwen3.5-4B 高 11.5 分（+6.8 到 +16.1）。金融分和 GSM8K 不用对话模板，这时官方模型和教师常在答完之后继续写，或者没写出答案就停了：GSM8K 的 1,319 个回复里分别有 180 个和 360 个没有最终答案行（SFT 模型 34 个）；金融分取最后一个 "Answer:"，如果取第一个，它们是 64.8 和 82.1（SFT 模型 77.0），所以这两列低估了这两个模型。
-        </p>
-      </div>
-      <p class="table-hint">左右滑动表格可查看所有列。</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>模型</th><th>金融分（1,886）</th><th>MMLU（13,018）</th><th>GSM8K（1,319）</th><th>IFEval（541）</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base（起点）</td><td><u>76.4</u></td><td>72.8</td><td>80.5</td><td><u>75.2</u></td></tr>
-            <tr><td>Qwen3.5-4B（官方后训练）</td><td>61.9</td><td>70.1</td><td>76.5</td><td>51.6</td></tr>
-            <tr><td>第一次 SFT，4B</td><td>75.1</td><td>73.3</td><td><u>81.7</u></td><td>63.6</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B（本项目）</b></td><td><b>77.0</b></td><td><u>73.6</u></td><td><b>83.0</b></td><td>63.0</td></tr>
-            <tr><td>Qwen3.8-27B（教师）</td><td>74.0</td><td><b>82.8</b></td><td>72.6</td><td><b>91.7</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End quantitative results -->
-
 <footer class="footer">
   <div class="container">
     <div class="columns is-centered">
@@ -520,7 +538,8 @@
   </div>
 </footer>
 
-<script src="../../assets/js/pipeline.js"></script>
+<script src="../../assets/js/pipeline.js">
+</script>
 
 </body>
 </html>
