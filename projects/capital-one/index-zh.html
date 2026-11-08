@@ -131,13 +131,13 @@
 <tbody>
 <tr><th scope="row">DocFinQA</th><td>已选定 1,497 道原题</td><td>942</td><td>182</td><td>373</td></tr>
 <tr><th scope="row">FinSearchComp</th><td>97 道离线支持的 Global T2/T3 原题；上游共 635 题</td><td>48</td><td>19</td><td>30</td></tr>
-<tr><th scope="row">IFEval</th><td>541 道原题</td><td>216</td><td>108</td><td>217</td></tr>
+<tr><th scope="row">IFEval</th><td>原始 541 题完整保留；3 道指令冲突的训练题对九组统一隔离</td><td>213</td><td>108</td><td>217</td></tr>
 <tr><th scope="row">FinDeepResearch</th><td>已取得 64 个任务；隔离 1 个来源冲突，冻结 63 个原题；执行资格未就绪</td><td>24</td><td>16</td><td>23</td></tr>
 <tr><th scope="row">MLE-bench 项目子集</th><td>82 个来源竞赛元数据条目：75 个官方评测＋7 个开发；4 个官方比赛已获取并准备为可执行候选，项目任务准入尚未完成</td><td>未划分</td><td>未划分</td><td>未划分</td></tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">原有三数据集已冻结训练 1,206／验证 309／测试 620 题；FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 的项目任务准入仍未完成。原题训练池只定义任务来源，SFT 还须逐条验收记录了解题消息、工具调用及返回的示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
+<p class="data-note">原有三数据集的活动原题池含训练 1,203／验证 309／测试 620 题。IFEval 原始 541 题完整保留，3 道训练题的隔离对九组一致生效，验证与测试不变。FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 的项目任务准入仍未完成。原题训练池只定义任务来源，SFT 还须逐条验收记录了解题消息、工具调用及返回的示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
 <p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 的 Insults、Leaf、NOMAD 和 Spooky 四个官方比赛候选已通过真实沙箱中的原生评分、独立指标复算与私有标签隔离检查；来源尚未分配给 SFT 合成、DAPO 合成、验证及测试，项目划分也未确定；派生任务与 SFT 示范均为 0，DAPO 奖励适配仍未通过资格核验。五数据集训练仍未就绪；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
 <h3 class="title is-5" id="synthetic-pools">各阶段共用一份合成增量，当前合格数均为 0</h3>
 <div class="table-container" tabindex="0">
@@ -155,6 +155,7 @@
 <p class="data-note">检查点是一份保存下来的模型权重，后续作业从这份权重继续训练。</p>
 <h3 class="title is-5">两个 SFT 检查点复用于六个 DAPO 作业</h3>
 <p class="data-note">下表 O 表示上方原题训练池，新增来源只在合格并冻结后加入 O；S、R 分别表示上方两份独立合成训练池。SFT 使用 O 或 O＋S 的合格示范，DAPO 使用相应任务与原生奖励；同一行的题目池数量不能代替合格示范数。所有 S1 后续模型复用同一检查点及 S 池，所有 R1 模型共用 R 池。</p>
+<p class="data-note">S0、S1 将分别从相同 Base 独立开始，各自先进行给齐材料的推理，再进行检索与推理。二者共用原题及材料视图，即同题附带指定材料的版本；S1 再加入固定 S 池，九组共用评测池。每个 SFT 条件的两阶段合计为 6,553,600 个有效监督输出 token、100 次更新，初始每阶段各 3,276,800 token／50 次更新。材料视图与重复训练不增加不同题目数；完整训练及能力增益尚未实测。</p>
 <p class="table-hint">左右滑动表格可查看所有列。</p>
 <div class="table-container baseline-scroll" tabindex="0">
 <table class="table setting-table baseline-table">
@@ -279,7 +280,11 @@
 <h4 class="pipeline-group" id="gen-program">程序扩展可复现的薄弱题型</h4>
 <ul>
 <li>
+<b>Financial diagnostics:</b> 诊断先区分金额、公司、时期、单位等金融错误与格式、来源标识错误，再决定强化哪些题目；历史评分与准入决定保持不变。</li>
+<li>
 <b>Programmatic generation:</b> 生成器在可信金融事实和明确期间、单位、计算约束内改变题目参数，为解题不稳定或持续出错的能力提供可重复练习，不复制保留题。</li>
+<li>
+<b>Structural strengthening:</b> 编译器可先筛选完整候选集合，唯一定位合格公司，再计算依赖该选择的比较结果；实质改题后必须重算参考答案并重新独立审查。</li>
 </ul>
 <h4 class="pipeline-group" id="gen-claude">Claude 在已验证约束内选择题目</h4>
 <ul>
@@ -311,6 +316,8 @@
 <ul>
 <li>
 <b>Sandbox replay:</b> 现有金融问答的参考代码通过学习者的受限工具环境查询固定只读快照，执行结果须与独立答案一致；计划中的报告、机器学习任务须分别通过原生产物及评分检查，元数据声明不能单独证明任务可执行。</li>
+<li>
+<b>Paired probes:</b> 已实现的配对探测入口可让同题分别在允许检索来源、以及仅能计算且无法读取来源快照的条件下试答。实际配对模型记录与信息需求审查仍是必要条件；缺失时，材料视图与示范继续待审。</li>
 </ul>
 <h4 class="pipeline-group" id="review-cloud">盲解与对抗审查保持独立</h4>
 <ul>
@@ -353,21 +360,38 @@
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
 <nav class="flow" aria-label="多轮监督微调">
-<a class="flow-node" href="#sft-models">共用检查点</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">损失与发布</a>
+<a class="flow-node" href="#sft-models">独立起点</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-given">给齐材料的推理</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-retrieve">检索与推理</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">掩码与预算</a>
 </nav>
 <div class="content">
 <span class="status-tag">尚未开始</span>
+<p>两阶段实现已通过 CPU 检查；完整模型训练与能力效果尚未实测。</p>
 <h4 class="pipeline-group" id="sft-models">两个监督检查点服务对照</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 将使用共同原题池的合格示范，S1 将加入共用的 SFT 合成池；二者从相同 Base 权重开始并保留相同原题，<a href="#synthetic-pools">合成池表</a>给出允许扩充的数据及其资格状态。</li>
+<b>Supervised fine-tuning:</b> S0 将使用共同原题池的合格示范，S1 将加入固定共用的 SFT 合成池；二者将各自从相同 Base 独立开始，执行相同两阶段并共用原题与材料视图，<a href="#synthetic-pools">合成池表</a>给出允许扩充的数据及其资格状态。</li>
+</ul>
+<h4 class="pipeline-group" id="sft-given">第一阶段给齐推理必需的材料</h4>
+<ul>
+<li>
+<b>Given-evidence reasoning:</b> 第一阶段将给齐完成题目所需的事实，并允许 Python 计算，让模型学习金融推理、单位换算、条件计算、自检和指令遵循。</li>
+<li>
+<b>Phase assignment:</b> 阶段依据每题还缺什么必要信息来确定，不按数据集名称或是否使用 Python 划分；未核验的材料视图保持待审。</li>
+</ul>
+<h4 class="pipeline-group" id="sft-retrieve">第二阶段先检索缺失材料，再完成推理</h4>
+<ul>
+<li>
+<b>Retrieval and reasoning:</b> 第二阶段将使用题面缺少必要信息的任务，让模型检索获准来源，对齐实体、时期与单位后再推理作答。</li>
+<li>
+<b>State continuity:</b> 同一训练作业将跨阶段保留优化器（参数更新状态）与学习率计划，并连同模型保存完整检查点；每个模型的第二阶段将承接自己的第一阶段状态。</li>
 </ul>
 <h4 class="pipeline-group" id="sft-loss">仅核验后的助手行为参与损失</h4>
 <ul>
 <li>
-<b>Loss masking:</b> 打包器屏蔽用户文本、工具返回与无效助手内容，并将示范来源、分词器身份绑定到训练导出。</li>
+<b>Loss masking:</b> 已准入的助手推理、工具调用与最终答案参与监督；system、user 文本、工具返回和无效助手内容仅作上下文。完整轨迹保留原有掩码与分词器绑定，过长或无法精确调度时待审，不截断凑量。</li>
 <li>
-<b>Launch gates:</b> 新一轮 SFT 尚未开始；所需示范、合成配额及共同训练预算的执行检查通过后才能启动。</li>
+<b>Shared budget:</b> 每个条件全程共用 6,553,600 个有效监督 token 和 100 次更新，初始每阶段各 3,276,800 token／50 次更新。token 数只核对监督暴露量，沿用现有损失求平均方式；初始阶段比例尚未经效果验证。</li>
+<li>
+<b>Launch gates:</b> 新一轮 SFT 尚未开始；证据、方法审查、必要的实际配对探测、完整示范、固定合成池和精确预算检查全部通过后，五数据集共同训练入口才能放行。</li>
 </ul>
 </div>
 </div>
