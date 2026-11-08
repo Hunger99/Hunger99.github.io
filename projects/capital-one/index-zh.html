@@ -133,12 +133,12 @@
 <tr><th scope="row">FinSearchComp</th><td>97 道离线支持的 Global T2/T3 原题；上游共 635 题</td><td>48</td><td>19</td><td>30</td></tr>
 <tr><th scope="row">IFEval</th><td>541 道原题</td><td>216</td><td>108</td><td>217</td></tr>
 <tr><th scope="row">FinDeepResearch</th><td>已取得 64 个任务；隔离 1 个来源冲突，冻结 63 个原题；执行资格未就绪</td><td>24</td><td>16</td><td>23</td></tr>
-<tr><th scope="row">MLE-bench 项目子集</th><td>82 个竞赛元数据条目：75 个官方评测＋7 个开发；可运行合格任务 0</td><td>未划分</td><td>未划分</td><td>未划分</td></tr>
+<tr><th scope="row">MLE-bench 项目子集</th><td>82 个竞赛元数据条目：75 个官方评测＋7 个开发；已取得一份作者提供的 NOMAD 表格 CSV 试验数据；可运行合格任务 0</td><td>未划分</td><td>未划分</td><td>未划分</td></tr>
 </tbody>
 </table>
 </div>
 <p class="data-note">原有三数据集已冻结训练 1,206／验证 309／测试 620 题；FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 尚无合格原题。原题训练池只定义任务来源，SFT 还须逐条验收记录了解题消息、工具调用及返回的示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
-<p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 仅盘点了竞赛元数据，数据访问、竞赛规则、原生评分与代码隔离尚待核验；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
+<p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 已取得作者提供的 NOMAD 表格 CSV 试验数据；完整竞赛仍未通过资格核验，原子结构的几何文件缺失，数据使用条件、原生评分与代码隔离尚待核验。五数据集训练仍未就绪；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
 <h3 class="title is-5" id="synthetic-pools">各阶段共用一份合成增量，当前合格数均为 0</h3>
 <div class="table-container" tabindex="0">
 <table class="table setting-table synthetic-counts">
