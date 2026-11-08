@@ -130,13 +130,13 @@
 <tbody>
 <tr><th scope="row">DocFinQA</th><td>1,497 selected original questions</td><td>942</td><td>182</td><td>373</td></tr>
 <tr><th scope="row">FinSearchComp</th><td>97 offline-supported Global T2/T3 originals from the 635-question source release</td><td>48</td><td>19</td><td>30</td></tr>
-<tr><th scope="row">IFEval</th><td>541 original prompts</td><td>216</td><td>108</td><td>217</td></tr>
+<tr><th scope="row">IFEval</th><td>541 raw prompts preserved; 3 conflicting training prompts quarantined uniformly across all nine candidates</td><td>213</td><td>108</td><td>217</td></tr>
 <tr><th scope="row">FinDeepResearch</th><td>64 source tasks acquired; 1 source conflict held, 63 originals frozen; execution not qualified</td><td>24</td><td>16</td><td>23</td></tr>
 <tr><th scope="row">MLE-bench project subset</th><td>82 source competition metadata entries: 75 official evaluation + 7 development; 4 official competitions acquired and prepared as executable candidates; project task admission pending</td><td>Unset</td><td>Unset</td><td>Unset</td></tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">The original three datasets retain 1,206 training / 309 validation / 620 test questions. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench still awaits project task admission. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories: recorded solutions containing model messages, tool calls and results. No complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
+<p class="data-note">The active original pools for the three datasets contain 1,203 training / 309 validation / 620 test questions. IFEval retains all 541 raw prompts; the three training quarantines leave validation and test unchanged and apply to every candidate. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench still awaits project task admission. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories: recorded solutions containing model messages, tool calls and results. No complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
 <p class="data-note">FinDeepResearch still needs an independent evidence corpus and grader integration; expert reports are evaluator targets, not retrieval evidence. Its project split is not an official training split. Four official MLE-bench competition candidates (Insults, Leaf, NOMAD and Spooky) have passed native grading, independent metric recalculation and private-label isolation checks in real sandboxes. Source assignments to SFT augmentation, DAPO augmentation, validation and test remain unset, as do project splits; derived tasks and SFT demonstrations are 0, and the DAPO reward adapter remains unqualified. Five-dataset training remains unready. The official 22-competition Lite set is not this project’s low-cost runnable subset.</p>
 <h3 class="title is-5" id="synthetic-pools">One shared synthetic pool per stage; all qualified counts are currently 0</h3>
 <div class="table-container" tabindex="0">
@@ -154,6 +154,7 @@
 <p class="data-note">A checkpoint is a saved set of model weights that later jobs can continue training.</p>
 <h3 class="title is-5">Two SFT checkpoints serve six DAPO jobs</h3>
 <p class="data-note">In the table, O means the original training pool above; new sources join O only after qualification and freezing. S and R mean the two separate synthetic training pools above. SFT consumes admitted demonstrations for O or O + S; DAPO consumes the corresponding tasks and native rewards. A task count is not a qualified demonstration count. Every S1 descendant reuses the same checkpoint and S pool; every R1 candidate shares the R pool.</p>
+<p class="data-note">S0 and S1 will independently start from the same Base and each follow given-evidence reasoning → retrieval plus reasoning. They share original tasks and evidence views: versions of the same task with specified supplied material. S1 adds one fixed S pool, and all nine retain the same evaluation pools. Each SFT condition shares 6,553,600 supervised output tokens and 100 updates across both phases, initially 3,276,800 tokens and 50 updates per phase. Views and replay do not add unique tasks; full training and its benefit remain unmeasured.</p>
 <p class="table-hint">Scroll the table sideways to see all columns.</p>
 <div class="table-container baseline-scroll" tabindex="0">
 <table class="table setting-table baseline-table">
@@ -278,7 +279,11 @@
 <h4 class="pipeline-group" id="gen-program">Programs expand reproducible weaknesses</h4>
 <ul>
 <li>
+<b>Financial diagnostics:</b> The diagnostic separates financial errors in amount, company, period or unit from formatting and source-identity failures before choosing tasks to strengthen. Historical scores and admission decisions stay unchanged.</li>
+<li>
 <b>Programmatic generation:</b> The generator varies a declared task contract over trusted financial facts and explicit periods, units and calculations. This supplies repeatable practice for unstable or consistently missed capabilities without copying reserved questions.</li>
+<li>
+<b>Structural strengthening:</b> The compiler can filter a complete set of candidates, select a unique eligible company, then compute a dependent comparison. A changed task requires regenerated reference answers and fresh independent review.</li>
 </ul>
 <h4 class="pipeline-group" id="gen-claude">Claude selects questions within a verified contract</h4>
 <ul>
@@ -310,6 +315,8 @@
 <ul>
 <li>
 <b>Sandbox replay:</b> For current financial QA, reference code queries the fixed read-only snapshot through the learner’s restricted tool runtime and must match the independent answer. Planned report and ML tasks must instead pass their native artifact and grader checks; metadata claims alone cannot qualify execution.</li>
+<li>
+<b>Paired probes:</b> The implemented runner can compare the same question with source retrieval enabled and with calculation-only tools that cannot read the source snapshot. Actual records from both model attempts and a review of the task’s required information are still needed; missing records keep evidence views and demonstrations pending.</li>
 </ul>
 <h4 class="pipeline-group" id="review-cloud">Blind solving and adversarial review remain independent</h4>
 <ul>
@@ -352,21 +359,38 @@
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
 <nav class="flow" aria-label="Multi-turn SFT">
-<a class="flow-node" href="#sft-models">Shared checkpoints</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">Loss and release</a>
+<a class="flow-node" href="#sft-models">Independent starts</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-given">Given-evidence reasoning</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-retrieve">Retrieval + reasoning</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">Masks and budget</a>
 </nav>
 <div class="content">
 <span class="status-tag">not started</span>
+<p>The two-stage implementation has passed CPU checks; the full model training run and its effect have not been measured.</p>
 <h4 class="pipeline-group" id="sft-models">Two supervised checkpoints serve the comparison</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add the shared SFT augmentation pool. Both will start from the same Base weights, with the same original tasks; the <a href="#synthetic-pools">pool table</a> defines eligible augmentation and its qualification state.</li>
+<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add the fixed shared SFT augmentation pool. Both will independently start from the same Base and follow the same two phases, with identical original tasks and evidence views; the <a href="#synthetic-pools">pool table</a> defines eligible augmentation and its qualification state.</li>
+</ul>
+<h4 class="pipeline-group" id="sft-given">Phase 1 supplies the evidence needed for reasoning</h4>
+<ul>
+<li>
+<b>Given-evidence reasoning:</b> The first phase will supply all facts needed for the task and permits Python calculation, so the model can learn financial reasoning, unit conversion, conditional calculations, self-checking and instruction following.</li>
+<li>
+<b>Phase assignment:</b> Verified missing information determines the phase, rather than the dataset name or Python use. Unverified evidence views remain held.</li>
+</ul>
+<h4 class="pipeline-group" id="sft-retrieve">Phase 2 retrieves missing evidence before reasoning</h4>
+<ul>
+<li>
+<b>Retrieval and reasoning:</b> The second phase will use tasks that require information absent from the prompt, so the model must retrieve authorized sources and align entities, periods and units before reasoning.</li>
+<li>
+<b>State continuity:</b> One training run will retain the optimizer, which holds the parameter-update state, and the learning-rate schedule across both phases, saving their full state with the model. Each model’s second phase will continue its own first-phase state.</li>
 </ul>
 <h4 class="pipeline-group" id="sft-loss">Only verified assistant behavior contributes to loss</h4>
 <ul>
 <li>
-<b>Loss masking:</b> The packer masks user text, tool returns and invalid assistant content. Demonstration provenance and tokenizer identity are bound to the packed export.</li>
+<b>Loss masking:</b> Admitted assistant reasoning, tool calls and final answers receive supervision; system and user text, tool returns and invalid assistant content provide context only. Complete trajectories retain their masks and tokenizer binding; overlong or infeasible schedules are held without clipping.</li>
 <li>
-<b>Launch gates:</b> The new SFT stage has not started. Required demonstrations, synthetic quotas and the common training-budget execution checks must pass before launch.</li>
+<b>Shared budget:</b> Each condition has one total of 6,553,600 supervised tokens and 100 updates, initially split into 3,276,800 tokens and 50 updates per phase. These tokens count supervised exposure; existing loss averaging is unchanged, and the initial allocation has not been evaluated.</li>
+<li>
+<b>Launch gates:</b> The new SFT stage has not started. Evidence, method review, actual paired probes where required, complete demonstrations, fixed synthetic pools and exact budget checks must pass before the common five-dataset training gate can open.</li>
 </ul>
 </div>
 </div>
