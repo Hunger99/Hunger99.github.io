@@ -13,15 +13,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Financial LLM Agent with SFT and DAPO</title>
-  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text></svg>">
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
+<text y=%22.9em%22 font-size=%2290%22>%E2%9C%A8</text>
+</svg>">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js">
+</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
+</script>
   <link rel="stylesheet" href="static/css/main.css">
 </head>
 <body>
@@ -39,9 +43,14 @@
             with Multi-Turn Agent SFT and DAPO
           </h1>
           <div class="is-size-5 publication-authors">
-            <span class="sponsor-line"><img src="../../assets/images/badges/Capital-One.png" alt="Capital One"><small>Sponsored Practicum Project</small></span>
+            <span class="sponsor-line">
+<img src="../../assets/images/badges/Capital-One.png" alt="Capital One">
+<small>Sponsored Practicum Project</small>
+</span>
             <br>
-            <span class="eql-cntrb"><small>Sep. 2026 – mid-Nov. 2026 (expected)</small></span>
+            <span class="eql-cntrb">
+<small>Sep. 2026 – mid-Nov. 2026 (expected)</small>
+</span>
           </div>
 
           <span class="venue-text">Ongoing Project</span>
@@ -49,9 +58,12 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
-                <a href="https://github.com/Hunger99/fin-agent-posttrain" target="_blank"
+                <a href="https://github.com/Hunger99/llm-pipeline" target="_blank"
                    class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span class="icon">
+<i class="fab fa-github">
+</i>
+</span>
                   <span>Code</span>
                 </a>
               </span>
@@ -63,448 +75,454 @@
   </div>
 </section>
 
-<!-- Teaser figure -->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img src="static/images/teaser.svg" alt="Success rates on the market-data test, FinSearchComp and DocFinQA for the base, official, SFT and teacher models" style="display: block; margin: 0 auto; width: 100%;">
-      <h2 class="subtitle has-text-centered">
-        On tasks of the trained types, multi-turn agent SFT takes the 4B model from 16.7% to 87.3%, past the official Qwen3.5-4B (57.7%). On FinSearchComp tasks written outside the project it reaches 74.5%, past the official model's 64.3%, and on long-document QA it reaches 53.0%, level with the official model.
-      </h2>
-    </div>
-  </div>
-</section>
-<!-- End teaser figure -->
-
-<!-- Abstract -->
 <section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            This project post-trains a 4B base model, Qwen3.5-4B-Base, into a tool-using financial agent that looks up market prices, macroeconomic series and company filings, computes over them in a Python sandbox and answers multi-step questions. The official post-trained Qwen3.5-4B already solves 84.7% of our earlier market-retrieval development tasks, so we built a harder offline dataset of 3,148 tasks (2,350 training, 200 development and 598 test tasks). Of these, 2,850 are generated in the style of the public benchmark FinSearchComp over a fixed data snapshot, with answers computed by programs and rechecked by an independent implementation; the rest are 98 FinSearchComp tasks and 200 DocFinQA questions over full annual reports. A teacher, the larger model Qwen3.8-27B, solves the market training tasks of two difficulty tiers and tasks that read annual reports inside an agent harness, the code that gives a model its tools and checks its answers, and each attempt is saved as a trajectory, the full record of its messages, tool calls and tool results. These trajectories, after filtering, with filtered wealth-management and machine-learning trajectories and 2,000 samples from a 1:1 mix of finance and general data, train the 4B model with multi-turn agent SFT (supervised fine-tuning, which continues training on examples with known answers). On 300 market-data test tasks from held-out stocks and later periods, the SFT model solves <b>87.3%</b>, against 57.7% for the official Qwen3.5-4B, 16.7% for the base model and 94.7% for the teacher. On DocFinQA it solves 53.0%, level with the official model and 14.0 points above the first SFT run, whose data held no trajectory that read a report. The project uses DAPO for reinforcement learning from the SFT checkpoint. These reported SFT results belong to the earlier data batches; the data architecture below separates programmatic expansion from Claude exploration and applies common review.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered">Abstract</h2>
+<div class="content has-text-justified">
+<p>This project compares nine post-training settings for Qwen3.5-4B-Base using DocFinQA, FinSearchComp and IFEval. Multi-turn supervised fine-tuning (SFT) teaches the model from verified demonstrations; DAPO then learns from tool-assisted attempts and rule-based rewards. Only FinSearchComp receives additional synthetic questions. Programmatic expansion targets reproducible weaknesses, while Claude proposes questions within source-bound task contracts; both branches share independent computation, executable tool checks, blind solving and adversarial review. All settings retain identical original questions and a common evaluation set, so the comparison can distinguish synthetic-data gains at SFT, DAPO or both stages.</p>
+</div>
+</div>
 </section>
-<!-- End abstract -->
-
-<!-- Data -->
-<section class="section hero data-section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered" id="co-data">Data</h2>
-
-    <h3 class="title is-5">The reported SFT model uses 14,486 samples</h3>
-    <div class="content has-text-justified">
-      <p>The table counts the actual inputs after packing exclusions. These historical batches used source-specific filters, not the common Claude review in the two-branch pipeline; a recorded read call alone did not establish a successful evidence read.</p>
-    </div>
-    <table class="table is-narrow data-table">
-      <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>Market trajectories (4,791)</b></td>
-          <td data-label="What">The teacher solves original- and hard-tier tasks over prices, macroeconomic series and company filings.</td>
-          <td data-label="Why">These trajectories provide examples of retrieval, adjusting prices for splits and dividends, and multi-step calculations.</td>
-        </tr>
-        <tr>
-          <td><b>Wealth management (5,278)</b></td>
-          <td data-label="What">The teacher completes trading and database tasks under customer and product rules.</td>
-          <td data-label="Why">These trajectories add rule-constrained write actions beyond read-only market tools.</td>
-        </tr>
-        <tr>
-          <td><b>Machine learning (406)</b></td>
-          <td data-label="What">The teacher inspects tables, trains candidate models and submits a model through tools.</td>
-          <td data-label="Why">These trajectories add data-processing and model-selection decisions.</td>
-        </tr>
-        <tr>
-          <td><b>DocFinQA trajectories (1,474)</b></td>
-          <td data-label="What">The teacher answers questions over annual reports.</td>
-          <td data-label="Why">These trajectories provide examples of report search, passage reads and numerical answers.</td>
-        </tr>
-        <tr>
-          <td><b>Annual-report-to-trade tasks (537)</b></td>
-          <td data-label="What">The teacher answers a report question before applying trading rules in <code>t6_report_gate</code>.</td>
-          <td data-label="Why">These trajectories connect document evidence to business decisions.</td>
-        </tr>
-        <tr>
-          <td><b>Direct-QA supplement (2,000)</b></td>
-          <td data-label="What">The builder adds 1,019 general Tülu 3 samples and 981 finance QA samples, including 115 rewritten article-QA samples.</td>
-          <td data-label="Why">These samples add direct answers without tool use alongside the agent trajectories.</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="data-note">The final inputs contain 12,486 teacher trajectories and 2,000 direct-QA samples. Filtering and packing are explained in the Pipeline section.</p>
-
-    <h3 class="title is-5">Evaluation separates task generalization, retained abilities and development choices</h3>
-    <table class="table is-narrow data-table">
-      <thead><tr><th>Data</th><th>What</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>Market test (300)</b></td>
-          <td data-label="What">The test covers 10 trained task types on held-out stocks and later time windows.</td>
-          <td data-label="Why">It measures generalization within the trained task families.</td>
-        </tr>
-        <tr>
-          <td><b>External financial tasks</b></td>
-          <td data-label="What">The tests use 98 offline FinSearchComp Global T2/T3 questions and 200 full-report DocFinQA questions.</td>
-          <td data-label="Why">FinSearchComp probes externally authored tasks; DocFinQA probes reports separate from those used in its teacher-training trajectories.</td>
-        </tr>
-        <tr>
-          <td><b>Business and model-building tasks</b></td>
-          <td data-label="What">The tests contain 500 wealth-management tasks and 50 machine-learning tasks.</td>
-          <td data-label="Why">They measure rule-following on new customers and products, and model quality on hidden data, respectively.</td>
-        </tr>
-        <tr>
-          <td><b>Finance and general benchmarks</b></td>
-          <td data-label="What">The evaluation uses FinQA/TAT-QA (1,886), MMLU (13,018), GSM8K (1,319) and IFEval (541).</td>
-          <td data-label="Why">They measure financial calculations, knowledge, math and instruction following, respectively.</td>
-        </tr>
-        <tr>
-          <td><b>Development set (200)</b></td>
-          <td data-label="What">The model makes four attempts per question across 10 task types.</td>
-          <td data-label="Why">These results guide method selection separately from the final test scores.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<section class="section hero data-section" id="data-sets">
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered" id="co-data">Data Sets</h2>
+<table class="table is-narrow data-table">
+<thead>
+<tr>
+<th>Dataset and source</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a>
+</td>
+<td data-label="Definition">Financial question answering over full annual reports, requiring passage retrieval and numerical reasoning.</td>
+</tr>
+<tr>
+<td>
+<a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a>
+</td>
+<td data-label="Definition">An expert-authored benchmark for financial search and reasoning over market and company information.</td>
+</tr>
+<tr>
+<td>
+<a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a>
+</td>
+<td data-label="Definition">Instruction-following prompts with programmatically checkable requirements such as format, length, keywords and language.</td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<!-- End data -->
-
-<!-- Pipeline -->
+<section class="section hero is-light" id="baselines">
+<div class="container is-max-widescreen">
+<h2 class="title is-3 has-text-centered">Baselines</h2>
+<p class="data-note">The original validation pool (309 questions) and original test pool (620) are already frozen. Currently 0 synthetic questions have qualified. Synthetic counts below are minimum acceptance quotas: validation totals 347 and test totals 680 only after those quotas are met. Question-pool counts are not qualified SFT-demonstration counts. DocFinQA and IFEval receive no synthetic questions.</p>
+<h3 class="title is-5">Original question pools</h3>
+<div class="table-container">
+<table class="table setting-table original-counts">
+<thead>
+<tr>
+<th>Original dataset</th>
+<th>Training</th>
+<th>Validation</th>
+<th>Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">DocFinQA</th>
+<td>942</td>
+<td>182</td>
+<td>373</td>
+</tr>
+<tr>
+<th scope="row">FinSearchComp</th>
+<td>48</td>
+<td>19</td>
+<td>30</td>
+</tr>
+<tr>
+<th scope="row">IFEval</th>
+<td>216</td>
+<td>108</td>
+<td>217</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="data-note">The SFT synthetic set is shared by settings 3, 5 and 7; the separate DAPO synthetic set is shared by settings 6, 7 and 9. Training, validation and test instances and their source support are kept separate. Two SFT checkpoints are reused across six DAPO jobs, producing nine model settings in total.</p>
+<p class="table-hint">Scroll the table sideways to see all columns.</p>
+<div class="table-container baseline-scroll" tabindex="0">
+<table class="table setting-table baseline-table">
+<thead>
+<tr>
+<th>Model setting</th>
+<th>SFT training</th>
+<th>DAPO training</th>
+<th>Common validation</th>
+<th>Common test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1 · Original 4B</th>
+<td>No training</td>
+<td>No training</td>
+<td rowspan="9" class="common-pool">
+<div class="pool-counts">
+<span>DocFinQA: 182</span>
+<span>FinSearchComp: 19 <b>+ 38 synthetic</b>
+</span>
+<span>IFEval: 108</span>
+</div>
+<p class="pool-total">Minimum after qualification: 347</p>
+<p>After qualification, freeze one shared release for all nine settings.</p>
+</td>
+<td rowspan="9" class="common-pool">
+<div class="pool-counts">
+<span>DocFinQA: 373</span>
+<span>FinSearchComp: 30 <b>+ 60 synthetic</b>
+</span>
+<span>IFEval: 217</span>
+</div>
+<p class="pool-total">Minimum after qualification: 680</p>
+<p>After qualification, freeze one shared release for all nine settings.</p>
+</td>
+</tr>
+<tr>
+<th scope="row">2 · Original SFT (S0)</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>No training</td>
+</tr>
+<tr>
+<th scope="row">3 · Augmented SFT (S1)</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>No training</td>
+</tr>
+<tr>
+<th scope="row">4 · S0 → original DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">5 · S1 → original DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">6 · S0 → augmented DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">7 · S1 → augmented DAPO</th>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">8 · Original 4B → original DAPO</th>
+<td>No training</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+<tr>
+<th scope="row">9 · Original 4B → augmented DAPO</th>
+<td>No training</td>
+<td>
+<div class="pool-counts">
+<span>DocFinQA: 942</span>
+<span>FinSearchComp: 48 <b>+ 96 synthetic</b>
+</span>
+<span>IFEval: 216</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="data-note">The test setting retains 620 frozen original questions and requires at least 60 independently reviewed FinSearchComp additions before the expanded test is available. Report original-only scores and the synthetic challenge score separately, alongside any combined score. FinSearchComp uses 97 supported Global T2/T3 original questions from the 635-question release; six questions with added background are training-only. The original FinSearchComp and IFEval questions have historical evaluation exposure; these project subsets are not fresh, untouched confirmation sets.</p>
+<p class="data-note">Freeze both synthetic validation and test sources, questions and graders before learner calibration or model selection. Validation may subsequently guide model and mixture selection; test answers and test outcomes do not feed generation, filtering thresholds or checkpoint choice.</p>
+</div>
+</section>
 <section class="section hero">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column">
-        <h3 class="title is-3">Pipeline</h3>
-        <div class="content"><p>Select a stage to see what it does.</p></div>
-        <div class="pipeline" id="co-pipeline" data-pipeline>
-          <div class="pipeline-steps" role="tablist" aria-label="Project pipeline stages">
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-selected="true" aria-controls="co-panel-1"><span class="pipeline-step-num">1</span>Data pipeline</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>Offline dataset</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>Agent harness</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>Multi-turn agent SFT</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>SFT evaluation</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6"><span class="pipeline-step-num">6</span>DAPO (running)</button>
-            <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-            <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7"><span class="pipeline-step-num">7</span>RL evaluation (next)</button>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-            <nav class="flow" aria-label="Data pipeline stages">
-              <a class="flow-node" href="#dp-selection">Sources and splits</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-synthesis">Two generation branches</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-filtering">Common verification and review</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-dedup">SFT and RL routing</a><span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#dp-mixing">Mixing and release</a>
-            </nav>
-            <div class="content">
-              <p>The data architecture combines programmatic generation for known weaknesses with Claude generation for uncovered task structures. Both branches pass the same independent checks and mandatory Claude review. Task approval, demonstration approval and measured training gains are separate questions.</p>
-              <p class="pipeline-group" id="dp-selection">Fixed sources and four splits keep selection separate from final testing</p>
-              <ul>
-                <li><b>Source inventory:</b> Each task records its source snapshot, entities, dates, parent, task family and generation method. Question overlap and report overlap are counted separately, so a new question on a seen report is not presented as a new report.</li>
-                <li><b>Four-way split:</b> Training supplies examples, calibration fixes formats and difficulty measurements, development selects mixtures and checkpoints, and a frozen test set reports the final choice. Related tasks inherit their source split; test questions and answers never enter the generation feedback.</li>
-                <li><b>Failure analysis:</b> Valid failures on training and calibration tasks identify missing operations, unstable decisions and uncovered constraints. Tool failures and malformed questions are diagnosed separately so generation does not turn infrastructure errors into harder exercises.</li>
-              </ul>
-              <p class="pipeline-group" id="dp-synthesis">Two branches practise known weaknesses and explore missing task structures</p>
-              <ul>
-                <li><b>Program generation + Claude review:</b> Seeded programs vary entities, dates, constraints and dependent operations inside verified task families. This branch supplies reproducible practice where the model is inconsistent or repeatedly fails a valid task, and also supplies simpler intermediate exercises.</li>
-                <li><b>Claude generation + Claude review:</b> A generation conversation receives a capability gap, available data and tool contracts, and proposes a task family and instances with explicit rules. Rewording an existing question or adding text does not count as new capability coverage.</li>
-                <li><b>Claude requests:</b> The v2 client is configured to send both branches' Claude requests through the native Messages interface of <a href="https://github.com/router-for-me/CLIProxyAPI">CLIProxyAPI</a>, with caller-defined prompts and a separate context for each role. Requests specify Opus 5.5 with Extra High reasoning effort for generation and Medium for blind solving, adversarial review and trajectory review; call records bind the served model and requested effort to each result.</li>
-                <li><b>Trusted task adapters:</b> An adapter maps a structured task into tool execution and an independent answer computation. The market adapter handles price windows, offsetting market exposure and costed holdings; bounded integer allocation states how many lots each account may buy under its own limits and a shared budget. Unsupported proposals stay isolated until their data, tools and validators are established; generated validator code is not trusted by default.</li>
-                <li><b>Family promotion:</b> A Claude-origin family can become a verified program template for repeated expansion. Its original designer and each instance's current generator remain separate provenance fields, and every new instance still passes common review.</li>
-              </ul>
-              <p class="pipeline-group" id="dp-filtering">Independent computation and Claude review check different failure modes</p>
-              <ul>
-                <li><b>Rules and tool execution:</b> Schema, units, duplicates and split boundaries are checked before model review. Separate computation implementations recompute the reference, and a reference solution runs through the actual tools, so an executable answer cannot rely on inaccessible evidence.</li>
-                <li><b>Blind solution:</b> A fresh Claude conversation sees only the student-visible question, materials and tool contract, and writes a solution. The solution executes in the same CPU tool sandbox and its output must pass independent grading before adversarial review.</li>
-                <li><b>Adversarial review:</b> Another fresh conversation checks the question and reference for ambiguity, contradictions, unavailable information, wrong units, future information and grading exploits. Every retained instance needs a reasoned approval; missing, failed or over-budget reviews remain unresolved. Separate conversations do not guarantee independent errors.</li>
-              </ul>
-              <p class="pipeline-group" id="dp-dedup">Measured success patterns route tasks to different training uses</p>
-              <ul>
-                <li><b>SFT candidates:</b> A successful teacher attempt is a candidate demonstration, not automatic admission. Only a trajectory that passes its own checks and review enters supervised fine-tuning, which teaches the model by imitation.</li>
-                <li><b>Demonstration review:</b> Each retained SFT trajectory additionally needs successful evidence reads, valid calculations, an accepted terminal answer and Claude review of the actual method. Tokens of rejected actions remain in context but are excluded from the imitation loss, so a successful recovery need not teach the rejected action.</li>
-                <li><b>RL candidates:</b> Tasks with both correct and incorrect current-student attempts can supply within-group reward differences for DAPO. All-wrong tasks first receive diagnosis, reliable demonstrations or intermediate exercises; all-right tasks can serve retention. Finite attempts estimate current performance, not learning gains.</li>
-                <li><b>Deduplication and reuse:</b> Exact questions and related source instances are checked across training and reserved pools. A fresh RL pool excludes questions used in the preceding SFT batch; online RL rewards remain programmatic rather than adding a Claude judge to every exploration trajectory.</li>
-              </ul>
-              <p class="pipeline-group" id="dp-mixing">Mixing counts approved instances and releases immutable training inputs</p>
-              <ul>
-                <li><b>Accepted-instance mixture:</b> Branch proportions count unique questions that pass the shared review, not generation attempts or multiple trajectories of one question. A shortfall stops publication rather than silently filling the quota with duplicates or rejected tasks. SFT tokens and effective RL groups are reported separately.</li>
-                <li><b>Cost control:</b> Rules reject obvious failures first, and exact version-bound reviews can use a cache. Accounting includes Claude generation, both branches' task reviews, SFT trajectory reviews and failed attempts. A shared cap reserves the worst-case request cost before sending, and interrupted or unpriced calls block further spending.</li>
-                <li><b>Release contract:</b> Code, snapshots, prompts, model identities, independent references, reviews, task IDs, tokenizer and loss masks are bound to the released data. CPU diagnostic readiness and simulation outputs cannot authorize training. Fresh SFT starts from the Base checkpoint with a new packed dataset and output directory; RL follows the resulting checkpoint and fresh difficulty measurements.</li>
-              </ul>
-            </div>
-            <div class="pipeline-facts"><span class="pipeline-fact">2 generation branches · common mandatory review</span><span class="pipeline-fact">Separate task and demonstration approval</span></div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
-            <nav class="flow" aria-label="Offline dataset stages">
-              <a class="flow-node" href="#od-snapshot">Data snapshot</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-split">Split</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-generation">Task generation</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-answers">Answer computation</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-verification">Independent verification</a>
-              <span class="flow-arrow" aria-hidden="true">&rarr;</span>
-              <a class="flow-node" href="#od-dataset">Dataset</a>
-            </nav>
-            <div class="content">
-              <p>The reported model's original program-generated task collection uses fixed snapshots and executable reference answers.</p>
-              <p class="pipeline-group" id="od-snapshot">The data snapshot fixes the data, so programs can compute and recheck every answer</p>
-              <ul>
-                <li><b>SQLite snapshot:</b> One database file stores daily prices of 565 securities with 35,727 splits and dividends, 68 FRED macroeconomic series and the SEC XBRL filings of 516 companies (machine-readable company financial reports). Live data would change, so only a fixed snapshot lets a program compute each answer and grade each task.</li>
-                <li><b>Point-in-time vintage:</b> The snapshot fixes FRED values at its cutoff or latest stored vintage; it does not reconstruct what was known at every earlier decision date, so these tasks do not establish historically available-information backtests.</li>
-              </ul>
-              <p class="pipeline-group" id="od-split">The split keeps test entities and periods out of training</p>
-              <ul>
-                <li><b>Entity split:</b> A hash of the ticker assigns each stock to training, development or test at about 70/10/20, and filing tasks follow their company, so the market-data test measures companies the model has not seen.</li>
-                <li><b>Temporal split:</b> Indices, ETFs (funds that trade like stocks), FX rates and FRED series split by time into 2000–2016 for training, 2017–2019 for development and 2020 onward for test, so the market-data test measures periods after the training window.</li>
-                <li><b>Limit of the split:</b> The development set holds 47 stocks and the test set 99, and the S&amp;P 500 list comes from 2026, so it holds only companies that survived to that year.</li>
-              </ul>
-              <p class="pipeline-group" id="od-generation">The original program-generated batch follows FinSearchComp and adds a hard tier</p>
-              <ul>
-                <li><b>Need for harder tasks:</b> The official Qwen3.5-4B already scores near full marks on 11 of the 14 wealth-management task types, which mainly test calling tools by the rules, so the project needs tasks the official model also does badly on.</li>
-                <li><b>Operations from FinSearchComp:</b> Labelling FinSearchComp's T2 and T3 tasks showed recurring operations, such as unadjusted prices, the Nth trading day after a date, threshold scans, period extremes, monthly resampling, maximum drawdown and rolling standard deviation, and the generator builds task types from them because the benchmark's difficulty comes from many periods of data, price adjustment, unit conversion and multi-step aggregation.</li>
-                <li><b>Original tier:</b> The generator builds 17 task types of difficulty 1–3 by drawing entities and time windows, with 200 training, 20 development and 30 test tasks per task type, so training practices each of the operations above on its own.</li>
-                <li><b>Hard tier:</b> The generator builds 8 composite task types of difficulty 4–5, motivated by the teacher solving 99.7% of original-tier development tasks; the student's RL signal still needs its own measurement. A composite task chains operations, so one wrong step fails it, and difficulty comes from steps and conventions, not obscure data.</li>
-                <li><b>One round of hardening:</b> The generator rewrites the 5 hard task types on which the teacher scores at least 95% on the development set, giving company names only, standard terms and extra keys, which lowers the teacher from 98/100 to 93/100 on them, because the tier needs tasks the teacher can also get wrong. This happens once, because repeated changes would tune the tasks on the development set.</li>
-              </ul>
-              <p class="pipeline-group" id="od-answers">Answer computation gives every task a reference a program can check</p>
-              <ul>
-                <li><b>Computed answers:</b> The generator computes each reference answer from the snapshot and drops candidates that invite misgrading, such as answers near a rounding boundary or dates close to a threshold, so a score does not turn on a rounding edge.</li>
-                <li><b>Key-based grading:</b> The grader splits a reference answer into keys (a number within tolerance, a date, a text or a set) and passes a task only when every key appears correctly in the final answer, so scores need no model judge and can be recomputed. A count key can still match another small integer in the answer.</li>
-              </ul>
-              <p class="pipeline-group" id="od-verification">Independent verification checks answers and tools</p>
-              <ul>
-                <li><b>Independent verification:</b> A separate SQL and Python implementation recomputes answers from task parameters; all answers in both tiers match. Comparing implementations can expose discrepancies, but shared assumptions or mistakes can still escape this check.</li>
-                <li><b>Golden policy:</b> A scripted solver uses only the tools, one Python call and <code>finish</code>, and solves every task through the same loop, verification and grading as the model, which shows the tools are sufficient for each task.</li>
-              </ul>
-              <p class="pipeline-group" id="od-dataset">The dataset holds 3,148 tasks, with sources and task types chosen on development results</p>
-              <ul>
-                <li><b>Composition:</b> The dataset fixes 2,350 training, 200 development and 598 test tasks, totaling 3,148. The Data section lists the test sources. Development guides method selection; the frozen test reports the selected method.</li>
-                <li><b>Training file:</b> The file holds 250 tasks from each of 7 hard task types and 200 from each of <code>rolling_vol</code>, <code>extreme_period</code> and <code>xbrl_ratio</code>, 2,350 tasks in all. It drops the eighth hard type, <code>div_event_study</code>, because the official model solves 19/20 of its development tasks, which leaves no room to show a gain, and it keeps the original tier's three types the official model does worst on (2/20, 14/20, 14/20). The SFT model also uses trajectories on the other 14 original-tier task types, 2,800 tasks beyond these.</li>
-                <li><b>Development and market-data test files:</b> Both files use the same task types under the entity and time splits above. Test tasks are not selected by whether a model answers them correctly, so models can be compared on the same fixed questions.</li>
-                <li><b>FinSearchComp file:</b> Of the 203 Global T2 and T3 tasks, the file keeps the 98 on which the snapshot's value agrees with the official answer within tolerance, so a score does not rest on a snapshot value that disagrees with that answer.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
-            <nav class="flow" aria-label="Agent harness parts">
-              <a class="flow-node" href="#ah-context">Context management</a>
-              <a class="flow-node" href="#ah-tools">Tool interface and constraints</a>
-              <a class="flow-node" href="#ah-verification">Verification and correction</a>
-            </nav>
-            <div class="content">
-              <p>The harness in this work has three parts: context management, tool interface and constraints, and verification and correction. The description below is version 3, used on market and DocFinQA tasks; wealth-management, machine-learning and <code>t6_report_gate</code> tasks use version 2, which truncates older tool results into summaries.</p>
-              <p class="pipeline-group" id="ah-context">Context management</p>
-              <ul>
-                <li><b>System prompt:</b> The harness opens each task with a message that states the model's role, the task's rules and how to use the tools.</li>
-                <li><b>Append-only context:</b> The harness never changes a message after sending it, so each request's messages are a prefix of the next request and of the stored trajectory. The stored trajectory is then exactly what the model saw at each step, and SFT and RL train on the sequence as it was sampled.</li>
-                <li><b>Tool-result cap:</b> The harness cuts each tool result to 8,000 characters when the tool returns it and appends a note on how to ask for less, such as the next page or a shorter date range. Every market tool returns at most 7,500 characters per page and <code>read_chunk</code> with neighbouring passages about 7,100, below the cap, so the model does not receive cut-off JSON.</li>
-                <li><b>Checklist (<code>set_checklist</code>):</b> The model writes the steps of a request into a checklist and marks them done, the harness restates the list after every tool result, and the model may call the tool at most 20 times in a task. This mainly reduces skipped sub-tasks.</li>
-                <li><b>Step budget:</b> The harness counts only task turns against the limit of 100 steps; checklist-only turns, a turn with a rejected finish and the 10 turns after it stay outside the count, under a hard cap of 142 turns. Checklist upkeep and redoing are actions the harness itself adds, and on long tasks they would use up the step limit.</li>
-                <li><b>Thinking-preserving chat template:</b> A changed Qwen3.5 chat template, the rule that renders messages into model input, keeps the thinking of every assistant turn after the first user message. Under the original template a nudge, which is a user message, removed the earlier thinking from the next prompt, so the stored trajectory was no longer what the model saw.</li>
-                <li><b>Token-level logging:</b> The harness records each turn's prompt token count, sampled tokens and their log probabilities, plus <code>prefix_ok</code>, a flag for whether the prompt begins with the previous prompt and its completion. RL can then use the sampled tokens and probabilities without rescoring them, and the flag exposes any turn rendered differently from how it was sampled.</li>
-              </ul>
-              <p class="pipeline-group" id="ah-tools">Tool interface and constraints</p>
-              <ul>
-                <li><b>Function calling:</b> The harness describes each tool's name and arguments to the model in JSON Schema, a standard format for structured data, and the model calls tools in the native function-calling format.</li>
-                <li><b>Tool sets:</b> The market environment offers 11 tools, wealth management 12, machine learning 5, DocFinQA 4 and <code>t6_report_gate</code> (version 2) 14, each count including <code>finish</code>, which ends a task with the answer; the full harness adds <code>set_checklist</code>.</li>
-                <li><b>BM25 two-step retrieval:</b> BM25, a keyword ranking algorithm, scores a passage higher when the query's words are frequent in it and rare elsewhere, and the harness uses it alone, with no vector search or reranking. A search of the wealth-management knowledge base of fund prospectuses returns ids, titles and opening text of at most 10 passages, and the model then reads a full passage by its id. DocFinQA cuts a 10-K into passages of 1,500 characters with 200 characters of overlap, a search there returns snippets of about 240 characters, and only <code>read_chunk</code> gives the full passage.</li>
-                <li><b>Sandbox (<code>run_python</code>):</b> The harness runs the model's code in bubblewrap, a Linux tool that isolates a process, with no network, a read-only file system outside a temporary directory, 30 seconds and 3 GiB.</li>
-                <li><b>Constraints:</b> Before a write action runs, code checks its arguments against the tool schema and the business rules, refuses a violating action unexecuted and returns the reason to the model, which mainly reduces rule violations and bad arguments.</li>
-              </ul>
-              <p class="pipeline-group" id="ah-verification">Verification and correction</p>
-              <ul>
-                <li><b>Answer verification:</b> On <code>finish</code>, the harness checks that the answer's numbers have support in tool results or the request, that every checklist item is done and that the environment's own checks pass; on market tasks a number counts as supported when a tool-result number matches it after scaling by thousands, millions, billions or percent and rounding to the answer's decimals. Unit conversions therefore pass, while numbers worked out in the model's head or recalled from memory are rejected.</li>
-                <li><b>Rejection limit:</b> The harness rejects at most 2 finishes in a task and accepts the next one unchecked.</li>
-                <li><b>Correction messages:</b> The harness returns the failing checks after a rejected finish and an example of a valid call after a tool error, which mainly reduces loops and exhausted step budgets.</li>
-                <li><b>Loop hint:</b> The harness tells the model to change approach on the third identical call.</li>
-                <li><b>Nudge:</b> The harness appends a reminder after a reply with no tool call.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
-            <div class="content">
-              <ul>
-                <li><b>Packing:</b> The builder drops 48 trajectories over their token limits and 7 multi-user-message trajectories that would lose earlier thinking under the chat template. It renders market and DocFinQA trajectories with the thinking-preserving chat template up to 32,768 tokens, and <code>t6_report_gate</code> trajectories up to 32,768 and wealth-management and machine-learning trajectories up to 16,384 with Qwen3.5's own template, then packs the 14,486 samples into 2,830 sequences of at most 32,768 tokens, so short samples fill each sequence's token budget and a step of 12 sequences trains on about 61 samples. The market limit is 32,768 because the median <code>xbrl_ratio</code> trajectory has 17,661 tokens, so 16,384 would lose over half of that task type.</li>
-                <li><b>Settings:</b> Training fine-tunes all parameters of Qwen3.5-4B-Base for 2 epochs (two passes through the data) and 472 steps, on 6 GPUs, at a learning rate of 1e-5 that falls along a cosine curve. It starts from the Base model so that everything the model learns after pre-training comes only from this project's data.</li>
-                <li><b>Loss:</b> Training minimizes the cross-entropy between the model's next-token prediction and the label, the standard loss for next-token prediction \(\mathcal{L} = -\frac{1}{N}\sum_{t:\, y_t \neq -100} \log p_\theta(y_t \mid x_{&lt;t})\), where \(x_{&lt;t}\) is the sequence before position \(t\), \(\theta\) the model weights and \(N\) the number of labeled tokens, so the model reproduces the labeled turns token by token. Training computes the loss only at labeled positions, in chunks, which leaves its value and gradients unchanged, because the model's scores for every vocabulary token at every position of a long sequence do not fit in GPU memory.</li>
-                <li><b>Labels:</b> A label is the token itself where the model should learn and &minus;100, which the loss ignores, everywhere else. The labels cover thinking, text and tool calls in a trajectory's assistant turns, because the model later runs under a chat template that keeps past thinking in its context, and they mask system, user and tool turns, because tools produce their own output.</li>
-                <li><b>Masked turns:</b> Market and DocFinQA trajectories mask a reply that drew a nudge and a turn with a rejected call but keep them in the context, because a loss there would teach the model to hand in wrong answers first, while the later correction is still learned; <code>t6_report_gate</code> trajectories mask rejected turns too. Wealth-management and machine-learning trajectories keep the loss on rejected turns. The builder drops wealth-management, machine-learning and <code>t6_report_gate</code> trajectories with a nudge.</li>
-                <li><b>Malformed calls:</b> The data builder also masks turns with malformed calls, such as unknown tool names, because a loss there teaches wrong names.</li>
-                <li><b>Sample boundaries:</b> Each batch tells the model where every sample in a shared sequence begins and ends, because Qwen3.5's linear-attention layers, an attention variant that carries state along the sequence, would otherwise leak one sample into the next. This cut the largest per-token loss difference from 6.3 to 0.13, which is numerical noise.</li>
-              </ul>
-            </div>
-            <div class="pipeline-facts">
-              <span class="pipeline-fact">27.09M of 92.70M tokens carry loss</span>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
-            <div class="content">
-              <p>Programs score every model; the Data section lists the task sets.</p>
-              <p class="pipeline-group">Scores and comparisons</p>
-              <ul>
-                <li><b>Success rate:</b> The score counts the share of tasks in the set \(T\) that pass, where \(s_t = 1\) when task \(t\) passes, so only a fully finished task earns credit. \[S = \frac{100}{|T|}\sum_{t \in T} s_t\]</li>
-                <li><b>Paired bootstrap:</b> The comparison subtracts two models' results on the same tasks, where \(a_i\) and \(b_i\) are 100 for a correct task and 0 otherwise, and takes the 95% interval from 10,000 resamples of the \(n\) tasks. Pairing removes task difficulty from the difference, which narrows the interval; it covers task sampling only, since each test task runs once. \[\Delta = \frac{1}{n}\sum_{i=1}^{n}(b_i - a_i)\]</li>
-              </ul>
-              <p class="pipeline-group">Finance QA and general abilities</p>
-              <ul>
-                <li><b>Finance score:</b> The scorer takes the first number after the last "Answer:" and marks the question correct when it is within 1% of the reference, in percent or decimal form. Every model gets the same prompt with 3 worked examples and no chat template, because a base model is not trained on chat format and scores must stay comparable. Here \(D\) is the question set, \(y_i\) the reference, \(\hat{y}_i\) the answer and \(\tau_i = 0.01|y_i|\), or 0.005 when \(y_i = 0\). \[A_{\text{fin}} = \frac{100}{|D|}\sum_{i \in D}\mathbf{1}\Big[\min_{k \in \{1,\,100,\,0.01\}}|k\hat{y}_i - y_i| \le \tau_i\Big]\]</li>
-                <li><b>MMLU:</b> The scorer marks a knowledge question correct when the most likely option \(o\) for prompt \(x_q\) is the right option \(o^{*}_q\), over the question set \(Q\). Comparing option probabilities needs no generated format, so the base and SFT models stay comparable, and four economics and accounting subjects are left out, because financial training would raise them and hide declines elsewhere. \[A_{\text{MMLU}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}\Big[\arg\max_{o}\log p(o \mid x_q) = o^{*}_q\Big]\]</li>
-                <li><b>GSM8K:</b> The scorer marks a math word problem correct when \(\hat{a}_q\), the last number in the reply, equals the reference \(a_q\), which shows whether multi-step arithmetic survives outside the filing format. Every model gets the same prompt with 5 worked examples and no chat template, as the finance score does. \[A_{\text{GSM}} = \frac{100}{|Q|}\sum_{q \in Q}\mathbf{1}[\hat{a}_q = a_q]\]</li>
-                <li><b>IFEval:</b> The scorer counts a prompt in the set \(P\) only when the reply meets all its program-checkable instructions \(I_p\), such as a word limit or JSON output, where \(f_{p,j}=1\) when instruction \(j\) holds, which measures following stated rules and formats as an agent must. Every model answers through a chat template that lets it reason first, and the scorer reads the text after that reasoning. The base model uses Qwen3.5's native template and a stop rule, and it scores 37.7 without a template. \[A_{\text{IF}} = \frac{100}{|P|}\sum_{p \in P}\prod_{j \in I_p} f_{p,j}\]</li>
-              </ul>
-              <p class="pipeline-group">Agent tasks</p>
-              <ul>
-                <li><b>Market-data test and FinSearchComp:</b> The grader applies key-based grading from the Offline dataset tab and uses the tolerance each FinSearchComp task states.</li>
-                <li><b>DocFinQA:</b> The grader takes the answer's last number and passes it within 1% of the reference, in percent or decimal form, or checks the same word on a yes/no question, which gives a score comparable with outside results.</li>
-                <li><b>State comparison (wealth management):</b> The grader compares the final holdings, cash and trade records with the reference state and the answer's key numbers with their tolerances (amounts ±$0.01, rates ±0.1 percentage points). On a task the rules forbid, it checks that the banned trade did not run and the answer names the rule, because a task counts only when both the trades and the answer are right.</li>
-                <li><b>AUC and \(R^2\) bar (machine learning):</b> AUC measures ranking quality (0.5 is random and 1 is perfect); \(R^2\) measures the share of the target's variance a model explains. The grader requires a submitted model that scores at most 0.015 AUC or 0.03 \(R^2\) below the model that generated the data on a hidden table. This bar demands correct data handling: on the development set a fixed pipeline passes 20 of 20 tasks with a log transform of skewed columns and 1 without it.</li>
-                <li><b>pass@1 and pass@4:</b> The scorer computes both scores over \(T_4\), the development tasks with 4 valid attempts, where \(c_t\) of the \(n_t\) valid attempts at task \(t\) pass. \[P_1 = \frac{100}{|T_4|}\sum_{t \in T_4}\frac{c_t}{n_t}\] \[P_4 = \frac{100}{|T_4|}\sum_{t \in T_4}\mathbf{1}[c_t \ge 1]\]</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
-            <div class="content">
-              <p>Task selection is running; training has not started, and every training value here is planned. DAPO is the next reinforcement learning (RL) method. It builds on GRPO, which samples a group of attempts at each task and scores each attempt against its group. DAPO adds the first four changes below and removes the KL penalty, an extra loss that holds the model close to a frozen copy of itself. Training will use verl's own DAPO implementation and start from the SFT model above.</p>
-              <ul>
-                <li><b>Clip-Higher:</b> Training limits how far one update may move a token's probability: the ratio of its new to its old probability may fall by at most 0.2 and rise by at most 0.28.</li>
-                <li><b>Dynamic Sampling:</b> verl's trainer drops a group whose 8 attempts all earn the same grade, all passed or all failed, whatever their lengths, and dispatches 2 refill tasks for it, because such a group holds no pass-or-fail difference and would train only on length. The refill has no cap, so a step takes longer as more groups are dropped.</li>
-                <li><b>Token-level loss:</b> <code>token-mean</code> averages the loss over all tokens directly, so the tokens of a long attempt keep their full weight.</li>
-                <li><b>Overlong reward shaping:</b> verl's DAPO reward manager adds a length reward to the grade \(r\): 0 up to \(L_s\), then falling linearly to −1 at the budget \(L_{\max}\). An attempt that fills the budget always fails, so it totals −2, and it carries loss. Here \(L\) counts an attempt's tokens with tool results, the buffer is \(L_c = 4{,}096\) and \(L_s = L_{\max} - L_c = 24{,}576\); the budget \(L_{\max} = 28{,}672\) plus a 4,096-token prompt equals the 32,768-token SFT sequences. \[R = r + \min\Big(-\frac{L - L_s}{L_c},\ 0\Big)\]</li>
-                <li><b>Reward:</b> The grader gives +1 for a pass and −1 otherwise, as DAPO does. With 0/1 grades the same length penalty would weigh twice as much against the gap between right and wrong.</li>
-                <li><b>No KL:</b> Training applies no KL penalty, because with long reasoning the model is expected to move far from where it started; this also saves that copy's memory and forward pass.</li>
-                <li><b>Task selection:</b> The SFT model attempts each pool task 8 times, and selection drops tasks with 0/8 passes, keeps tasks with 1–7/8 and keeps 10% of tasks with 8/8, because a task with the same grade in all attempts gives the group comparison nothing. The kept 10% leaves some solved tasks for the model to keep practicing. If more remain, a draw within each task type, in proportion to the type's share, holds the set to an average of 93.9 tasks per type, which largely sets how many times a run passes over its tasks. The model changes during training, so a selected task can also come to be all passed or all failed, and dynamic sampling keeps dropping such groups at each step.</li>
-                <li><b>Task pool:</b> The market part of the pool holds newly generated tasks, 200 in each of 10 task types, and none of them repeats an SFT training, development or test task. 200 DocFinQA training tasks join as an eleventh type if a short trial run on 2 such tasks passes, because without them RL has no signal to keep the SFT model's reading ability.</li>
-                <li><b>Settings:</b> On 8 GPUs, each step takes 128 tasks with 8 attempts each, in mini-batches of 32 tasks, which gives 4 updates per step; the run lasts 21 steps at a learning rate of 1e-6, and an attempt stops at 30 task turns.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
-            <div class="content">
-              <p><span class="status-tag">not started</span> The final DAPO model will run the market-data, FinSearchComp, DocFinQA, development, wealth-management, machine-learning and general-ability sets under the SFT evaluation tab's rules, for comparison with the base, teacher and SFT models, with three additions.</p>
-              <ul>
-                <li><b>Strict grading:</b> The strict grader adds four rules to market-data, FinSearchComp and development answers, and \(r_t = 1\) when all hold. An answer may hold at most 50 numbers outside dates. It may hold at most 40 distinct dates. Each number key must appear outside any date. On a task with candidates, the first company named must be correct and each later company key must be followed by its value. The original grader accepts a key anywhere in the answer: an audit's answers that knew no reference value, only the restated task and grids of numbers, passed 209 of 939 RL training tasks, so an RL gain under the original grader alone could not be trusted. \[S_{\text{strict}} = \frac{100}{|T|}\sum_{t \in T} s_t\, r_t\]</li>
-                <li><b>Reworded test:</b> Rewording rewrites the 300 market-data test tasks with the same parameters and answers and lowers their 5-gram overlap with same-type training tasks from 0.77–0.99 to 0.10–0.32, so a score change shows how much a result depends on wording. \[\Delta_{\text{reword}} = S_{\text{reworded}} - S_{\text{original}}\]</li>
-                <li><b>Paired gain over the SFT model:</b> The comparison takes \(a_i\) from the SFT model and \(b_i\) from the final DAPO model on each task under the paired bootstrap of the SFT evaluation tab.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered">Method Pipeline</h2>
+<p class="has-text-centered">Select a stage to see what it does.</p>
+<div class="pipeline" id="co-pipeline" data-pipeline>
+<div class="pipeline-steps" role="tablist" aria-label="Method Pipeline">
+<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
+<span class="pipeline-step-num">1</span>Canonical reports and splits</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
+<span class="pipeline-step-num">2</span>FinSearchComp synthesis (running)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
+<span class="pipeline-step-num">3</span>Common task review (running)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4">
+<span class="pipeline-step-num">4</span>Calibration and demonstrations (running)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5">
+<span class="pipeline-step-num">5</span>Multi-turn SFT (next)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6">
+<span class="pipeline-step-num">6</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7">
+<span class="pipeline-step-num">7</span>Shared evaluation</button>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
+<nav class="flow" aria-label="Canonical reports and splits">
+<a class="flow-node" href="#canon-report">Canonical reports</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">Source isolation</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">Frozen pools</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="canon-report">One original report version represents each filing</h4>
+<ul>
+<li>
+<b>Canonicalization:</b> The entry filter groups DocFinQA reports by registrant and fiscal end, selects one verbatim version by source quality and preserves the alternatives and source hashes. This keeps equivalent reports from appearing as different source documents.</li>
+<li>
+<b>Evidence retention:</b> Post-selection checks quarantine questions that lose required source operands; they do not rewrite reports or choose versions by model scores.</li>
+</ul>
+<h4 class="pipeline-group" id="source-split">Source identities precede question sampling</h4>
+<ul>
+<li>
+<b>Decontamination:</b> The splitter checks report identities, normalized questions, task ancestry and financial support periods across roles. Unresolved report identities remain outside the eligible pools.</li>
+<li>
+<b>Stratification:</b> DocFinQA retains its official split membership and a proportional half of each numeric/boolean stratum; FinSearchComp and IFEval use deterministic category-aware project splits. This preserves category coverage while retaining test questions.</li>
+</ul>
+<h4 class="pipeline-group" id="pool-freeze">One release serves every model setting</h4>
+<ul>
+<li>
+<b>Immutable inputs:</b> Question IDs, original text, canonical sources and graders are bound to a frozen release. The Baselines section specifies the counts; the same originals serve every setting.</li>
+<li>
+<b>Reserved evaluation:</b> Synthetic validation and test items use separate source support and independent review. Their acceptance quotas do not authorize filling a shortfall with duplicates or unreviewed candidates.</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
+<nav class="flow" aria-label="FinSearchComp synthesis">
+<a class="flow-node" href="#gen-program">Program branch</a> <a class="flow-node" href="#gen-claude">Claude branch</a> <a class="flow-node" href="#gen-native">Native requests</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="gen-program">Programs expand reproducible weaknesses</h4>
+<ul>
+<li>
+<b>Programmatic generation:</b> The generator varies a declared task contract over trusted financial facts and explicit periods, units and calculations. This supplies repeatable practice for unstable or consistently missed capabilities without copying reserved questions.</li>
+</ul>
+<h4 class="pipeline-group" id="gen-claude">Claude selects questions within a verified contract</h4>
+<ul>
+<li>
+<b>Source-bound generation:</b> Claude selects supported structures and parameters from trusted source cases and training capabilities. A compiler controls the learner question and reference computation so generated prose cannot silently introduce facts or an authoritative answer.</li>
+<li>
+<b>Scope:</b> The active typed adapter covers a bounded set of SEC retrieval and debt-computation questions. Unsupported task structures are rejected; this adapter does not claim complete FinSearchComp coverage.</li>
+</ul>
+<h4 class="pipeline-group" id="gen-native">Fresh Messages requests separate the roles</h4>
+<ul>
+<li>
+<b>Native proxy:</b> The client uses the native Messages interface of CLIProxyAPI with explicit caller prompts and a fresh conversation for each role. Generation requests use Opus 5.5 Extra High effort; blind solving, adversarial review and trajectory review use Medium.</li>
+<li>
+<b>Accounting:</b> A shared append-only ledger enforces total, call-count and role-specific limits. Failed requests remain recorded; missing accounting blocks further calls.</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
+<nav class="flow" aria-label="Common task review">
+<a class="flow-node" href="#review-gold">Independent answers</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#review-tools">Tool execution</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#review-cloud">Blind and adversarial review</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="review-gold">Independent computation checks the answer contract</h4>
+<ul>
+<li>
+<b>Reference agreement:</b> Separate arithmetic implementations must agree on the answer, units and required source periods. Equivalent instances are deduplicated before any quota is counted.</li>
+</ul>
+<h4 class="pipeline-group" id="review-tools">Real tools check source availability</h4>
+<ul>
+<li>
+<b>Sandbox replay:</b> Reference code queries the fixed read-only snapshot through the same restricted tool runtime available to the learner. Actual execution must match the independent answer; metadata claims alone cannot pass a task.</li>
+</ul>
+<h4 class="pipeline-group" id="review-cloud">Blind solving and adversarial review remain independent</h4>
+<ul>
+<li>
+<b>Blind solve:</b> A fresh Claude conversation receives the learner question and tool contract without the private answer. Its solver is executed and independently graded.</li>
+<li>
+<b>Adversarial review:</b> A separate conversation checks the question, reference, solver and actual execution for ambiguity, periods, units and grading loopholes without receiving an earlier verdict. Both reviews must pass before question admission.</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
+<nav class="flow" aria-label="Calibration and demonstrations">
+<a class="flow-node" href="#collect-harness">Agent harness</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-difficulty">Difficulty measurement</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-demo">Demonstration admission</a>
+</nav>
+<div class="content">
+<h4 class="pipeline-group" id="collect-harness">The harness records the evidence used by the model</h4>
+<ul>
+<li>
+<b>Tool interface:</b> Financial tasks use read-only market, SEC and FRED queries, report retrieval and a restricted Python runtime. Messages, tool calls and results are saved as trajectories; explicit completion ends an attempt.</li>
+<li>
+<b>IFEval:</b> Its final answer is scored by the strict instruction checker with fixed scoring randomness. Financial evidence requirements are not applied to instruction-only answers.</li>
+</ul>
+<h4 class="pipeline-group" id="collect-difficulty">Local models measure solvability before training</h4>
+<ul>
+<li>
+<b>Teacher and student:</b> A larger local teacher supplies candidate demonstrations, while student trials measure success patterns. Always-unsolved tasks need diagnosis or SFT support; they do not automatically supply a DAPO learning signal.</li>
+<li>
+<b>Reserved tasks:</b> Calibration uses only training or calibration material. The sealed test is excluded from difficulty selection.</li>
+</ul>
+<h4 class="pipeline-group" id="collect-demo">A correct final answer alone is insufficient</h4>
+<ul>
+<li>
+<b>Trace qualification:</b> Admission checks successful evidence reads, tool schemas, grounding, units, completion and source receipts. A historical trajectory cannot be rebound to a newly selected report without matching source evidence.</li>
+<li>
+<b>Separate products:</b> Approved questions, approved demonstrations and packed training data are different outputs. Missing demonstrations or unreviewed candidates keep training entry closed.</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
+<nav class="flow" aria-label="Multi-turn SFT">
+<a class="flow-node" href="#sft-models">Shared checkpoints</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">Loss and release</a>
+</nav>
+<div class="content">
+<span class="status-tag">not started</span>
+<h4 class="pipeline-group" id="sft-models">Two supervised checkpoints serve the comparison</h4>
+<ul>
+<li>
+<b>Supervised fine-tuning:</b> S0 trains the common original demonstrations; S1 adds the shared FinSearchComp synthetic demonstrations. Both start from the same Base weights and retain the same original question pool.</li>
+</ul>
+<h4 class="pipeline-group" id="sft-loss">Only verified assistant behavior contributes to loss</h4>
+<ul>
+<li>
+<b>Loss masking:</b> The packer masks user text, tool returns and invalid assistant content. Demonstration provenance and tokenizer identity are bound to the packed export.</li>
+<li>
+<b>Launch gates:</b> The new SFT stage has not started. Required demonstrations, synthetic quotas and the common training-budget execution checks must pass before launch.</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
+<nav class="flow" aria-label="DAPO">
+<a class="flow-node" href="#dapo-models">Six continuations</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-length">Generated length</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-mask">Incomplete rollouts</a>
+</nav>
+<div class="content">
+<span class="status-tag">not started</span>
+<h4 class="pipeline-group" id="dapo-models">Six reinforcement-learning jobs complete the nine settings</h4>
+<ul>
+<li>
+<b>Matched continuations:</b> Each SFT checkpoint and the original Base model receives an original-only or augmented DAPO continuation. The Baselines table identifies the shared task pools.</li>
+<li>
+<b>Dynamic filtering:</b> DAPO learns from groups with different correctness outcomes. Actual retained questions, updates and generated-token exposure are recorded so nominal quotas do not hide filtering differences.</li>
+</ul>
+<h4 class="pipeline-group" id="dapo-length">The soft penalty counts model-generated tokens</h4>
+<ul>
+<li>
+<b>Generated-token penalty:</b> The repository reward manager excludes tool returns, inserted context and padding from the soft length penalty. The hard response budget still includes the full context, keeping the resource limit explicit.</li>
+</ul>
+<h4 class="pipeline-group" id="dapo-mask">Unfinished attempts contribute no policy loss</h4>
+<ul>
+<li>
+<b>Whole-rollout masking:</b> An unfinished truncated or aborted rollout has its entire policy mask zeroed. Completed wrong answers remain trainable, and an entirely masked microbatch returns finite loss and gradients.</li>
+<li>
+<b>Launch gates:</b> These fixes are implemented and CPU-checked; the new six-job experiment has not started. Shared data, checkpoints and executable budget controls must be ready before launch.</li>
+</ul>
+</div>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
+<nav class="flow" aria-label="Shared evaluation">
+<a class="flow-node" href="#eval-original">Original benchmarks</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#eval-synthetic">Synthetic challenge</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#eval-comparison">Paired comparisons</a>
+</nav>
+<div class="content">
+<span class="status-tag">not started</span>
+<h4 class="pipeline-group" id="eval-original">Every stage is measured on the same original questions</h4>
+<ul>
+<li>
+<b>Success rate:</b> FinSearchComp uses the offline answer contract, DocFinQA checks numeric or boolean answers, and IFEval uses strict prompt-level accuracy. Per-dataset scores retain their own meaning; an equal-weight mean prevents the larger report set from dominating.</li>
+<li>
+<b>Shared protocol:</b> Base, SFT and DAPO outputs use the same task IDs, tool conditions, sampling policy and grader versions. This makes stage-to-stage comparisons possible.</li>
+</ul>
+<h4 class="pipeline-group" id="eval-synthetic">The added test probes reviewed FinSearchComp questions</h4>
+<ul>
+<li>
+<b>Separate reporting:</b> The added challenge is reviewed independently and reported separately from original-only scores. A combined score does not replace the original benchmark result.</li>
+<li>
+<b>Limits:</b> A larger synthetic test increases coverage of generated task families; it does not by itself establish generalization to all externally authored financial tasks.</li>
+</ul>
+<h4 class="pipeline-group" id="eval-comparison">Paired differences isolate the declared intervention</h4>
+<ul>
+<li>
+<b>Stage comparisons:</b> Compare S1 with S0 for the SFT increment; compare augmented and original DAPO from the same checkpoint for the DAPO increment; compare each DAPO result with its own starting checkpoint for the extra-training effect.</li>
+<li>
+<b>Selection:</b> Only validation guides checkpoint and mixture selection. Final paired confidence intervals use the common frozen test and do not feed the data generator.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 </section>
-<!-- End pipeline -->
-
-<!-- Quantitative results -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3">Quantitative Results</h2>
-
-<h3 class="title is-5">Agent SFT lifts the 4B model from 16.7% to 87.3% on held-out market-data tasks</h3>
-      <div class="content has-text-justified">
-        <p>
-          Success rate (%) with the same harness, one attempt per task. The SFT model is 29.7 points above the official Qwen3.5-4B on the market-data test (95% interval +23.3 to +36.0) and 10.2 points above it on FinSearchComp (+1.0 to +20.4). Against the first run it stands at &minus;1.3 (&minus;6.3 to +3.7) and &minus;3.1 (&minus;10.2 to +3.1); both intervals include zero, so these tasks cannot tell the two runs apart at this sample size. On the 200 development tasks, which guide selection, the SFT model scores pass@1 88.0 and pass@4 100.0, a 12.0-point gap.
-        </p>
-      </div>
-      <p class="table-hint">Scroll the table sideways to see all columns.</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>Model</th><th>Market-data test (300)</th><th>FinSearchComp, offline (98)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base (start)</td><td>16.7</td><td>50.0</td></tr>
-            <tr><td>Qwen3.5-4B (official post-trained)</td><td>57.7</td><td>64.3</td></tr>
-            <tr><td>First SFT run, 4B</td><td><u>88.7</u></td><td><u>77.6</u></td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td>87.3</td><td>74.5</td></tr>
-            <tr><td>Qwen3.8-27B (teacher)</td><td><b>94.7</b></td><td><b>83.7</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <hr>
-      <h3 class="title is-5">The second SFT run lifts DocFinQA from 39.0 to 53.0, level with the official model</h3>
-      <div class="content has-text-justified">
-        <p>
-          The table gives results on 200 questions over full annual reports, one attempt per task. The SFT model is 14.0 points above the first run (95% interval +8.5 to +20.0), level with the official Qwen3.5-4B (+0.0, &minus;5.0 to +5.0) and 6.0 points below the teacher (&minus;10.5 to &minus;1.5). Across the two runs, tasks without a <code>read_chunk</code> call fall from 39 to 5; answers containing only a number or yes/no rise from 141 to 191, ignoring <code>$</code>, <code>%</code>, commas and whitespace. The second run added DocFinQA and annual-report-to-trade trajectories, filtering, rewritten direct-QA samples and malformed-call masking together, so these results cannot separate their effects.
-        </p>
-      </div>
-      <p class="table-hint">Scroll the table sideways to see all columns.</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>Model</th><th>Success rate (%)</th><th><code>read_chunk</code> calls per question</th><th>Questions with no <code>read_chunk</code></th><th>Answers in the required form (of 200)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base (start)</td><td>43.5</td><td>2.57</td><td>15</td><td>193</td></tr>
-            <tr><td>Qwen3.5-4B (official post-trained)</td><td><u>53.0</u></td><td>3.02</td><td>8</td><td>193</td></tr>
-            <tr><td>First SFT run, 4B</td><td>39.0</td><td>1.50</td><td>39</td><td>141</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><u>53.0</u></td><td>1.98</td><td>5</td><td>191</td></tr>
-            <tr><td>Qwen3.8-27B (teacher)</td><td><b>59.0</b></td><td>2.04</td><td>10</td><td>194</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <hr>
-      <h3 class="title is-5">The gain holds on 550 wealth-management and machine-learning tasks</h3>
-      <div class="content has-text-justified">
-        <p>
-          Success rate (%) on the test set of a self-built wealth-management environment (500 tasks such as rebalancing, fund switching and rule-constrained trades) and 50 machine-learning tasks, one attempt per task. On wealth management the SFT model is 8.4 points above the official Qwen3.5-4B (95% interval +5.2 to +11.8). On machine learning it is 14.0 points above it (+0.0 to +28.0), an interval that reaches zero on only 50 tasks. On machine learning the teacher passes 24 of 25 <code>ml_redemption</code> tasks and 1 of 25 <code>ml_volatility</code> tasks, where the SFT model passes 25 and 14.
-        </p>
-      </div>
-      <p class="table-hint">Scroll the table sideways to see all columns.</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>Model</th><th>All (550)</th><th>Wealth management (500)</th><th>Machine learning (50)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base (start)</td><td>50.4</td><td>51.0</td><td>44</td></tr>
-            <tr><td>Qwen3.5-4B (official post-trained)</td><td>84.2</td><td>86.2</td><td>64</td></tr>
-            <tr><td>First SFT run, 4B</td><td>91.1</td><td>92.2</td><td><b>80</b></td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><b>93.1</b></td><td><u>94.6</u></td><td><u>78</u></td></tr>
-            <tr><td>Qwen3.8-27B (teacher)</td><td><b>93.1</b></td><td><b>97.4</b></td><td>50</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <hr>
-      <h3 class="title is-5">SFT keeps knowledge and math ability and loses 12.2 points of instruction following against the base model</h3>
-      <div class="content has-text-justified">
-        <p>
-          Against Qwen3.5-4B-Base the SFT model gains 0.8 points on MMLU (95% interval +0.4 to +1.1) and 2.5 on GSM8K (+0.5 to +4.5) and loses 12.2 on IFEval (&minus;16.3 to &minus;8.0, the base model running Qwen3.5's native chat template), where it still stands 11.5 points above the official Qwen3.5-4B (+6.8 to +16.1). The finance score and GSM8K use no chat template, and without one the official and teacher models often write on past their answer or stop without one: 180 and 360 of 1,319 GSM8K replies have no final-answer line (SFT model 34), and the finance scorer reads the last "Answer:", while reading the first one would give them 64.8 and 82.1 (SFT model 77.0), so these two columns understate those two models.
-        </p>
-      </div>
-      <p class="table-hint">Scroll the table sideways to see all columns.</p>
-      <div class="table-container">
-        <table class="table is-narrow is-hoverable results-table">
-          <thead>
-            <tr><th>Model</th><th>Finance score (1,886)</th><th>MMLU (13,018)</th><th>GSM8K (1,319)</th><th>IFEval (541)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Qwen3.5-4B-Base (start)</td><td><u>76.4</u></td><td>72.8</td><td>80.5</td><td><u>75.2</u></td></tr>
-            <tr><td>Qwen3.5-4B (official post-trained)</td><td>61.9</td><td>70.1</td><td>76.5</td><td>51.6</td></tr>
-            <tr><td>First SFT run, 4B</td><td>75.1</td><td>73.3</td><td><u>81.7</u></td><td>63.6</td></tr>
-            <tr class="ours"><td><b>Agent SFT, 4B (Ours)</b></td><td><b>77.0</b></td><td><u>73.6</u></td><td><b>83.0</b></td><td>63.0</td></tr>
-            <tr><td>Qwen3.8-27B (teacher)</td><td>74.0</td><td><b>82.8</b></td><td>72.6</td><td><b>91.7</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End quantitative results -->
-
 <footer class="footer">
   <div class="container">
     <div class="columns is-centered">
@@ -519,7 +537,8 @@
   </div>
 </footer>
 
-<script src="../../assets/js/pipeline.js"></script>
+<script src="../../assets/js/pipeline.js">
+</script>
 
 </body>
 </html>
