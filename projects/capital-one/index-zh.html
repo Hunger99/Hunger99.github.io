@@ -138,94 +138,28 @@
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
-<div class="container is-max-widescreen">
+<div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Candidates and Settings</h2>
-<p class="data-note">九个候选共用相同的原题队列及评测协议。下方新增题池仅说明 FinSearchComp；原题数、合格示范数与自行编写的新题数分别记录，新一轮训练实验尚未开始。</p>
-<h3 class="title is-5" id="original-pools">原题数量与新增来源的准入状态</h3>
-<div class="table-container" tabindex="0">
-<table class="table setting-table original-counts">
-<thead><tr><th scope="col">数据集</th><th scope="col">来源库存与当前状态</th><th scope="col">原题训练</th><th scope="col">原题验证</th><th scope="col">原题测试</th></tr></thead>
+<div class="table-container"><table class="table setting-table candidate-table">
+<thead><tr><th scope="col">候选模型</th><th scope="col">训练设置</th></tr></thead>
 <tbody>
-<tr><th scope="row">DocFinQA</th><td>已选定 1,497 道原题</td><td>942</td><td>182</td><td>373</td></tr>
-<tr><th scope="row">FinSearchComp</th><td>97 道离线支持的 Global T2/T3 原题；上游共 635 题</td><td>48</td><td>19</td><td>30</td></tr>
-<tr><th scope="row">IFEval</th><td>原始 541 题完整保留；3 道指令冲突的训练题对九组统一隔离</td><td>213</td><td>108</td><td>217</td></tr>
-<tr><th scope="row">FinDeepResearch</th><td>已取得 64 个任务；隔离 1 个来源冲突，冻结 63 个原题；执行资格未就绪</td><td>24</td><td>16</td><td>23</td></tr>
-<tr><th scope="row">MLE-bench 项目子集</th><td>4 个可执行竞赛候选；表中为有条件的项目分配，任务尚未正式准入</td><td>2</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
-<p class="data-note">已有 DocFinQA、FinSearchComp 和 IFEval 原题池含训练 1,203／验证 309／测试 620 题。IFEval 保留全部 541 道原始提示，三道冲突训练题对所有设置统一隔离。FinDeepResearch 保留已冻结的项目队列，四个 MLE-bench 比赛候选保留有条件的原题用途分配；新增基准接口仍须完成准入。题目数量不等于合格 SFT 示范数量。DocFinQA 与 IFEval 继续只用原题。</p>
-<h3 class="title is-5" id="synthetic-pools">FinSearchComp 各用途的新增题验收目标</h3>
-<div class="table-container" tabindex="0"><table class="table setting-table synthetic-counts"><thead><tr><th scope="col">用途</th><th scope="col">FinSearchComp 验收目标</th></tr></thead><tbody>
-<tr><th scope="row">SFT 训练（S）</th><td>96</td></tr>
-<tr><th scope="row">DAPO 训练（R）</th><td>96</td></tr>
-<tr><th scope="row">新增验证题</th><td>38</td></tr>
-<tr><th scope="row">新增测试题</th><td>60</td></tr>
-<tr><th scope="row">新增独立题目合计</th><td>290</td></tr>
+<tr><th scope="row">1 · Base</th><td>基础模型，不做后训练</td></tr>
+<tr><th scope="row">2 · S0</th><td>Base → 使用原题示范进行 SFT</td></tr>
+<tr><th scope="row">3 · S1</th><td>Base → 使用原题＋新增题示范进行 SFT</td></tr>
+<tr><th scope="row">4 · S0R0</th><td>S0 → 使用原题进行 DAPO</td></tr>
+<tr><th scope="row">5 · S1R0</th><td>S1 → 使用原题进行 DAPO</td></tr>
+<tr><th scope="row">6 · S0R1</th><td>S0 → 使用原题＋新增题进行 DAPO</td></tr>
+<tr><th scope="row">7 · S1R1</th><td>S1 → 使用原题＋新增题进行 DAPO</td></tr>
+<tr><th scope="row">8 · BaseR0</th><td>Base → 使用原题进行 DAPO</td></tr>
+<tr><th scope="row">9 · BaseR1</th><td>Base → 使用原题＋新增题进行 DAPO</td></tr>
 </tbody></table></div>
-<p class="data-note">FinSearchComp 保留既有验收目标：SFT 96、DAPO 96、验证 38、测试 60，共 290 道新增题，另有 97 道原题。这些是配额，不是已发布库存。真实资料提供事实，程序或 Claude 编写问题，独立检查核实答案。上方 FinDeepResearch 与 MLE-bench 的数量仅描述原题队列。</p>
-<p class="data-note">检查点是一份保存下来的模型权重，后续作业从这份权重继续训练。</p>
-<h3 class="title is-5">两个 SFT 检查点复用于六个 DAPO 作业</h3>
-<p class="data-note">表中 O 为上方共同原题训练池，S、R 分别为经过审查的 FinSearchComp SFT 与 DAPO 新增题。SFT 使用 O 或 O + S 的合格示范，DAPO 使用 O 或 O + R 的任务。所有 S1 后续设置共用一份 S 题池及同一检查点，所有 R1 设置共用一份 R 题池；各候选的原始来源与评测队列保持相同。</p>
-<p class="data-note">S0、S1 将分别从相同 Base 独立开始，各自先进行给齐材料的推理，再进行检索与推理。二者共用原题及材料视图，即同题附带指定材料的版本；S1 再加入固定 S 池，九组共用评测池。每个 SFT 条件的两阶段合计为 6,553,600 个有效监督输出 token、100 次更新，初始每阶段各 3,276,800 token／50 次更新。材料视图与重复训练不增加不同题目数；完整训练及能力增益尚未实测。</p>
-<p class="table-hint">左右滑动表格可查看所有列。</p>
-<div class="table-container baseline-scroll" tabindex="0">
-<table class="table setting-table baseline-table">
-<thead><tr><th scope="col">候选模型</th><th scope="col">SFT 使用的数据</th><th scope="col">DAPO 使用的数据</th><th scope="col">共同验证</th><th scope="col">共同测试</th></tr></thead>
-<tbody>
-<tr>
-<th scope="row">1 · Base · 原始 4B</th>
-<td>不训练</td>
-<td>不训练</td>
-<td rowspan="9" class="common-pool"><p>九组共用<a href="#original-pools">原始验证队列</a>。通过准入的<a href="#synthetic-pools">FinSearchComp 新增验证题</a>另成一份共同挑战题池，验收目标为 38 题；原题与新增题成绩分别报告。</p></td>
-<td rowspan="9" class="common-pool"><p>九组共用<a href="#original-pools">原始测试队列</a>。通过准入的<a href="#synthetic-pools">FinSearchComp 新增测试题</a>另成一份共同挑战题池，验收目标为 60 题；测试答案与结果不用于出题或检查点选择。</p></td>
-</tr>
-<tr>
-<th scope="row">2 · S0 · 原题 SFT</th>
-<td>O 的合格示范</td>
-<td>不训练</td>
-</tr>
-<tr>
-<th scope="row">3 · S1 · 增强 SFT</th>
-<td>O＋S 的合格示范</td>
-<td>不训练</td>
-</tr>
-<tr>
-<th scope="row">4 · S0R0</th>
-<td>复用 S0</td>
-<td>O 任务</td>
-</tr>
-<tr>
-<th scope="row">5 · S1R0</th>
-<td>复用 S1</td>
-<td>O 任务</td>
-</tr>
-<tr>
-<th scope="row">6 · S0R1</th>
-<td>复用 S0</td>
-<td>O＋R 任务</td>
-</tr>
-<tr>
-<th scope="row">7 · S1R1</th>
-<td>复用 S1</td>
-<td>O＋R 任务</td>
-</tr>
-<tr>
-<th scope="row">8 · BaseR0</th>
-<td>不训练</td>
-<td>O 任务</td>
-</tr>
-<tr>
-<th scope="row">9 · BaseR1</th>
-<td>不训练</td>
-<td>O＋R 任务</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="data-note">各组固定来源版本、工具条件与训练预算，并记录实际进入更新的题数、示范／试答次数、生成 token 和工具计算开销；混合权重按这些曝光量校准，不能只把原始行数配平。合成题先通过审查，再冻结共享池，不因模型设置不同而重新出题。</p>
-<p class="data-note">原题成绩与合成挑战成绩分开报告。FinSearchComp 的六道背景补充题仅用于训练；现有 FinSearchComp、IFEval 原题有历史评测使用，不能称为全新未见测试。新增基准一旦采用项目训练划分，成绩只代表该项目保留子集，不能直接与官方完整评测成绩比较。</p>
-<p class="data-note">新增原题及合成验证／测试的来源、题目、评分器在学习者校准与模型选择前冻结。验证可用于选择检查点与混合配比；测试答案及结果不反馈给出题、阈值或模型选择。五个数据集及其共同任务池、示范、原生评分与共同预算条件全部齐备前，训练入口保持关闭。</p>
+<h3 class="title is-5">Settings</h3>
+<div class="content"><ul>
+<li><b>Base model:</b> Qwen3.5-4B-Base。S0、S1 分别从相同权重独立开始；配对 DAPO 实验使用相同的起始检查点。</li>
+<li id="original-pools"><b>原题与评测:</b> 执行训练的设置共用相同原题身份；九组共用同一份冻结的验证集和测试集，以及相同的工具条件和评分器版本。仅使用验证集选择检查点。</li>
+<li id="synthetic-pools"><b>新增数据:</b> 所有 S1 后续设置共用同一份 FinSearchComp SFT 新增题；所有 R1 设置共用另一份固定的 DAPO 新增题，不为不同候选重新生成。</li>
+<li><b>训练控制:</b> 同一训练阶段内，有无新增题的配对实验使用相同训练配方及 token／计算预算，比较的变量是是否加入新增训练数据。</li>
+</ul></div>
 </div>
 </section>
 <section class="section hero">
@@ -269,7 +203,7 @@
 <li>
 <b>Task adapter:</b> 计划中的五数据集接口将来源身份与输入文件、隔离的工具轨迹、提交产物及各数据集评分结果绑定起来；共用这份外层记录，让同一运行器管理不同任务，同时保留报告写作和机器学习工程的任务形式。</li>
 <li>
-<b>Qualification:</b> 新适配器须先通过证据访问、原生评分、产物格式与评分端隔离检查，再准入任务；<a href="#co-data">数据集表</a>定义任务输出和指标，<a href="#original-pools">题目池表</a>区分已冻结队列与可执行任务。</li>
+<b>Qualification:</b> 新适配器须先通过证据访问、原生评分、产物格式与评分端隔离检查，再准入任务；<a href="#co-data">数据集表</a>定义任务输出和指标，<a href="#original-pools">共同数据控制</a>使各候选使用一致的原题及评测条件。</li>
 </ul>
 <h4 class="pipeline-group" id="source-split">先核对来源身份，再抽取题目</h4>
 <ul>
@@ -281,7 +215,7 @@
 <h4 class="pipeline-group" id="pool-freeze">一个版本服务所有模型设置</h4>
 <ul>
 <li>
-<b>Immutable inputs:</b> 现有原题 ID、原始文本、规范报告与评分器绑定到冻结版本；新增队列及适配器通过资格核验后才并入共同版本，数量与状态见<a href="#baselines">候选设置表</a>。</li>
+<b>Immutable inputs:</b> 现有原题 ID、原始文本、规范报告与评分器绑定到冻结版本；新增队列及适配器通过资格核验后才并入共同版本，<a href="#baselines">候选设置</a>规定共同对照条件。</li>
 <li>
 <b>Reserved evaluation:</b> 合成验证、测试题使用隔离的答案支持来源并独立审查；不能用重复题或未审查候选填补验收配额。</li>
 </ul>
@@ -404,7 +338,7 @@
 <h4 class="pipeline-group" id="sft-models">两个监督检查点服务对照</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 将使用共同原题池的合格示范，S1 将加入固定共用的 SFT 合成池；二者将各自从相同 Base 独立开始，执行相同两阶段并共用原题与材料视图，<a href="#synthetic-pools">合成池表</a>给出允许扩充的数据及其资格状态。</li>
+<b>Supervised fine-tuning:</b> S0 将使用共同原题池的合格示范，S1 将加入固定共用的 SFT 合成池；二者将各自从相同 Base 独立开始，执行相同两阶段并共用原题与材料视图，<a href="#synthetic-pools">新增数据控制</a>固定所有 S1 后续设置共用的 SFT 新增题池。</li>
 </ul>
 <h4 class="pipeline-group" id="sft-given">第一阶段给齐推理必需的材料</h4>
 <ul>
