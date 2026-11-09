@@ -79,7 +79,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Abstract</h2>
 <div class="content has-text-justified">
-<p>This project plans nine post-training settings for Qwen3.5-4B-Base across five datasets: the existing financial question-answering and instruction-following tasks, FinDeepResearch company reports, and a Kaggle-derived MLE-bench project subset. Multi-turn supervised fine-tuning (SFT) teaches verified demonstrations; DAPO then learns from tool-assisted attempts and task-specific rewards. Augmentation is planned for FinSearchComp and the two new datasets; DocFinQA and IFEval retain original tasks only. Every setting will share frozen original cohorts and an evaluation protocol, separating the effect of adding synthetic tasks at SFT, DAPO or both stages. The new task adapters still need evidence, grading and execution qualification; the new training experiment has not started.</p>
+<p>This project plans nine post-training settings for Qwen3.5-4B-Base across five datasets: the existing financial question-answering and instruction-following tasks, FinDeepResearch company reports, and a Kaggle-derived MLE-bench project subset. Multi-turn supervised fine-tuning (SFT) teaches verified demonstrations; DAPO then learns from tool-assisted attempts and task-specific rewards. We plan to generate additional synthetic tasks for FinSearchComp, FinDeepResearch and the MLE-bench project subset; DocFinQA and IFEval retain original tasks only. Every setting will share frozen original cohorts and an evaluation protocol, separating the effect of adding synthetic tasks at SFT, DAPO or both stages. The new task adapters still need evidence, grading and execution qualification; the new training experiment has not started.</p>
 </div>
 </div>
 </section>
@@ -191,7 +191,7 @@
 <td>No training</td>
 </tr>
 <tr>
-<th scope="row">3 · S1 · Augmented SFT</th>
+<th scope="row">3 · S1 · Original + synthetic SFT</th>
 <td>Admitted O + S demonstrations</td>
 <td>No training</td>
 </tr>
@@ -385,7 +385,7 @@
 <h4 class="pipeline-group" id="sft-models">Two supervised checkpoints serve the comparison</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add the fixed shared SFT augmentation pool. Both will independently start from the same Base and follow the same two phases, with identical original tasks and evidence views; the <a href="#synthetic-pools">pool table</a> defines eligible augmentation and its qualification state.</li>
+<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add admitted demonstrations for the fixed shared pool of synthetic SFT tasks. Both will independently start from the same Base and follow the same two phases, with identical original tasks and evidence views; the <a href="#synthetic-pools">pool table</a> defines eligible synthetic tasks and their qualification state.</li>
 </ul>
 <h4 class="pipeline-group" id="sft-given">Phase 1 supplies the evidence needed for reasoning</h4>
 <ul>
@@ -421,7 +421,7 @@
 <h4 class="pipeline-group" id="dapo-models">Six reinforcement-learning jobs complete the nine settings</h4>
 <ul>
 <li>
-<b>Matched continuations:</b> Each SFT checkpoint and the original Base model receives an original-only or augmented DAPO continuation. The Baselines table identifies the shared task pools.</li>
+<b>Matched continuations:</b> Each SFT checkpoint and the original Base model receives an original-only DAPO continuation or one that also uses synthetic tasks. The Baselines table identifies the shared task pools.</li>
 <li>
 <b>Dynamic filtering:</b> DAPO filters groups without reward variation. Record tasks retained after filtering, updates, generated tokens and tool-compute exposure; planned report and ML grading-to-reward adapters must be qualified before those tasks enter training.</li>
 </ul>
@@ -462,7 +462,7 @@
 <h4 class="pipeline-group" id="eval-comparison">Paired differences isolate the declared intervention</h4>
 <ul>
 <li>
-<b>Stage comparisons:</b> Compare S1 with S0 for the SFT increment; compare augmented and original DAPO from the same checkpoint for the DAPO increment; compare each DAPO result with its own starting checkpoint for the extra-training effect.</li>
+<b>Stage comparisons:</b> Compare S1 with S0 for the SFT increment; compare DAPO with and without synthetic tasks from the same checkpoint for the DAPO increment; compare each DAPO result with its own starting checkpoint for the extra-training effect.</li>
 <li>
 <b>Selection:</b> Only validation guides checkpoint and mixture selection. Final paired confidence intervals use the common frozen test and do not feed the data generator.</li>
 </ul>
