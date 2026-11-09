@@ -140,17 +140,17 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Candidates and Settings</h2>
 <div class="table-container"><table class="table setting-table candidate-table">
-<thead><tr><th scope="col">Candidate</th><th scope="col">Configuration</th></tr></thead>
+<thead><tr><th scope="col">Candidate</th><th scope="col">Definition</th></tr></thead>
 <tbody>
-<tr><th scope="row">1 · Base</th><td>Base model without post-training</td></tr>
-<tr><th scope="row">2 · S0</th><td>Base → SFT on original demonstrations</td></tr>
-<tr><th scope="row">3 · S1</th><td>Base → SFT on original + additional demonstrations</td></tr>
-<tr><th scope="row">4 · S0R0</th><td>S0 → DAPO on original tasks</td></tr>
-<tr><th scope="row">5 · S1R0</th><td>S1 → DAPO on original tasks</td></tr>
-<tr><th scope="row">6 · S0R1</th><td>S0 → DAPO on original + additional tasks</td></tr>
-<tr><th scope="row">7 · S1R1</th><td>S1 → DAPO on original + additional tasks</td></tr>
-<tr><th scope="row">8 · BaseR0</th><td>Base → DAPO on original tasks</td></tr>
-<tr><th scope="row">9 · BaseR1</th><td>Base → DAPO on original + additional tasks</td></tr>
+<tr><th scope="row">Base</th><td>The original base model, without SFT or DAPO.</td></tr>
+<tr><th scope="row">S0</th><td>SFT using original demonstrations only; no DAPO.</td></tr>
+<tr><th scope="row">S1</th><td>SFT using original and additional demonstrations; no DAPO.</td></tr>
+<tr><th scope="row">S0R0</th><td>Original-only SFT followed by original-only DAPO.</td></tr>
+<tr><th scope="row">S1R0</th><td>SFT using original and additional demonstrations, followed by original-only DAPO.</td></tr>
+<tr><th scope="row">S0R1</th><td>Original-only SFT followed by DAPO using original and additional tasks.</td></tr>
+<tr><th scope="row">S1R1</th><td>SFT and DAPO each use original and additional data.</td></tr>
+<tr><th scope="row">BaseR0</th><td>DAPO using original tasks only, without prior SFT.</td></tr>
+<tr><th scope="row">BaseR1</th><td>DAPO using original and additional tasks, without prior SFT.</td></tr>
 </tbody></table></div>
 <h3 class="title is-5">Settings</h3>
 <div class="content"><ul>
