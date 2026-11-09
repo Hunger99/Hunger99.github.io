@@ -445,19 +445,49 @@ html[lang="zh-CN"] .teaser {
   width: 36%;
 }
 
+.dataset-metrics {
+  table-layout: fixed;
+}
+
+.dataset-metrics th,
+.dataset-metrics td {
+  overflow-wrap: anywhere;
+}
+
 .dataset-metrics th:first-child,
 .dataset-metrics td:first-child {
-  width: 17%;
+  width: 12%;
 }
 
 .dataset-metrics th:nth-child(2),
 .dataset-metrics td:nth-child(2) {
-  width: 28%;
+  width: 19%;
 }
 
 .dataset-metrics th:nth-child(3),
 .dataset-metrics td:nth-child(3) {
-  width: 55%;
+  width: 34%;
+}
+
+.dataset-metrics th:nth-child(4),
+.dataset-metrics td:nth-child(4) {
+  width: 9%;
+}
+
+.dataset-metrics th:nth-child(5),
+.dataset-metrics td:nth-child(5) {
+  width: 26%;
+}
+
+.sample-cell {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.sample-source {
+  display: block;
+  margin-top: .35rem;
+  font-size: .8rem;
 }
 
 .metric-cell {

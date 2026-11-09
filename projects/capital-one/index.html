@@ -87,35 +87,51 @@
 <div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered" id="co-data">Data Sets</h2>
 <table class="table is-narrow data-table dataset-metrics">
-<thead><tr><th scope="col">Dataset and source</th><th scope="col">Definition</th><th scope="col">Evaluation metric: definition and formula</th></tr></thead>
+<thead><tr><th scope="col">Dataset and source</th><th scope="col">Definition</th><th scope="col">Evaluation metric: definition and formula</th><th scope="col">Question format</th><th scope="col">Sample question (abridged)</th></tr></thead>
 <tbody>
 <tr>
 <td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
 <td data-label="Definition">The model answers financial questions over full annual reports by retrieving passages and reasoning with numbers.</td>
 <td data-label="Evaluation metric: definition and formula" class="metric-cell">The current project grader measures numeric/boolean answer accuracy. It allows 1% relative numerical error (0.005 absolute error for a zero reference), checks ×100/÷100 percentage equivalents, and requires a matching yes/no answer.<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> is 1 when question i passes the grader and 0 otherwise.</td>
+
+<td data-label="Question format">Single-turn</td>
+<td data-label="Sample question (abridged)" class="sample-cell">Using the annual report, what percentage of the company’s total facilities are leased?<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA train · question</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
 <td data-label="Definition">The model searches market and company information to solve expert-authored financial reasoning questions; this project uses an offline-supported subset.</td>
 <td data-label="Evaluation metric: definition and formula" class="metric-cell">Task success requires every reference item in the final answer to pass its task-specific numeric tolerance, date or text-alias contract.<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> indicates that all required items pass. This score describes the project’s offline subset.</td>
+
+<td data-label="Question format">Single-turn</td>
+<td data-label="Sample question (abridged)" class="sample-cell">In March 2023, to what percentage did the Federal Reserve raise interest on reserve balances? Round to one decimal place.<span class="sample-source"><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">Global T2 · prompt 503</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
 <td data-label="Definition">The model follows programmatically checkable requirements for format, length, keywords or language; one prompt may contain several instructions.</td>
 <td data-label="Evaluation metric: definition and formula" class="metric-cell">Prompt-level strict accuracy requires all instructions in a prompt to pass; instruction-level strict accuracy measures the fraction of instructions passed.<span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N is the number of prompts, m<sub>i</sub> the instruction count for prompt i, and c<sub>ij</sub> is 1 when instruction j passes its strict check and 0 otherwise.</td>
+
+<td data-label="Question format">Single-turn</td>
+<td data-label="Sample question (abridged)" class="sample-cell">Write a blog post about visiting Japan in fewer than 300 words.<span class="sample-source"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">Prompt 1092</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">Official task</a></td>
 <td data-label="Definition">The model retrieves evidence, calculates metrics and writes a full Markdown company report in a prescribed structure. The source benchmark spans eight markets and four languages; its 247 grading items per report are not separate tasks.</td>
 <td data-label="Evaluation metric: definition and formula" class="metric-cell">Weighted content quality measures recognition, calculation, abstraction and interpretation; structure is scored separately.<span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N is the number of reports; s<sub>ij</sub> ∈ [0,1] is native judge attainment from matching, claim coverage or normalized criterion points. The weights w<sub>j</sub> are 1 for recognition/calculation and 2 for abstraction/interpretation, totaling 350; f<sub>i</sub> is the header, subsection and table structure score out of 42. <a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">Scoring protocol</a>; <a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">weights</a>.</td>
+
+<td data-label="Question format">Single-turn</td>
+<td data-label="Sample question (abridged)" class="sample-cell">Using UnitedHealth’s FY2023–2024 annual reports and evidence available on 20 September 2025, complete the supplied Markdown research tables on performance, valuation and risks.<span class="sample-source"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch/blob/d6f80827caf60492fd0aa2769391d5137bc6aa2e/Analytical%20Structure/test004.md" target="_blank" rel="noopener">UnitedHealth · task test004</a></span></td>
 </tr>
 <tr>
 <td><a href="https://github.com/openai/mle-bench/tree/507f92e1138bb6e40dac5c6ee7a6758e6424bf97" target="_blank" rel="noopener">MLE-bench project subset</a><br><a href="https://github.com/openai/mle-bench#dataset" target="_blank" rel="noopener">Kaggle sources</a></td>
 <td data-label="Definition">The model reads competition data, writes and runs machine-learning training code, and submits the required prediction CSV. One complete competition task is not one data row. The project subset awaits qualification.</td>
 <td data-label="Evaluation metric: definition and formula" class="metric-cell">Retain each competition’s native score and direction: AUC measures ranking quality (higher is better), log loss measures probability error, and RMSLE measures regression error on a logarithmic scale (both lower are better).<span class="metric-formula">Native score<sub>i</sub> = G<sub>i</sub>(prediction CSV<sub>i</sub>, hidden labels<sub>i</sub>)</span>G<sub>i</sub> is the competition’s fixed native grader. Also report valid submissions, bronze-medal attainment and above-median performance.<span class="metric-formula">Valid rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub>]</span><span class="metric-formula">Medal rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ⪰<sub>i</sub> b<sub>i</sub>]</span><span class="metric-formula">Above-median rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ≻<sub>i</sub> h<sub>i</sub>]</span>N is the number of evaluated tasks; s<sub>i</sub> is the native score, and b<sub>i</sub>/h<sub>i</sub> are that competition’s bronze threshold/median. The comparisons ⪰<sub>i</sub> and ≻<sub>i</sub> follow its metric direction; 1[·] is 1 when the condition holds and 0 otherwise.</td>
+
+<td data-label="Question format">Single-turn</td>
+<td data-label="Sample question (abridged)" class="sample-cell">Train a model to identify 99 leaf species and submit a CSV containing a predicted probability for each species.<span class="sample-source"><a href="https://github.com/openai/mle-bench/blob/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/mlebench/competitions/leaf-classification/description.md" target="_blank" rel="noopener">Leaf Classification · competition brief</a></span></td>
 </tr>
 </tbody>
 </table>
+<p class="data-note">Question format counts user requests: each source task starts with one request. Solving it can involve multiple assistant/tool exchanges, which SFT can represent as a multi-turn trajectory. Samples shorten or rephrase source tasks; full report structures, input files and detailed requirements remain at the linked sources.</p>
 <p class="data-note">Each dataset retains its native output and grading meaning. Report content quality, ML competition scores and question-answer accuracy are reported separately.</p>
 </div>
 </section>

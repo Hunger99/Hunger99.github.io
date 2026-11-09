@@ -88,35 +88,51 @@
 <div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered" id="co-data">数据集</h2>
 <table class="table is-narrow data-table dataset-metrics">
-<thead><tr><th scope="col">数据集与来源</th><th scope="col">定义</th><th scope="col">评测指标定义与公式</th></tr></thead>
+<thead><tr><th scope="col">数据集与来源</th><th scope="col">定义</th><th scope="col">评测指标定义与公式</th><th scope="col">问题轮次</th><th scope="col">问题示例（简写）</th></tr></thead>
 <tbody>
 <tr>
 <td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
 <td data-label="定义">模型针对完整年度报告回答金融问题，需要检索原文并进行数值推理。</td>
 <td data-label="评测指标定义与公式" class="metric-cell">当前项目评分器计算数值／布尔答案准确率。数值答案允许 1% 相对误差，标准答案为 0 时允许 0.005 绝对误差，并检查百分数的 ×100／÷100 等价表示；布尔答案须匹配 yes／no。<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 在第 i 题通过评分器时为 1，否则为 0。</td>
+
+<td data-label="问题轮次">单轮</td>
+<td data-label="问题示例（简写）" class="sample-cell">根据年报，公司全部设施中租赁设施占多少百分比？<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA训练题</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
 <td data-label="定义">模型检索市场与公司信息，回答专家编写的金融推理问题；本项目使用有离线来源支持的子集。</td>
 <td data-label="评测指标定义与公式" class="metric-cell">任务成功率要求最终答案满足该题全部参考项，数值容差、日期和文本别名由逐题答案约束指定。<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 表示该题全部要求是否通过；这是项目离线子集的成绩。</td>
+
+<td data-label="问题轮次">单轮</td>
+<td data-label="问题示例（简写）" class="sample-cell">2023年3月，美联储将准备金余额利率上调至多少？以百分比作答，保留一位小数。<span class="sample-source"><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">Global T2 · 题号503</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
 <td data-label="定义">模型完成格式、长度、关键词、语言等可由程序检查的指令；一条提示可包含多条要求。</td>
 <td data-label="评测指标定义与公式" class="metric-cell">严格整题准确率要求同一提示的全部指令通过；严格逐指令准确率统计通过的指令占比。<span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N 是提示数，m<sub>i</sub> 是第 i 条提示的指令数，c<sub>ij</sub> 在第 j 条指令通过严格检查时为 1，否则为 0。</td>
+
+<td data-label="问题轮次">单轮</td>
+<td data-label="问题示例（简写）" class="sample-cell">撰写一篇介绍日本旅行的博客，少于300词。<span class="sample-source"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">题号1092</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">官方任务说明</a></td>
 <td data-label="定义">模型按指定分析结构检索、计算并生成完整 Markdown 公司研究报告；原始基准涵盖八个市场、四种语言，每份报告有 247 个评分项，评分项不计作独立任务。</td>
 <td data-label="评测指标定义与公式" class="metric-cell">加权内容质量分别衡量识别、计算、概括与解释；另报结构分。<span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N 是报告数；s<sub>ij</sub> ∈ [0,1] 是官方判官给出的匹配、关键主张覆盖或归一化细项得分；w<sub>j</sub> 为识别／计算项的 1 分或概括／解释项的 2 分，满分 350；f<sub>i</sub> 为标题、子标题与表格的结构得分，满分 42。<a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">评分协议</a>；<a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">权重</a>。</td>
+
+<td data-label="问题轮次">单轮</td>
+<td data-label="问题示例（简写）" class="sample-cell">根据UnitedHealth的2023、2024财年年报及截至2025年9月20日的证据，按指定Markdown研究表格分析财务表现、估值与风险。<span class="sample-source"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch/blob/d6f80827caf60492fd0aa2769391d5137bc6aa2e/Analytical%20Structure/test004.md" target="_blank" rel="noopener">UnitedHealth · 任务test004</a></span></td>
 </tr>
 <tr>
 <td><a href="https://github.com/openai/mle-bench/tree/507f92e1138bb6e40dac5c6ee7a6758e6424bf97" target="_blank" rel="noopener">MLE-bench 项目子集</a><br><a href="https://github.com/openai/mle-bench#dataset" target="_blank" rel="noopener">Kaggle 来源</a></td>
 <td data-label="定义">模型读取竞赛数据、编写与执行机器学习训练代码，并提交竞赛规定的预测 CSV；一个完整竞赛任务不等于一行数据。项目子集仍待资格核验。</td>
 <td data-label="评测指标定义与公式" class="metric-cell">保留各竞赛原生分数及方向：AUC 衡量排序质量，越高越好；log loss 衡量概率误差，RMSLE 衡量对数尺度的回归误差，两者越低越好。<span class="metric-formula">Native score<sub>i</sub> = G<sub>i</sub>(prediction CSV<sub>i</sub>, hidden labels<sub>i</sub>)</span>G<sub>i</sub> 是该竞赛固定的原生评分器，另报有效提交率、达到铜牌线的比例及高于参赛者中位数的比例。<span class="metric-formula">Valid rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub>]</span><span class="metric-formula">Medal rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ⪰<sub>i</sub> b<sub>i</sub>]</span><span class="metric-formula">Above-median rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ≻<sub>i</sub> h<sub>i</sub>]</span>N 是评测任务数，s<sub>i</sub> 是原生分数，b<sub>i</sub>／h<sub>i</sub> 是该竞赛铜牌线／中位数；⪰<sub>i</sub>、≻<sub>i</sub> 按该指标方向比较，1[·] 在条件满足时为 1，否则为 0。</td>
+
+<td data-label="问题轮次">单轮</td>
+<td data-label="问题示例（简写）" class="sample-cell">训练模型识别99种叶片，提交包含各类别预测概率的CSV文件。<span class="sample-source"><a href="https://github.com/openai/mle-bench/blob/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/mlebench/competitions/leaf-classification/description.md" target="_blank" rel="noopener">Leaf Classification · 竞赛题面</a></span></td>
 </tr>
 </tbody>
 </table>
+<p class="data-note">问题轮次按用户请求计：这些原始任务均从一次请求开始；求解可包含多次模型与工具交互，SFT可将其记录为多轮轨迹。示例经过简写或改写，中文为译文；完整报告结构、输入文件及详细要求见对应来源。</p>
 <p class="data-note">各数据集保留自己的输出与评分含义；公司报告的内容分、机器学习竞赛分数与问答准确率分别报告。</p>
 </div>
 </section>
