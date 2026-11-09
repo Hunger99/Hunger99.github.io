@@ -565,3 +565,17 @@ html[lang="zh-CN"] .teaser {
     font-size: .85em;
   }
 }
+
+/* Each stage diagram preserves readable labels inside a phone-width scroll area. */
+.architecture-diagram { margin: .75rem 0 1.5rem; }
+.architecture-scroll { overflow-x: auto; border: 1px solid #e6dfef; border-radius: .75rem; background: #fff; }
+.pipeline-panel .architecture-scroll img { display: block; width: 100%; min-width: 760px; max-height: none; margin: 0; }
+.architecture-diagram figcaption { margin-top: .5rem; color: #565061; font-size: .85rem; line-height: 1.6; }
+.architecture-scroll:focus-visible { outline: 2px solid #6d3fc8; outline-offset: 3px; }
+
+#harness code { white-space: normal; overflow-wrap: anywhere; }
+#harness .architecture-figure { margin: 1rem 0 1.75rem; }
+#harness .architecture-figure img { display: block; width: 100%; min-width: 760px; height: auto; }
+#harness .architecture-figure figcaption { margin-top: .5rem; color: #565061; font-size: .85rem; }
+#harness .table { min-width: 650px; }
+#harness .table-container { overflow-x: auto; }
