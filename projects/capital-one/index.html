@@ -132,25 +132,27 @@
 <tr><th scope="row">FinSearchComp</th><td>97 offline-supported Global T2/T3 originals from the 635-question source release</td><td>48</td><td>19</td><td>30</td></tr>
 <tr><th scope="row">IFEval</th><td>541 raw prompts preserved; 3 conflicting training prompts quarantined uniformly across all nine candidates</td><td>213</td><td>108</td><td>217</td></tr>
 <tr><th scope="row">FinDeepResearch</th><td>64 source tasks acquired; 1 source conflict held, 63 originals frozen; execution not qualified</td><td>24</td><td>16</td><td>23</td></tr>
-<tr><th scope="row">MLE-bench project subset</th><td>82 source competition metadata entries: 75 official evaluation + 7 development; 4 official competitions acquired and prepared as executable candidates; project task admission pending</td><td>Unset</td><td>Unset</td><td>Unset</td></tr>
+<tr><th scope="row">MLE-bench project subset</th><td>4 executable competition candidates; conditional project allocation shown here, with task admission pending</td><td>2</td><td>1</td><td>1</td></tr>
 </tbody>
 </table>
 </div>
 <p class="data-note">The active original pools for the three datasets contain 1,203 training / 309 validation / 620 test questions. IFEval retains all 541 raw prompts; the three training quarantines leave validation and test unchanged and apply to every candidate. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench still awaits project task admission. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories: recorded solutions containing model messages, tool calls and results. No complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
-<p class="data-note">FinDeepResearch still needs an independent evidence corpus and grader integration; expert reports are evaluator targets, not retrieval evidence. Its project split is not an official training split. Four official MLE-bench competition candidates (Insults, Leaf, NOMAD and Spooky) have passed native grading, independent metric recalculation and private-label isolation checks in real sandboxes. Source assignments to SFT augmentation, DAPO augmentation, validation and test remain unset, as do project splits; derived tasks and SFT demonstrations are 0, and the DAPO reward adapter remains unqualified. Five-dataset training remains unready. The official 22-competition Lite set is not this project’s low-cost runnable subset.</p>
+<p class="data-note">FinDeepResearch still needs an independent evidence corpus and grader integration; expert reports are evaluator targets, not retrieval evidence. Its project split is not an official training split. Four official MLE-bench competition candidates have passed native grading, independent metric recalculation and private-label isolation checks in real sandboxes. The conditional source plan uses Insults and Leaf as the two shared original training tasks, NOMAD for validation and Spooky for test; Insults supplies SFT variants and Leaf supplies DAPO variants. Fixed competition-ID order determines these roles, without labels or model scores. Four sources cannot balance task types across roles; original task admission, derived tasks and SFT demonstrations remain at 0, and DAPO integration is not qualified. Five-dataset training remains unready. The official 22-competition Lite set is not this project’s low-cost runnable subset.</p>
 <h3 class="title is-5" id="synthetic-pools">One shared synthetic pool per stage; all qualified counts are currently 0</h3>
 <div class="table-container" tabindex="0">
 <table class="table setting-table synthetic-counts">
 <thead><tr><th scope="col">Use</th><th scope="col">FinSearchComp target</th><th scope="col">FinDeepResearch target</th><th scope="col">MLE-bench subset target</th></tr></thead>
 <tbody>
-<tr><th scope="row">SFT training (S)</th><td>96</td><td>128</td><td>Stage count pending</td></tr>
-<tr><th scope="row">DAPO training (R)</th><td>96</td><td>128</td><td>Stage count pending</td></tr>
-<tr><th scope="row">Synthetic validation</th><td>38</td><td>32</td><td>Stage count pending</td></tr>
-<tr><th scope="row">Synthetic test</th><td>60</td><td>49</td><td>Stage count pending</td></tr>
+<tr><th scope="row">SFT training (S)</th><td>96</td><td>128</td><td>128</td></tr>
+<tr><th scope="row">DAPO training (R)</th><td>96</td><td>128</td><td>128</td></tr>
+<tr><th scope="row">Synthetic validation</th><td>38</td><td>32</td><td>56</td></tr>
+<tr><th scope="row">Synthetic test</th><td>60</td><td>49</td><td>84</td></tr>
+<tr><th scope="row">Total distinct synthetic targets</th><td>290</td><td>337</td><td>396</td></tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">FinSearchComp retains its plan for 290 distinct synthetic tasks: 96 + 96 + 38 + 60. Together with 97 originals, this is a planned inventory of 387 distinct tasks; the 48 original training questions reused at both stages count once. These are targets; formally qualified synthetic tasks are currently 0. Each new dataset targets 400–800 original plus synthetic tasks, defaulting to 400, with a fallback near 387 if infeasible. FinDeepResearch plans 63 originals + 337 synthetic tasks to reach 400; MLE-bench stage counts remain unset. If all four ML original candidates are admitted, reaching 400 still requires 396 additional qualified tasks. ML additions must change meaningful task requirements: data rows, random seeds and repeated runs do not count as new tasks, and independently sourced competitions/datasets are counted separately.</p>
+<p class="data-note">FinSearchComp retains its target of 97 originals + 290 synthetic tasks = 387 distinct tasks; FinDeepResearch targets 63 + 337 = 400. MLE-bench conditionally targets 4 + 396 = 400, with equal SFT and DAPO additions and 140 synthetic evaluation tasks. These are targets, not completed inventory; formally qualified synthetic tasks are currently 0. The shared original training pool counts once even when reused in both training stages. New datasets retain a total range of 400–800 and a fallback near 387 if quality limits capacity. The ML pilot allows at most 48 candidate definitions; it has not demonstrated capacity for 396 qualified additions. ML additions must change meaningful task requirements: data rows, random seeds and repeated runs do not count as new tasks, and independent competition counts are reported separately.</p>
+<p class="data-note">If every planned source and synthetic target qualifies, the five-dataset original allocation will total 1,229 training / 326 validation / 644 test tasks; synthetic additions will total 352 SFT / 352 DAPO / 126 validation / 193 test tasks. These sums are conditional targets; they do not open training.</p>
 <p class="data-note">A checkpoint is a saved set of model weights that later jobs can continue training.</p>
 <h3 class="title is-5">Two SFT checkpoints serve six DAPO jobs</h3>
 <p class="data-note">In the table, O means the original training pool above; new sources join O only after qualification and freezing. S and R mean the two separate synthetic training pools above. SFT consumes admitted demonstrations for O or O + S; DAPO consumes the corresponding tasks and native rewards. A task count is not a qualified demonstration count. Every S1 descendant reuses the same checkpoint and S pool; every R1 candidate shares the R pool.</p>
@@ -164,8 +166,8 @@
 <th scope="row">1 · Base · Original 4B</th>
 <td>No training</td>
 <td>No training</td>
-<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original validation cohorts</a> and <a href="#synthetic-pools">synthetic validation pool</a>.</p><p>Report original and synthetic scores separately.</p><p>MLE-bench split unset; full five-dataset total pending.</p></td>
-<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original test cohorts</a> and <a href="#synthetic-pools">synthetic test pool</a>.</p><p>Report original and synthetic scores separately.</p><p>MLE-bench split unset; full five-dataset total pending.</p></td>
+<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original validation cohorts</a> and <a href="#synthetic-pools">synthetic validation pool</a>.</p><p>Report original and synthetic scores separately.</p><p>Conditional target: 326 originals + 126 synthetic = 452 tasks; source and task admission remain pending.</p></td>
+<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original test cohorts</a> and <a href="#synthetic-pools">synthetic test pool</a>.</p><p>Report original and synthetic scores separately.</p><p>Conditional target: 644 originals + 193 synthetic = 837 tasks; source and task admission remain pending.</p></td>
 </tr>
 <tr>
 <th scope="row">2 · S0 · Original SFT</th>
