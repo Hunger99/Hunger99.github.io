@@ -155,9 +155,9 @@
 <h3 class="title is-5">Settings</h3>
 <div class="content"><ul>
 <li><b>Base model:</b> Qwen3.5-4B-Base. S0 and S1 start independently from the same weights; paired DAPO runs use the same starting checkpoint.</li>
+<li><b>Teacher Model:</b> Qwen3.8-27B generates demonstration trajectories for SFT.</li>
 <li id="original-pools"><b>Original data and evaluation:</b> Original task identities are shared wherever training is applied. All nine candidates use the same frozen validation and testing sets, tool conditions and grader versions. Only validation selects checkpoints.</li>
 <li id="synthetic-pools"><b>Additional data:</b> Every S1 descendant shares the same FinSearchComp SFT additions; every R1 candidate shares the same separate DAPO additions. These pools are not regenerated per candidate.</li>
-<li><b>Matched training:</b> Original-only and original-plus-additional runs within the same training stage use the same training recipe and token/compute budget; the added training data is the variable being compared.</li>
 </ul></div>
 </div>
 </section>

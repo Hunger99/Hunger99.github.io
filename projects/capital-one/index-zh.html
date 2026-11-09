@@ -156,9 +156,9 @@
 <h3 class="title is-5">Settings</h3>
 <div class="content"><ul>
 <li><b>Base model:</b> Qwen3.5-4B-Base。S0、S1 分别从相同权重独立开始；配对 DAPO 实验使用相同的起始检查点。</li>
+<li><b>Teacher Model:</b> Qwen3.8-27B 用于采集 SFT 示范轨迹。</li>
 <li id="original-pools"><b>原题与评测:</b> 执行训练的设置共用相同原题身份；九组共用同一份冻结的验证集和测试集，以及相同的工具条件和评分器版本。仅使用验证集选择检查点。</li>
 <li id="synthetic-pools"><b>新增数据:</b> 所有 S1 后续设置共用同一份 FinSearchComp SFT 新增题；所有 R1 设置共用另一份固定的 DAPO 新增题，不为不同候选重新生成。</li>
-<li><b>训练控制:</b> 同一训练阶段内，有无新增题的配对实验使用相同训练配方及 token／计算预算，比较的变量是是否加入新增训练数据。</li>
 </ul></div>
 </div>
 </section>
