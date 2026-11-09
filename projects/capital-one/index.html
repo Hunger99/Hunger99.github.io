@@ -137,94 +137,28 @@
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
-<div class="container is-max-widescreen">
+<div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Candidates and Settings</h2>
-<p class="data-note">The nine candidates share the same original cohorts and evaluation protocol. The additional-question pools described below apply to FinSearchComp. Original task counts, admitted demonstrations and newly authored questions are separate quantities; the new training experiment has not started.</p>
-<h3 class="title is-5" id="original-pools">Original task counts and admission of new sources</h3>
-<div class="table-container" tabindex="0">
-<table class="table setting-table original-counts">
-<thead><tr><th scope="col">Dataset</th><th scope="col">Source inventory and current state</th><th scope="col">Original train</th><th scope="col">Original validation</th><th scope="col">Original test</th></tr></thead>
+<div class="table-container"><table class="table setting-table candidate-table">
+<thead><tr><th scope="col">Candidate</th><th scope="col">Configuration</th></tr></thead>
 <tbody>
-<tr><th scope="row">DocFinQA</th><td>1,497 selected original questions</td><td>942</td><td>182</td><td>373</td></tr>
-<tr><th scope="row">FinSearchComp</th><td>97 offline-supported Global T2/T3 originals from the 635-question source release</td><td>48</td><td>19</td><td>30</td></tr>
-<tr><th scope="row">IFEval</th><td>541 raw prompts preserved; 3 conflicting training prompts quarantined uniformly across all nine candidates</td><td>213</td><td>108</td><td>217</td></tr>
-<tr><th scope="row">FinDeepResearch</th><td>64 source tasks acquired; 1 source conflict held, 63 originals frozen; execution not qualified</td><td>24</td><td>16</td><td>23</td></tr>
-<tr><th scope="row">MLE-bench project subset</th><td>4 executable competition candidates; conditional project allocation shown here, with task admission pending</td><td>2</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
-<p class="data-note">The established DocFinQA, FinSearchComp and IFEval pools contain 1,203 training / 309 validation / 620 test questions. IFEval preserves all 541 raw prompts, with three conflicting training prompts excluded uniformly. FinDeepResearch retains its frozen project cohorts; the four MLE-bench competition candidates retain their conditional original-task allocation. Those new benchmark interfaces still require admission. A task count does not count qualified SFT demonstrations. DocFinQA and IFEval remain original-only.</p>
-<h3 class="title is-5" id="synthetic-pools">FinSearchComp additional-question acceptance targets by use</h3>
-<div class="table-container" tabindex="0"><table class="table setting-table synthetic-counts"><thead><tr><th scope="col">Use</th><th scope="col">FinSearchComp acceptance target</th></tr></thead><tbody>
-<tr><th scope="row">SFT training (S)</th><td>96</td></tr>
-<tr><th scope="row">DAPO training (R)</th><td>96</td></tr>
-<tr><th scope="row">Additional validation</th><td>38</td></tr>
-<tr><th scope="row">Additional test</th><td>60</td></tr>
-<tr><th scope="row">Total distinct additional questions</th><td>290</td></tr>
+<tr><th scope="row">1 · Base</th><td>Base model without post-training</td></tr>
+<tr><th scope="row">2 · S0</th><td>Base → SFT on original demonstrations</td></tr>
+<tr><th scope="row">3 · S1</th><td>Base → SFT on original + additional demonstrations</td></tr>
+<tr><th scope="row">4 · S0R0</th><td>S0 → DAPO on original tasks</td></tr>
+<tr><th scope="row">5 · S1R0</th><td>S1 → DAPO on original tasks</td></tr>
+<tr><th scope="row">6 · S0R1</th><td>S0 → DAPO on original + additional tasks</td></tr>
+<tr><th scope="row">7 · S1R1</th><td>S1 → DAPO on original + additional tasks</td></tr>
+<tr><th scope="row">8 · BaseR0</th><td>Base → DAPO on original tasks</td></tr>
+<tr><th scope="row">9 · BaseR1</th><td>Base → DAPO on original + additional tasks</td></tr>
 </tbody></table></div>
-<p class="data-note">FinSearchComp retains the existing acceptance targets: 96 SFT, 96 DAPO, 38 validation and 60 test additions, totaling 290 new questions alongside 97 originals. These are quotas, not released inventory. Real source materials provide the facts; programs or Claude author the questions and independent checks establish their answers. The FinDeepResearch and MLE-bench counts above describe their original cohorts.</p>
-<p class="data-note">A checkpoint is a saved set of model weights that later jobs can continue training.</p>
-<h3 class="title is-5">Two SFT checkpoints serve six DAPO jobs</h3>
-<p class="data-note">In the table, O is the shared original training pool above. S and R are the separate, reviewed FinSearchComp SFT and DAPO additions. SFT consumes admitted demonstrations for O or O + S; DAPO consumes tasks for O or O + R. All S1 descendants share one S pool and checkpoint; all R1 candidates share one R pool. The same original sources and evaluation cohorts remain fixed across candidates.</p>
-<p class="data-note">S0 and S1 will independently start from the same Base and each follow given-evidence reasoning → retrieval plus reasoning. They share original tasks and evidence views: versions of the same task with specified supplied material. S1 adds one fixed S pool, and all nine retain the same evaluation pools. Each SFT condition shares 6,553,600 supervised output tokens and 100 updates across both phases, initially 3,276,800 tokens and 50 updates per phase. Views and replay do not add unique tasks; full training and its benefit remain unmeasured.</p>
-<p class="table-hint">Scroll the table sideways to see all columns.</p>
-<div class="table-container baseline-scroll" tabindex="0">
-<table class="table setting-table baseline-table">
-<thead><tr><th scope="col">Candidate</th><th scope="col">SFT data used</th><th scope="col">DAPO data used</th><th scope="col">Common validation</th><th scope="col">Common test</th></tr></thead>
-<tbody>
-<tr>
-<th scope="row">1 · Base · Original 4B</th>
-<td>No training</td>
-<td>No training</td>
-<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original validation cohorts</a>. Any admitted <a href="#synthetic-pools">FinSearchComp validation additions</a> form one separate shared challenge pool, with an acceptance target of 38. Report original and additional-question scores separately.</p></td>
-<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original test cohorts</a>. Any admitted <a href="#synthetic-pools">FinSearchComp test additions</a> form one separate shared challenge pool, with an acceptance target of 60. Test answers and outcomes do not guide question construction or checkpoint selection.</p></td>
-</tr>
-<tr>
-<th scope="row">2 · S0 · Original SFT</th>
-<td>Admitted O demonstrations</td>
-<td>No training</td>
-</tr>
-<tr>
-<th scope="row">3 · S1 · Original + synthetic SFT</th>
-<td>Admitted O + S demonstrations</td>
-<td>No training</td>
-</tr>
-<tr>
-<th scope="row">4 · S0R0</th>
-<td>Reuse S0</td>
-<td>O tasks</td>
-</tr>
-<tr>
-<th scope="row">5 · S1R0</th>
-<td>Reuse S1</td>
-<td>O tasks</td>
-</tr>
-<tr>
-<th scope="row">6 · S0R1</th>
-<td>Reuse S0</td>
-<td>O + R tasks</td>
-</tr>
-<tr>
-<th scope="row">7 · S1R1</th>
-<td>Reuse S1</td>
-<td>O + R tasks</td>
-</tr>
-<tr>
-<th scope="row">8 · BaseR0</th>
-<td>No training</td>
-<td>O tasks</td>
-</tr>
-<tr>
-<th scope="row">9 · BaseR1</th>
-<td>No training</td>
-<td>O + R tasks</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="data-note">Fix source versions, tool conditions and training budgets across candidates, and record tasks actually used in updates, demonstration/attempt counts, generated tokens and tool-compute costs. Calibrate mixture weights against this exposure rather than equalizing raw row counts. Freeze shared synthetic pools after review instead of regenerating them for each candidate.</p>
-<p class="data-note">Report original-only and synthetic-challenge scores separately. Six FinSearchComp questions with background additions are training-only. Existing FinSearchComp and IFEval originals have historical evaluation exposure, so they are not untouched confirmation sets. Once a new benchmark uses a project training split, its scores describe the held-out project subset and are not directly comparable with official full-benchmark evaluation.</p>
-<p class="data-note">Freeze new original and synthetic validation/test sources, tasks and graders before learner calibration or model selection. Validation can select checkpoints and mixture weights; test answers and outcomes do not feed generation, thresholds or model selection. Training entry stays closed until all five datasets, their shared task pools, demonstrations, native graders and common budget controls are ready.</p>
+<h3 class="title is-5">Settings</h3>
+<div class="content"><ul>
+<li><b>Base model:</b> Qwen3.5-4B-Base. S0 and S1 start independently from the same weights; paired DAPO runs use the same starting checkpoint.</li>
+<li id="original-pools"><b>Original data and evaluation:</b> Original task identities are shared wherever training is applied. All nine candidates use the same frozen validation and testing sets, tool conditions and grader versions. Only validation selects checkpoints.</li>
+<li id="synthetic-pools"><b>Additional data:</b> Every S1 descendant shares the same FinSearchComp SFT additions; every R1 candidate shares the same separate DAPO additions. These pools are not regenerated per candidate.</li>
+<li><b>Matched training:</b> Original-only and original-plus-additional runs within the same training stage use the same training recipe and token/compute budget; the added training data is the variable being compared.</li>
+</ul></div>
 </div>
 </section>
 <section class="section hero">
@@ -268,7 +202,7 @@
 <li>
 <b>Task adapter:</b> The planned five-dataset interface will bind source identities and input artifacts, an isolated tool trajectory, a submitted artifact and a dataset-specific grader result. Sharing this outer record lets one runner manage different tasks without converting report writing or ML engineering into question answering.</li>
 <li>
-<b>Qualification:</b> New adapters must pass evidence-access, native-grader, artifact-validation and evaluator-isolation checks before admission. The <a href="#co-data">Data Sets table</a> defines the task outputs and metrics; the <a href="#original-pools">pool table</a> distinguishes frozen cohorts from runnable tasks.</li>
+<b>Qualification:</b> New adapters must pass evidence-access, native-grader, artifact-validation and evaluator-isolation checks before admission. The <a href="#co-data">Data Sets table</a> defines the task outputs and metrics; the <a href="#original-pools">shared-data controls</a> keep original tasks and evaluation conditions consistent across candidates.</li>
 </ul>
 <h4 class="pipeline-group" id="source-split">Source identities precede question sampling</h4>
 <ul>
@@ -280,7 +214,7 @@
 <h4 class="pipeline-group" id="pool-freeze">One release serves every model setting</h4>
 <ul>
 <li>
-<b>Immutable inputs:</b> Existing original task IDs, text, canonical sources and graders are bound to a frozen release. New cohorts and adapters will join the same shared release only after qualification; the <a href="#baselines">candidate tables</a> hold their counts and state.</li>
+<b>Immutable inputs:</b> Existing original task IDs, text, canonical sources and graders are bound to a frozen release. New cohorts and adapters will join the same shared release only after qualification; the <a href="#baselines">candidate settings</a> define the shared comparison conditions.</li>
 <li>
 <b>Reserved evaluation:</b> Synthetic validation and test items use separate source support and independent review. Their acceptance quotas do not authorize filling a shortfall with duplicates or unreviewed candidates.</li>
 </ul>
@@ -403,7 +337,7 @@
 <h4 class="pipeline-group" id="sft-models">Two supervised checkpoints serve the comparison</h4>
 <ul>
 <li>
-<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add admitted demonstrations for the fixed shared pool of synthetic SFT tasks. Both will independently start from the same Base and follow the same two phases, with identical original tasks and evidence views; the <a href="#synthetic-pools">pool table</a> defines eligible synthetic tasks and their qualification state.</li>
+<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add admitted demonstrations for the fixed shared pool of synthetic SFT tasks. Both will independently start from the same Base and follow the same two phases, with identical original tasks and evidence views; the <a href="#synthetic-pools">additional-data control</a> fixes one shared SFT addition pool across S1 descendants.</li>
 </ul>
 <h4 class="pipeline-group" id="sft-given">Phase 1 supplies the evidence needed for reasoning</h4>
 <ul>
