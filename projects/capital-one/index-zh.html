@@ -141,17 +141,17 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Candidates and Settings</h2>
 <div class="table-container"><table class="table setting-table candidate-table">
-<thead><tr><th scope="col">候选模型</th><th scope="col">训练设置</th></tr></thead>
+<thead><tr><th scope="col">代号</th><th scope="col">定义</th></tr></thead>
 <tbody>
-<tr><th scope="row">1 · Base</th><td>基础模型，不做后训练</td></tr>
-<tr><th scope="row">2 · S0</th><td>Base → 使用原题示范进行 SFT</td></tr>
-<tr><th scope="row">3 · S1</th><td>Base → 使用原题＋新增题示范进行 SFT</td></tr>
-<tr><th scope="row">4 · S0R0</th><td>S0 → 使用原题进行 DAPO</td></tr>
-<tr><th scope="row">5 · S1R0</th><td>S1 → 使用原题进行 DAPO</td></tr>
-<tr><th scope="row">6 · S0R1</th><td>S0 → 使用原题＋新增题进行 DAPO</td></tr>
-<tr><th scope="row">7 · S1R1</th><td>S1 → 使用原题＋新增题进行 DAPO</td></tr>
-<tr><th scope="row">8 · BaseR0</th><td>Base → 使用原题进行 DAPO</td></tr>
-<tr><th scope="row">9 · BaseR1</th><td>Base → 使用原题＋新增题进行 DAPO</td></tr>
+<tr><th scope="row">Base</th><td>原始基础模型，未进行 SFT 或 DAPO。</td></tr>
+<tr><th scope="row">S0</th><td>仅使用原题示范进行 SFT，不进行 DAPO。</td></tr>
+<tr><th scope="row">S1</th><td>使用原题与新增题示范进行 SFT，不进行 DAPO。</td></tr>
+<tr><th scope="row">S0R0</th><td>仅原题 SFT，随后仅原题 DAPO。</td></tr>
+<tr><th scope="row">S1R0</th><td>原题与新增题 SFT，随后仅原题 DAPO。</td></tr>
+<tr><th scope="row">S0R1</th><td>仅原题 SFT，随后使用原题与新增题进行 DAPO。</td></tr>
+<tr><th scope="row">S1R1</th><td>SFT 与 DAPO 两个阶段均使用原题和新增题。</td></tr>
+<tr><th scope="row">BaseR0</th><td>不经过 SFT，直接使用原题进行 DAPO。</td></tr>
+<tr><th scope="row">BaseR1</th><td>不经过 SFT，直接使用原题与新增题进行 DAPO。</td></tr>
 </tbody></table></div>
 <h3 class="title is-5">Settings</h3>
 <div class="content"><ul>
