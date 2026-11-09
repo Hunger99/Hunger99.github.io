@@ -133,25 +133,27 @@
 <tr><th scope="row">FinSearchComp</th><td>97 道离线支持的 Global T2/T3 原题；上游共 635 题</td><td>48</td><td>19</td><td>30</td></tr>
 <tr><th scope="row">IFEval</th><td>原始 541 题完整保留；3 道指令冲突的训练题对九组统一隔离</td><td>213</td><td>108</td><td>217</td></tr>
 <tr><th scope="row">FinDeepResearch</th><td>已取得 64 个任务；隔离 1 个来源冲突，冻结 63 个原题；执行资格未就绪</td><td>24</td><td>16</td><td>23</td></tr>
-<tr><th scope="row">MLE-bench 项目子集</th><td>82 个来源竞赛元数据条目：75 个官方评测＋7 个开发；4 个官方比赛已获取并准备为可执行候选，项目任务准入尚未完成</td><td>未划分</td><td>未划分</td><td>未划分</td></tr>
+<tr><th scope="row">MLE-bench 项目子集</th><td>4 个可执行竞赛候选；表中为有条件的项目分配，任务尚未正式准入</td><td>2</td><td>1</td><td>1</td></tr>
 </tbody>
 </table>
 </div>
 <p class="data-note">原有三数据集的活动原题池含训练 1,203／验证 309／测试 620 题。IFEval 原始 541 题完整保留，3 道训练题的隔离对九组一致生效，验证与测试不变。FinDeepResearch 已冻结原题划分，但其证据和评分尚不支持训练或评测；MLE-bench 的项目任务准入仍未完成。原题训练池只定义任务来源，SFT 还须逐条验收记录了解题消息、工具调用及返回的示范轨迹，目前没有完整五数据集合格示范总数。DocFinQA 与 IFEval 保持仅用原题，尚未选择进一步缩减 DocFinQA。</p>
-<p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 的 Insults、Leaf、NOMAD 和 Spooky 四个官方比赛候选已通过真实沙箱中的原生评分、独立指标复算与私有标签隔离检查；来源尚未分配给 SFT 合成、DAPO 合成、验证及测试，项目划分也未确定；派生任务与 SFT 示范均为 0，DAPO 奖励适配仍未通过资格核验。五数据集训练仍未就绪；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
+<p class="data-note">FinDeepResearch 的独立证据库和评分适配尚未就绪，专家报告只供评分，不能充当学习者检索证据；项目划分也不是官方训练划分。MLE-bench 四个官方竞赛候选已通过真实沙箱中的原生评分、独立指标复算与私有标签隔离检查。有条件的来源规划将 Insults、Leaf 分给共同原题训练池，NOMAD 用于验证，Spooky 用于测试；Insults 提供 SFT 派生题，Leaf 提供 DAPO 派生题。分配按竞赛 ID 固定排序，不读取标签或模型成绩；四个来源无法在各用途间均衡任务类别。正式准入原题、派生题与 SFT 示范仍为 0，DAPO 接入尚未通过资格核验。五数据集训练仍未就绪；官方 22 竞赛 Lite 不等于本项目的低成本可运行子集。</p>
 <h3 class="title is-5" id="synthetic-pools">各阶段共用一份合成增量，当前合格数均为 0</h3>
 <div class="table-container" tabindex="0">
 <table class="table setting-table synthetic-counts">
 <thead><tr><th scope="col">用途</th><th scope="col">FinSearchComp 目标</th><th scope="col">FinDeepResearch 目标</th><th scope="col">MLE-bench 子集目标</th></tr></thead>
 <tbody>
-<tr><th scope="row">SFT 训练（S）</th><td>96</td><td>128</td><td>阶段数量待定</td></tr>
-<tr><th scope="row">DAPO 训练（R）</th><td>96</td><td>128</td><td>阶段数量待定</td></tr>
-<tr><th scope="row">合成验证</th><td>38</td><td>32</td><td>阶段数量待定</td></tr>
-<tr><th scope="row">合成测试</th><td>60</td><td>49</td><td>阶段数量待定</td></tr>
+<tr><th scope="row">SFT 训练（S）</th><td>96</td><td>128</td><td>128</td></tr>
+<tr><th scope="row">DAPO 训练（R）</th><td>96</td><td>128</td><td>128</td></tr>
+<tr><th scope="row">合成验证</th><td>38</td><td>32</td><td>56</td></tr>
+<tr><th scope="row">合成测试</th><td>60</td><td>49</td><td>84</td></tr>
+<tr><th scope="row">不同合成题目标合计</th><td>290</td><td>337</td><td>396</td></tr>
 </tbody>
 </table>
 </div>
-<p class="data-note">FinSearchComp 保持 290 道不同合成题的计划：96＋96＋38＋60；加上 97 道原题共 387 个不同任务，两个训练阶段共用的 48 道原始训练题只计一次。这些是目标，当前正式合格合成题为 0。每个新增数据集的原题＋合成题总目标为 400–800，默认 400；不可行时以接近 387 为回退目标。FinDeepResearch 计划以 63 道原题＋337 道合成题达到 400；MLE-bench 的四阶段数量仍待固定。若四个 ML 原题候选最终全部准入，达到 400 道仍需新增 396 道合格任务。机器学习任务须有实质不同的任务要求，数据行、随机种子或重复运行不算新任务，独立来源竞赛／数据集数量另报。</p>
+<p class="data-note">FinSearchComp 保持 97 道原题＋290 道合成题＝387 个不同任务的目标；FinDeepResearch 为 63＋337＝400。MLE-bench 有条件地规划 4＋396＝400，SFT 与 DAPO 新增题量相同，合成评测共 140 题。这些是目标，当前正式合格合成题均为 0；两个训练阶段共用的原题只计一次。新增数据集仍以总共 400–800 题为范围，质量限制容量时回退至接近 387 题。ML 首轮最多试验 48 个候选定义，尚未证明能得到 396 道合格增量；派生题须改变实际任务要求，数据行、随机种子或重复运行不算新任务，独立来源竞赛数量另报。</p>
+<p class="data-note">若全部规划来源与合成目标通过准入，五数据集原题分配合计为训练 1,229／验证 326／测试 644 题；合成增量合计为 SFT 352／DAPO 352／验证 126／测试 193 题。这些合计有待实际验收，不放行训练。</p>
 <p class="data-note">检查点是一份保存下来的模型权重，后续作业从这份权重继续训练。</p>
 <h3 class="title is-5">两个 SFT 检查点复用于六个 DAPO 作业</h3>
 <p class="data-note">下表 O 表示上方原题训练池，新增来源只在合格并冻结后加入 O；S、R 分别表示上方两份独立合成训练池。SFT 使用 O 或 O＋S 的合格示范，DAPO 使用相应任务与原生奖励；同一行的题目池数量不能代替合格示范数。所有 S1 后续模型复用同一检查点及 S 池，所有 R1 模型共用 R 池。</p>
@@ -165,8 +167,8 @@
 <th scope="row">1 · Base · 原始 4B</th>
 <td>不训练</td>
 <td>不训练</td>
-<td rowspan="9" class="common-pool"><p>全九组共用<a href="#original-pools">原题验证队列</a>及<a href="#synthetic-pools">合成验证池</a>。</p><p>原题与合成成绩分报。</p><p>MLE-bench 未划分；完整五数据集总数待定。</p></td>
-<td rowspan="9" class="common-pool"><p>全九组共用<a href="#original-pools">原题测试队列</a>及<a href="#synthetic-pools">合成测试池</a>。</p><p>原题与合成成绩分报。</p><p>MLE-bench 未划分；完整五数据集总数待定。</p></td>
+<td rowspan="9" class="common-pool"><p>全九组共用<a href="#original-pools">原题验证队列</a>及<a href="#synthetic-pools">合成验证池</a>。</p><p>原题与合成成绩分报。</p><p>条件目标：326 原题＋126 合成＝452 题；来源及任务尚待完整准入。</p></td>
+<td rowspan="9" class="common-pool"><p>全九组共用<a href="#original-pools">原题测试队列</a>及<a href="#synthetic-pools">合成测试池</a>。</p><p>原题与合成成绩分报。</p><p>条件目标：644 原题＋193 合成＝837 题；来源及任务尚待完整准入。</p></td>
 </tr>
 <tr>
 <th scope="row">2 · S0 · 原题 SFT</th>
