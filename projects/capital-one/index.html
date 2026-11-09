@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="Post-training a 4B tool-using financial LLM agent with two synthesis branches, common Claude review, multi-turn agent SFT and DAPO, sponsored by Capital One">
+  <meta name="description" content="A 4B financial agent study using public-source FinSearchComp questions, independent review, two-stage SFT and DAPO">
   <meta property="og:title" content="Post-Training a 4B Financial LLM Agent"/>
-  <meta property="og:description" content="Post-training a 4B tool-using financial LLM agent with two synthesis branches, common Claude review, multi-turn agent SFT and DAPO, sponsored by Capital One"/>
+  <meta property="og:description" content="A 4B financial agent study using public-source FinSearchComp questions, independent review, two-stage SFT and DAPO"/>
   <meta property="og:url" content="https://hunger99.github.io/projects/capital-one/"/>
   <meta name="twitter:title" content="Post-Training a 4B Financial LLM Agent">
-  <meta name="twitter:description" content="Post-training a 4B tool-using financial LLM agent with two synthesis branches, common Claude review, multi-turn agent SFT and DAPO">
+  <meta name="twitter:description" content="A 4B financial agent study using public-source FinSearchComp questions, independent review, two-stage SFT and DAPO">
   <meta name="twitter:card" content="summary">
   <meta name="keywords" content="financial LLM agent, post-training, agent SFT, DAPO, tool use, FinSearchComp, Qwen3.5">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -79,7 +79,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Abstract</h2>
 <div class="content has-text-justified">
-<p>This project plans nine post-training settings for Qwen3.5-4B-Base across five datasets: the existing financial question-answering and instruction-following tasks, FinDeepResearch company reports, and a Kaggle-derived MLE-bench project subset. Multi-turn supervised fine-tuning (SFT) teaches verified demonstrations; DAPO then learns from tool-assisted attempts and task-specific rewards. We plan to generate additional synthetic tasks for FinSearchComp, FinDeepResearch and the MLE-bench project subset; DocFinQA and IFEval retain original tasks only. Every setting will share frozen original cohorts and an evaluation protocol, separating the effect of adding synthetic tasks at SFT, DAPO or both stages. The new task adapters still need evidence, grading and execution qualification; the new training experiment has not started.</p>
+<p>This project compares nine post-training settings for Qwen3.5-4B-Base across DocFinQA, FinSearchComp, IFEval, FinDeepResearch and an MLE-bench project subset. Supervised fine-tuning (SFT) learns from verified demonstrations; DAPO learns from tool-assisted attempts and task-specific rewards. The FinSearchComp expansion route starts with real public financial materials and constructs new, evidence-backed questions through programmatic and Claude authors. Both branches use independent computation, tool execution, blind solving and adversarial review. All settings share the same original cohorts and evaluation protocol to compare adding FinSearchComp questions at SFT, DAPO or both stages. The FinDeepResearch and MLE-bench entries describe original benchmark tasks; their additional-task construction is outside the scope presented here. The new training experiment has not started.</p>
 </div>
 </div>
 </section>
@@ -133,12 +133,13 @@
 </table>
 <p class="data-note">Task format describes the expected solution: a single answer or an agent task with successive model/tool exchanges and a final artifact. It does not count initial user requests. Given-evidence SFT views may supply the facts and omit retrieval; the retrieval phase retains the multi-turn task. Samples are abridged; full requirements remain at the linked sources.</p>
 <p class="data-note">Each dataset retains its native output and grading meaning. Report content quality, ML competition scores and question-answer accuracy are reported separately.</p>
+<p class="data-note">The table defines the original benchmarks. Public financial materials supply evidence for new FinSearchComp questions; they are not additional original benchmark questions. Newly authored questions are recorded separately as derived/synthetic tasks. The acquisition and question-construction steps appear in the Method Pipeline.</p>
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
 <div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered">Candidates and Settings</h2>
-<p class="data-note">The nine candidates will share one original, validation and test release. The tables distinguish frozen originals, new sources awaiting admission, synthetic targets and qualified demonstrations. The new training experiment has not started.</p>
+<p class="data-note">The nine candidates share the same original cohorts and evaluation protocol. The additional-question pools described below apply to FinSearchComp. Original task counts, admitted demonstrations and newly authored questions are separate quantities; the new training experiment has not started.</p>
 <h3 class="title is-5" id="original-pools">Original task counts and admission of new sources</h3>
 <div class="table-container" tabindex="0">
 <table class="table setting-table original-counts">
@@ -152,26 +153,19 @@
 </tbody>
 </table>
 </div>
-<p class="data-note">The active original pools for the three datasets contain 1,203 training / 309 validation / 620 test questions. IFEval retains all 541 raw prompts; the three training quarantines leave validation and test unchanged and apply to every candidate. FinDeepResearch original cohorts are frozen, but evidence and grading do not yet support training or evaluation; MLE-bench still awaits project task admission. A training task pool identifies tasks; SFT still needs separately admitted demonstration trajectories: recorded solutions containing model messages, tool calls and results. No complete five-dataset demonstration total is available. DocFinQA and IFEval remain original-only; no further DocFinQA pruning has been chosen.</p>
-<p class="data-note">FinDeepResearch now has one source-verified independent TRAIN pilot with 119 public evidence files; its partial report and labels do not qualify a full task or the 337-task synthetic target. Original benchmark evidence and grading still need full integration; expert reports remain evaluator targets, not retrieval evidence. Its project split is not an official training split. Four official MLE-bench competition candidates have passed native grading, independent metric recalculation and private-label isolation checks in real sandboxes. The conditional source plan uses Insults and Leaf as the two shared original training tasks, NOMAD for validation and Spooky for test; Insults supplies SFT variants and Leaf supplies DAPO variants. Fixed competition-ID order determines these roles, without labels or model scores. Four sources cannot balance task types across roles; original task admission, derived tasks and SFT demonstrations remain at 0, and DAPO integration is not qualified. Five-dataset training remains unready. The official 22-competition Lite set is not this project’s low-cost runnable subset.</p>
-<h3 class="title is-5" id="synthetic-pools">One shared synthetic pool per stage; all qualified counts are currently 0</h3>
-<div class="table-container" tabindex="0">
-<table class="table setting-table synthetic-counts">
-<thead><tr><th scope="col">Use</th><th scope="col">FinSearchComp target</th><th scope="col">FinDeepResearch target</th><th scope="col">MLE-bench subset target</th></tr></thead>
-<tbody>
-<tr><th scope="row">SFT training (S)</th><td>96</td><td>128</td><td>128</td></tr>
-<tr><th scope="row">DAPO training (R)</th><td>96</td><td>128</td><td>128</td></tr>
-<tr><th scope="row">Synthetic validation</th><td>38</td><td>32</td><td>56</td></tr>
-<tr><th scope="row">Synthetic test</th><td>60</td><td>49</td><td>84</td></tr>
-<tr><th scope="row">Total distinct synthetic targets</th><td>290</td><td>337</td><td>396</td></tr>
-</tbody>
-</table>
-</div>
-<p class="data-note">FinSearchComp retains its target of 97 originals + 290 synthetic tasks = 387 distinct tasks; FinDeepResearch targets 63 + 337 = 400. MLE-bench conditionally targets 4 + 396 = 400, with equal SFT and DAPO additions and 140 synthetic evaluation tasks. These are targets, not completed inventory; formally qualified synthetic tasks are currently 0. The shared original training pool counts once even when reused in both training stages. New datasets retain a total range of 400–800 and a fallback near 387 if quality limits capacity. For MLE-bench, the CPU-checked compiler varies which groups of input features the task retains, called feature families. It supports 126 SFT, 126 DAPO, 56 validation and 84 test candidate definitions within those quotas: 392 derived tasks plus four originals, or 396 potential tasks. SFT and DAPO each remain two below target; none of these definitions is a formally qualified task. ML additions must change meaningful task requirements: data rows, random seeds and repeated runs do not count as new tasks, and independent competition counts are reported separately.</p>
-<p class="data-note">If every planned source and synthetic target qualifies, the five-dataset original allocation will total 1,229 training / 326 validation / 644 test tasks; synthetic additions will total 352 SFT / 352 DAPO / 126 validation / 193 test tasks. These sums are conditional targets; they do not open training.</p>
+<p class="data-note">The established DocFinQA, FinSearchComp and IFEval pools contain 1,203 training / 309 validation / 620 test questions. IFEval preserves all 541 raw prompts, with three conflicting training prompts excluded uniformly. FinDeepResearch retains its frozen project cohorts; the four MLE-bench competition candidates retain their conditional original-task allocation. Those new benchmark interfaces still require admission. A task count does not count qualified SFT demonstrations. DocFinQA and IFEval remain original-only.</p>
+<h3 class="title is-5" id="synthetic-pools">FinSearchComp additional-question acceptance targets by use</h3>
+<div class="table-container" tabindex="0"><table class="table setting-table synthetic-counts"><thead><tr><th scope="col">Use</th><th scope="col">FinSearchComp acceptance target</th></tr></thead><tbody>
+<tr><th scope="row">SFT training (S)</th><td>96</td></tr>
+<tr><th scope="row">DAPO training (R)</th><td>96</td></tr>
+<tr><th scope="row">Additional validation</th><td>38</td></tr>
+<tr><th scope="row">Additional test</th><td>60</td></tr>
+<tr><th scope="row">Total distinct additional questions</th><td>290</td></tr>
+</tbody></table></div>
+<p class="data-note">FinSearchComp retains the existing acceptance targets: 96 SFT, 96 DAPO, 38 validation and 60 test additions, totaling 290 new questions alongside 97 originals. These are quotas, not released inventory. Real source materials provide the facts; programs or Claude author the questions and independent checks establish their answers. The FinDeepResearch and MLE-bench counts above describe their original cohorts.</p>
 <p class="data-note">A checkpoint is a saved set of model weights that later jobs can continue training.</p>
 <h3 class="title is-5">Two SFT checkpoints serve six DAPO jobs</h3>
-<p class="data-note">In the table, O means the original training pool above; new sources join O only after qualification and freezing. S and R mean the two separate synthetic training pools above. SFT consumes admitted demonstrations for O or O + S; DAPO consumes the corresponding tasks and native rewards. A task count is not a qualified demonstration count. Every S1 descendant reuses the same checkpoint and S pool; every R1 candidate shares the R pool.</p>
+<p class="data-note">In the table, O is the shared original training pool above. S and R are the separate, reviewed FinSearchComp SFT and DAPO additions. SFT consumes admitted demonstrations for O or O + S; DAPO consumes tasks for O or O + R. All S1 descendants share one S pool and checkpoint; all R1 candidates share one R pool. The same original sources and evaluation cohorts remain fixed across candidates.</p>
 <p class="data-note">S0 and S1 will independently start from the same Base and each follow given-evidence reasoning → retrieval plus reasoning. They share original tasks and evidence views: versions of the same task with specified supplied material. S1 adds one fixed S pool, and all nine retain the same evaluation pools. Each SFT condition shares 6,553,600 supervised output tokens and 100 updates across both phases, initially 3,276,800 tokens and 50 updates per phase. Views and replay do not add unique tasks; full training and its benefit remain unmeasured.</p>
 <p class="table-hint">Scroll the table sideways to see all columns.</p>
 <div class="table-container baseline-scroll" tabindex="0">
@@ -182,8 +176,8 @@
 <th scope="row">1 · Base · Original 4B</th>
 <td>No training</td>
 <td>No training</td>
-<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original validation cohorts</a> and <a href="#synthetic-pools">synthetic validation pool</a>.</p><p>Report original and synthetic scores separately.</p><p>Conditional target: 326 originals + 126 synthetic = 452 tasks; source and task admission remain pending.</p></td>
-<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original test cohorts</a> and <a href="#synthetic-pools">synthetic test pool</a>.</p><p>Report original and synthetic scores separately.</p><p>Conditional target: 644 originals + 193 synthetic = 837 tasks; source and task admission remain pending.</p></td>
+<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original validation cohorts</a>. Any admitted <a href="#synthetic-pools">FinSearchComp validation additions</a> form one separate shared challenge pool, with an acceptance target of 38. Report original and additional-question scores separately.</p></td>
+<td rowspan="9" class="common-pool"><p>All nine share the <a href="#original-pools">original test cohorts</a>. Any admitted <a href="#synthetic-pools">FinSearchComp test additions</a> form one separate shared challenge pool, with an acceptance target of 60. Test answers and outcomes do not guide question construction or checkpoint selection.</p></td>
 </tr>
 <tr>
 <th scope="row">2 · S0 · Original SFT</th>
@@ -241,18 +235,19 @@
 <div class="pipeline-steps" role="tablist" aria-label="Method Pipeline">
 <button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
 <span class="pipeline-step-num">1</span>Sources, task contracts and splits</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-acquisition" aria-controls="co-panel-acquisition"><span class="pipeline-step-num">2</span>Data acquisition</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
-<span class="pipeline-step-num">2</span>Source-bound synthesis</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">3</span>FinSearchComp question construction</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
-<span class="pipeline-step-num">3</span>Common task review</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">4</span>Common task review</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4">
-<span class="pipeline-step-num">4</span>Calibration and demonstrations</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">5</span>Calibration and demonstrations</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5">
-<span class="pipeline-step-num">5</span>Multi-turn SFT (next)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">6</span>Multi-turn SFT (next)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6">
-<span class="pipeline-step-num">6</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<span class="pipeline-step-num">7</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
 <button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7">
-<span class="pipeline-step-num">7</span>Shared evaluation</button>
+<span class="pipeline-step-num">8</span>Shared evaluation</button>
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
 <nav class="flow" aria-label="Sources, task contracts and splits">
@@ -291,13 +286,34 @@
 </ul>
 </div>
 </div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-acquisition" aria-labelledby="co-tab-acquisition" tabindex="0">
+<nav class="flow" aria-label="Data acquisition"><a class="flow-node" href="#acquire-sources">Public sources</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#acquire-cache">Raw evidence cache</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#acquire-checks">Checked source bank</a></nav>
+<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/source-acquisition-en.svg" alt="Public filings and macroeconomic observations enter a preserved source cache. Source identity, factual meaning and reserved evaluation support are checked before a source bank supplies either question author." loading="lazy"></div><figcaption>Public filings and macroeconomic observations enter a preserved source cache. Source identity, factual meaning and reserved evaluation support are checked before a source bank supplies either question author.</figcaption></figure>
+<div class="content"><p class="pipeline-note">FinSearchComp expansion begins by obtaining real financial materials. Source documents and observations supply evidence; the next stage authors new questions from those facts. The existing acquisition path covers the SEC/FRED source bank; an additional website needs its own verified connector.</p>
+<h4 class="pipeline-group" id="acquire-sources">Public records supply source facts</h4>
+<ul>
+<li><b>Source selection:</b> The source bank uses company disclosures and official economic observations selected for a declared task family and data role. The existing inputs include <a href="https://www.sec.gov/search-filings/edgar-application-programming-interfaces" target="_blank" rel="noopener">SEC filings</a> and <a href="https://fred.stlouisfed.org/docs/api/fred/" target="_blank" rel="noopener">FRED series</a>; a new provider must establish source identity, access conditions and an evidence path before it supplies questions.</li>
+<li><b>Original documents:</b> The acquisition path locates the original filing or series response and preserves its raw material and provenance. A company report, a copied disclosure and a question derived from it retain their relationship, so repeated material cannot inflate question counts.</li>
+</ul>
+<h4 class="pipeline-group" id="acquire-cache">Acquisition preserves raw evidence before normalization</h4>
+<ul>
+<li><b>Source cache:</b> Downloads and reused snapshots retain their source identity and version. Normalized facts link back to the original disclosure or series, including the entity, reporting period and units, so a reviewer can verify the operand instead of trusting generated prose.</li>
+<li><b>Time convention:</b> Each task uses a declared frozen snapshot. A current or revised observation is not automatically evidence of what was available at an earlier decision date. Historical information-availability and live-market tasks require separately verified dates, vintages and provider access.</li>
+</ul>
+<h4 class="pipeline-group" id="acquire-checks">Source checks protect the shared evaluation cohorts</h4>
+<ul>
+<li><b>Evidence checks:</b> Filing-semantic checks verify the metric meaning, consolidated context, period, unit and sign before generation. Missing or ambiguous support holds the affected source facts rather than asking an author to fill the gap.</li>
+<li><b>Source isolation:</b> The source bank excludes protected evaluation support and binds eligible facts to their declared SFT, DAPO, validation or test role. Both question-author branches use this same checked bank; original benchmark definitions remain in the Data Sets table.</li>
+</ul>
+</div>
+</div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
 <nav class="flow" aria-label="Two generation branches">
 <a class="flow-node" href="#gen-program">Program branch</a> <a class="flow-node" href="#gen-claude">Claude branch</a> <a class="flow-node" href="#gen-compile">Compile and merge</a> <a class="flow-node" href="#gen-native">API call boundary</a>
 </nav>
 <figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-2-en.svg" alt="The upper CPU lane and lower Claude-author lane are parallel alternatives. The lower lane binds the prompt and reserves cost from a conservative configured input bound before the proxy call, then settles actual usage. Both lanes merge into one compiler and semantic inventory before common review." loading="lazy"></div><figcaption>The upper CPU lane and lower Claude-author lane are parallel alternatives. The lower lane binds the prompt and reserves cost from a conservative configured input bound before the proxy call, then settles actual usage. Both lanes merge into one compiler and semantic inventory before common review.</figcaption></figure>
 <div class="content">
-<p class="pipeline-note">The two authors are independent branches. They converge on the same task contract and review gates; the native proxy and accounting wrap each model request rather than form a third generation branch.</p>
+<p class="pipeline-note">This stage creates additional FinSearchComp questions from the checked public-material bank. Programs expand supported weak task families; Claude explores source-supported combinations within its task contract. Both routes create new questions and converge on the same review gates. Importing an existing question-answer pair is a separate intake operation, not what this generation stage does.</p>
 <h4 class="pipeline-group" id="gen-program">Programs expand reproducible weaknesses</h4>
 <ul>
 <li><b>Financial diagnostics:</b> The generator separates errors in amount, company, period and unit from formatting or source-identity failures before choosing a capability to strengthen. This prevents format failures from being mistaken for difficult financial reasoning.</li>
@@ -306,7 +322,7 @@
 <h4 class="pipeline-group" id="gen-claude">Claude proposes supported tasks from fixed sources</h4>
 <ul>
 <li><b>Source-bound generation:</b> Opus 5.5 at Extra High effort selects a structured plan from a reviewed source bank. The host compiler renders the learner task and computes its reference; author-written prose and private answers do not become authoritative task content.</li>
-<li><b>Coverage:</b> Typed financial generation covers supported SEC retrieval and dependent calculations. Separate report and ML candidate adapters retain report rubrics or native competition artifacts. Unsupported proposals are quarantined; these contracts do not establish broad discovery of every uncovered capability.</li>
+<li><b>Coverage:</b> Supported financial contracts combine SEC/FRED retrieval, comparison and dependent calculation. A new task structure requires available source evidence and an executable verifier; proposals outside the supported contract are held.</li>
 </ul>
 <h4 class="pipeline-group" id="gen-compile">Both branches produce new, source-bound candidate identities</h4>
 <ul>
@@ -317,7 +333,7 @@
 <ul>
 <li><b>Request sequence:</b> The host binds the complete prompt and reserves the maximum in-flight cost under a shared lock before sending a fresh native Messages conversation through CLIProxyAPI. Authors use a conservative configured input bound; blind-solving and critic roles use calibrated native input-token counts. The host then saves the raw response and settles actual token usage in the append-only ledger. Generation uses Extra High; blind solving and criticism use Medium.</li>
 <li><b>Failure handling:</b> Failed and retried calls consume the same authorization; missing usage, changed input or an exceeded bound stops subsequent calls. The proxy forwards explicit caller prompts; OAuth metadata and billing fields remain, so this is not claimed to be a zero-overhead direct API.</li>
-<li><b>Execution scope:</b> Independent candidates may run concurrently only after source, inventory and spending checks pass. The strengthened current financial contract still needs fresh live review; prior-version acceptance does not transfer. Formal training qualification is separate from candidate generation.</li>
+<li><b>Execution scope:</b> Independent candidates may run concurrently after source, inventory and spending checks pass. Each changed task contract requires its own review evidence; earlier-version acceptance never grants formal training admission.</li>
 </ul>
 </div>
 </div>
@@ -334,9 +350,9 @@
 </ul>
 <h4 class="pipeline-group" id="review-tools">The host executes the actual source reads and submissions</h4>
 <ul>
-<li><b>Sandbox replay:</b> Financial solvers must query the fixed read-only snapshot and match an independently calculated answer. ML checks validate the exact source, feature family, row identity and native grader; hidden labels remain evaluator-only, and native identifiers are restored by the host only after submission closes.</li>
+<li><b>Sandbox replay:</b> Financial solvers query the fixed read-only evidence snapshot and must agree with an independently computed reference. Actual source reads, code and results are retained; model claims alone do not certify execution.</li>
 <li><b>Retrieval evidence:</b> Host records bind real queries, returned data, code and snapshot identity. A real model → retrieval → model check confirmed that returned evidence entered the follow-up model request; intervention tests separately check evidence use by retained model-written code. This does not prove every internal reasoning step or replace a full same-model tools-on/tools-off comparison.</li>
-<li><b>Report validation:</b> A report needs complete sections, supported citations, correct calculations and its declared rubric. A heading or citation-structure check alone cannot certify financial content; independent expert targets and future data stay outside the learner corpus.</li>
+
 </ul>
 <h4 class="pipeline-group" id="review-cloud">Independent model roles must survive executable counter-checks</h4>
 <ul>
@@ -346,7 +362,7 @@
 </ul>
 <h4 class="pipeline-group" id="review-admission">Passing a sample does not release a training dataset</h4>
 <ul>
-<li><b>Version-bound checks:</b> The prior-contract programmatic FSC, Claude FSC and ML acceptance samples completed real blind and adversarial checks. The latest strengthened financial contract needs its own fresh reviews; no earlier verdict is silently reassigned.</li>
+<li><b>Version-bound checks:</b> Each accepted FinSearchComp question binds its exact task contract, source facts, model responses and executed solutions. A revised task or source needs matching new checks; question quality, difficulty, demonstrations and release remain separate gates.</li>
 <li><b>Production boundary:</b> The semantic-inventory guard currently covers the new typed review path. Legacy continuous, batch, graph and cycle paths require the same guard or routing through it before formal use. Question quality, difficulty, complete demonstration and final dataset release remain separate decisions.</li>
 </ul>
 </div>
@@ -355,11 +371,11 @@
 <nav class="flow" aria-label="Calibration and demonstrations">
 <a class="flow-node" href="#collect-harness">Recorded attempts</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-difficulty">Difficulty measurement</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-demo">Demonstration admission</a>
 </nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-4-en.svg" alt="Teacher and student attempts may run independently for one task. Their results route SFT candidates to complete, grounded demonstration review and packing; DAPO tasks follow a separate rollout path, and held tasks stop. Report fragments do not count as new tasks." loading="lazy"></div><figcaption>Teacher and student attempts may run independently for one task. Their results route SFT candidates to complete, grounded demonstration review and packing; DAPO tasks follow a separate rollout path, and held tasks stop. Report fragments do not count as new tasks.</figcaption></figure>
+<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-4-en.svg" alt="Teacher and student attempts may run independently for one task. Their results route SFT candidates to complete, grounded demonstration review and packing; DAPO tasks follow a separate rollout path, and held tasks stop." loading="lazy"></div><figcaption>Teacher and student attempts may run independently for one task. Their results route SFT candidates to complete, grounded demonstration review and packing; DAPO tasks follow a separate rollout path, and held tasks stop.</figcaption></figure>
 <div class="content">
 <h4 class="pipeline-group" id="collect-harness">The harness saves model actions and real tool results</h4>
 <ul>
-<li><b>Recorded execution:</b> Financial tasks use read-only evidence tools and restricted Python; report and ML adapters add their declared source documents or data artifacts. Model messages, tool calls, results and completion state are preserved. The <a href="#harness">Harness section</a> describes context, tools and correction behavior.</li>
+<li><b>Recorded execution:</b> The harness preserves model messages, tool calls, real results and completion state. Financial attempts use read-only evidence tools and restricted Python; the <a href="#harness">Harness section</a> describes context and correction behavior.</li>
 <li><b>IFEval:</b> Its final answer is scored with the fixed strict instruction checker. Financial evidence requirements are not applied to instruction-only answers.</li>
 </ul>
 <h4 class="pipeline-group" id="collect-difficulty">Local teacher and student trials determine the training route</h4>
@@ -370,8 +386,8 @@
 <h4 class="pipeline-group" id="collect-demo">Complete, grounded demonstrations qualify separately</h4>
 <ul>
 <li><b>Trace qualification:</b> Admission checks source receipts, successful evidence reads, tool schemas, grounding, units and task completion, followed by independent trajectory review. A historical trace cannot be rebound to a different source or revised question without matching proof.</li>
-<li><b>Report collection:</b> The implemented collector can divide one unchanged report task into independent report-section and sentiment contexts, with bounded concurrency and append-only raw artifacts. These contexts and fragments remain one parent task and are not represented as one continuous model trajectory.</li>
-<li><b>Current report result:</b> The latest bounded local pilot retained 25 of 110 required labels and 10 report fragments; it produced no complete parent report or qualified training demonstration. Partial output is preserved and cannot fill the synthetic quota.</li>
+
+
 <li><b>Training release:</b> Qualified questions, qualified demonstrations and tokenizer-bound packed data are separate products. Only complete reviewed trajectories proceed to exact token, mask and common-release checks.</li>
 </ul>
 </div>
@@ -456,10 +472,9 @@
 <li>
 <b>Shared protocol:</b> Base, SFT and DAPO outputs use the same task IDs, tool conditions, sampling policy and grader versions. This makes stage-to-stage comparisons possible.</li>
 </ul>
-<h4 class="pipeline-group" id="eval-synthetic">The added test probes independently reviewed synthetic tasks</h4>
+<h4 class="pipeline-group" id="eval-synthetic">The additional challenge evaluates reviewed FinSearchComp questions</h4>
 <ul>
-<li>
-<b>Separate reporting:</b> Report each qualified synthetic challenge separately from its original cohort. A project-derived report or ML challenge retains its own task requirements and grader; its result does not replace the official source benchmark score.</li>
+<li><b>Separate reporting:</b> Report the reviewed FinSearchComp challenge separately from the original cohort. Additional questions retain their own source support, task requirements and grader; their score does not replace the original benchmark score.</li>
 <li>
 <b>Limits:</b> A larger synthetic test measures coverage of generated task families. Generalization claims remain limited to the held-out sources, task families and execution budgets actually evaluated.</li>
 </ul>
@@ -488,7 +503,7 @@
 <tr><td>DocFinQA</td><td><code>search_document</code>, <code>read_chunk</code>, <code>calculator</code>, <code>finish</code></td><td>BM25 finds passages in the assigned report; chunk reads provide the evidence used for arithmetic.</td></tr>
 <tr><td>FinSearchComp / financial retrieval</td><td><code>search_securities</code>, <code>get_prices</code>, <code>get_corporate_actions</code>, <code>trading_day</code>, <code>count_trading_days</code>, <code>search_fred</code>, <code>get_fred</code>, <code>search_financial_tags</code>, <code>get_financials</code>, <code>run_python</code>, <code>finish</code></td><td>A fixed read-only snapshot supplies market, FRED and SEC data. The opt-in v2 Python adapter mounts only the runtime and declared data in an isolated process, with no network and explicit time/memory limits. The retrieval-proof adapter records source queries outside the solver process.</td></tr>
 <tr><td>IFEval</td><td><code>finish</code></td><td>The strict instruction checker grades only the submitted answer; financial evidence checks do not apply.</td></tr>
-<tr><td>FinDeepResearch collection pilot</td><td><code>list_documents</code>, <code>search_documents</code>, <code>read_document</code>, <code>run_python</code>, <code>write_report_part</code>, <code>write_sentiment_labels</code>, <code>sentiment_windows</code>, <code>finish</code>; phased workers also have <code>read_dependency</code></td><td>Only allowlisted evidence is visible. Separate bounded worker contexts preserve model-authored report/label revisions and declared dependencies. Partial fragments are not complete tasks or qualified demonstrations.</td></tr>
+<tr><td>FinDeepResearch evidence pilot</td><td><code>list_documents</code>, <code>search_documents</code>, <code>read_document</code>, <code>run_python</code>, <code>write_report_part</code>, <code>write_sentiment_labels</code>, <code>sentiment_windows</code>, <code>finish</code>; phased workers also have <code>read_dependency</code></td><td>Only allowlisted evidence is visible. The listed tools belong to the existing pilot runtime; their execution does not qualify a complete benchmark task or a training demonstration.</td></tr>
 <tr><td>MLE-bench project subset</td><td><code>mlebench_describe</code>, <code>run_python</code>, <code>finish</code></td><td>CPU Python sees only the declared public data and writable output. The host freezes the submission after finish and grades it separately with hidden labels; the learner receives no private score during the episode.</td></tr>
 </tbody></table></div>
 <p>H1 additionally exposes <code>set_checklist</code> and restates its progress after tool results. Slow declared tools run in worker threads so one episode's Python execution does not stall other episodes.</p>
