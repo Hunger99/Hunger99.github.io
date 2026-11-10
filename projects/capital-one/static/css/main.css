@@ -581,15 +581,19 @@ html[lang="zh-CN"] .teaser {
 #harness .table-container { overflow-x: auto; }
 
 #harness .harness-dimensions { width: 100%; min-width: 0; table-layout: fixed; }
-.harness-dimensions th:first-child { width: 16%; }
-.harness-dimensions th:nth-child(2) { width: 27%; }
-.harness-dimensions td { overflow-wrap: anywhere; }
-.harness-dimensions ul { margin: 0; padding-left: 1.1em; }
+.harness-dimension-column { width: 20%; }
+.harness-core-column { width: 24%; }
+.harness-definition-column { width: 56%; }
+#harness .harness-dimensions th, #harness .harness-dimensions td { overflow-wrap: anywhere; vertical-align: top; }
+#harness .harness-dimensions th { width: auto; }
+.harness-dimensions tbody + tbody { border-top: 2px solid #d4d8e3; }
+.harness-core { font-weight: 600; }
 @media screen and (max-width: 768px) {
   .harness-dimensions, .harness-dimensions tbody, .harness-dimensions tr,
   .harness-dimensions th, .harness-dimensions td { display: block; width: 100%; min-width: 0; }
-  .harness-dimensions thead { display: none; }
-  .harness-dimensions tr { margin-bottom: 1.5rem; border-bottom: 1px solid #d4d8e3; }
-  .harness-dimensions th:first-child { width: 100%; }
-  .harness-dimensions td::before { content: attr(data-label); display: block; font-weight: 700; margin-bottom: .4rem; }
+  .harness-dimensions thead, .harness-dimensions colgroup { display: none; }
+  .harness-dimensions tbody { margin-bottom: 1.5rem; }
+  .harness-dimensions tr { border-bottom: 1px solid #d4d8e3; }
+  #harness .harness-dimensions .harness-dimension { width: 100%; padding-top: 1rem; background: #f0ebfa; }
+  .harness-dimensions td::before { content: attr(data-label); display: block; font-weight: 700; margin-bottom: .4rem; color: #61586e; }
 }

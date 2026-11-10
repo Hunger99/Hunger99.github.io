@@ -27,7 +27,7 @@
 </script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
 </script>
-  <link rel="stylesheet" href="static/css/main.css?v=20261110-four-dimensions-wrap">
+  <link rel="stylesheet" href="static/css/main.css?v=20261110-core-alignment">
 </head>
 <body>
 
@@ -172,13 +172,34 @@
 </section>
 <section class="section hero is-light" id="harness">
 <div class="container is-max-widescreen"><h2 class="title is-3 has-text-centered">Harness</h2>
-<div class="table-container"><table class="table setting-table harness-dimensions"><thead><tr><th scope="col">Harness 要素</th><th scope="col">核心内容</th><th scope="col">核心内容在我们这里如何实现</th></tr></thead><tbody>
-<tr><th scope="row">上下文管理</th><td class="harness-core" data-label="核心内容">提示工程、Agent 状态栏、上下文压缩、Agent Skills</td><td data-label="核心内容在我们这里如何实现"><ul><li>提示工程：按任务环境注入system、题面、输出要求及允许工具。</li><li>Agent 状态栏：H1（启用清单、约束检查、结果核验与有限纠错的运行配置）用set_checklist保存清单，并在工具结果后以文本回显完成标记。</li><li>上下文压缩：-（未实现历史摘要或压缩；消息只追加，新工具结果按长度截取）。</li><li>Agent Skills：-（模型运行时未实现技能包加载与调用）。</li></ul></td></tr>
-<tr><th scope="row">上下文管理（跨会话）</th><td class="harness-core" data-label="核心内容">用户记忆、RAG、结构化索引、智能体化 RAG</td><td data-label="核心内容在我们这里如何实现"><ul><li>用户记忆：-（每次尝试独立初始化，未建立跨会话用户记忆库）。</li><li>RAG：DocFinQA检索并读取指定报告证据；仅在本任务内使用，不存储用户记忆。</li><li>结构化索引：报告按编号分块、建立BM25索引，支持chunk_id及邻近段落读取；无跨会话个人知识索引。</li><li>智能体化 RAG：模型可在任务内多次检索、读取和计算；跨会话知识更新为-（未实现记忆写入与更新协议）。</li></ul></td></tr>
-<tr><th scope="row">工具接口与约束</th><td class="harness-core" data-label="核心内容">工具分类、权限控制、MCP 标准、主动工具发现</td><td data-label="核心内容在我们这里如何实现"><ul><li>工具分类：按任务环境注册工具白名单和JSON参数格式，仅分派已知工具。</li><li>权限控制：H1在声明的写操作前检查参数和规则；已有v2 Python适配器用bubblewrap隔离、只读挂载、断网及时间／内存限制，DS-1000尚未接入。</li><li>MCP 标准：-（当前直接注册函数工具，未接入MCP协议）。</li><li>主动工具发现：-（工具列表在尝试开始时固定，未实现动态搜索或加载）。</li></ul></td></tr>
-<tr><th scope="row">验证与纠正</th><td class="harness-core" data-label="核心内容">Coding Agent 的 Harness、测试驱动、代码化规则</td><td data-label="核心内容在我们这里如何实现"><ul><li>Coding Agent 的 Harness：模型→工具→真实返回→模型的循环及轨迹保存已实现；DS-1000代码补全适配尚未完成。</li><li>测试驱动：-（已有离线测试与评分检查，未实现运行时先写测试、再驱动编码的流程）。</li><li>代码化规则：H1核对清单、环境要求与结果依据；工具错误附有效调用示例，重复调用给出提示，拒绝结束后仅允许有限纠错。</li></ul></td></tr>
-</tbody></table></div>
-<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-zh.svg" alt="独立任务可并发；每任务内工具按顺序分派，检索或隔离执行返回真实结果，H1核验与有限纠错后保存，再由独立评分器检查。" width="1200" height="740" loading="lazy"></div></figure>
+<div class="table-container"><table class="table setting-table harness-dimensions">
+<colgroup><col class="harness-dimension-column"><col class="harness-core-column"><col class="harness-definition-column"></colgroup>
+<thead><tr><th scope="col">Harness 要素</th><th scope="col">核心内容</th><th scope="col">核心内容在我们这里如何实现</th></tr></thead>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="4">上下文管理</th><td class="harness-core" data-label="核心内容">提示工程</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">任务环境提供系统指令、题目、输出要求和允许调用的工具。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">智能体状态记录</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">任务清单记录待办事项和完成标记，工具返回时显示更新后的清单。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">上下文压缩</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">-（对话历史采用消息追加方式，尚未实现历史摘要与压缩。）</td></tr>
+<tr><td class="harness-core" data-label="核心内容">智能体技能</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">-（模型运行时尚无技能包加载器。）</td></tr>
+</tbody>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="4">上下文管理：任务内检索与跨会话记忆</th><td class="harness-core" data-label="核心内容">用户记忆</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">-（尚未实现持久化用户记忆库。）</td></tr>
+<tr><td class="harness-core" data-label="核心内容">检索增强生成</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">文档检索与段落读取为当前任务提供指定财报中的证据。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">结构化索引</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">财报按编号分块，以 BM25 按词语相关性建立检索索引；通过段落编号读取指定段落及其前后段落。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">智能体检索增强生成</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">模型自主选择并重复检索、段落读取和计算，为当前任务收集证据。</td></tr>
+</tbody>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="4">工具接口与约束</th><td class="harness-core" data-label="核心内容">工具分类</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">每个任务环境定义可调用的工具及其 JSON 参数格式。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">权限控制</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">工具白名单限定可调用的函数；声明为写操作的工具在执行前校验参数格式与业务规则；Python 沙箱执行器通过只读数据挂载、网络隔离和时间、内存上限约束程序。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">MCP 标准</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">-（工具采用直接函数注册，尚未接入 MCP 协议。）</td></tr>
+<tr><td class="harness-core" data-label="核心内容">主动工具发现</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">-（任务开始时固定工具列表，尚未实现动态查找与加载。）</td></tr>
+</tbody>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="3">验证与纠正</th><td class="harness-core" data-label="核心内容">编码智能体运行框架</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">运行框架将模型请求、工具执行、工具结果及后续模型请求串接为循环，并记录执行轨迹。</td></tr>
+<tr><td class="harness-core" data-label="核心内容">测试驱动</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">-（测试与评分在离线阶段执行，尚未实现运行时先写测试再编码的流程。）</td></tr>
+<tr><td class="harness-core" data-label="核心内容">代码化规则</td><td class="harness-definition" data-label="核心内容在我们这里如何实现">程序在任务结束时核对清单完成情况、任务要求及数字依据；工具报错附有效调用示例，重复调用给出提示，结束请求被拒后触发有限次数的纠错。</td></tr>
+</tbody>
+</table></div>
+<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-zh.svg" alt="Python 工具调用按串行循环执行：提示工程、编码智能体运行框架、工具分类、权限控制、sandbox、代码化规则、智能体状态记录，再返回模型。" width="1200" height="500" loading="lazy"></div></figure>
 </div></section>
 
 <footer class="footer">
