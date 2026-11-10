@@ -80,7 +80,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">摘要</h2>
 <div class="content has-text-justified">
-<p>本项目使用 DocFinQA、FinSearchComp、IFEval、FinDeepResearch 和 MLE-bench 项目子集，比较 Qwen3.5-4B-Base 的九个训练设置。监督微调（SFT）学习经过验证的示范，DAPO 从工具辅助试答与任务专属奖励中学习。FinSearchComp 的扩充先获取真实公开金融资料，再由程序或 Claude 基于证据出新题；两路共用独立计算、工具执行、盲解与对抗审查。所有设置保留相同原题队列及评测协议，以比较在 SFT、DAPO 或两个阶段增加 FinSearchComp 题目的作用。FinDeepResearch 和 MLE-bench 在此保留原始基准任务的定义，额外任务的构造方法不在本页展开。新一轮训练实验尚未开始。</p>
+<p>本项目使用 DocFinQA、FinSearchComp、IFEval、FinDeepResearch 和合并的561题 DS-1000 Python 数据分析子集，比较 Qwen3.5-4B-Base 的九个训练设置。监督微调（SFT）学习经过验证的示范，DAPO 从工具辅助试答与任务专属奖励中学习。FinSearchComp 的扩充先获取真实公开金融资料，再由程序或 Claude 基于证据出新题；两路共用独立计算、工具执行、盲解与对抗审查。所有设置保留相同原题队列及评测协议，以比较在 SFT、DAPO 或两个阶段增加 FinSearchComp 题目的作用。DS-1000 子集已下载，同源题去重、执行验收和训练切分尚未完成。新一轮训练实验尚未开始。</p>
 </div>
 </div>
 </section>
@@ -92,16 +92,16 @@
 <tbody>
 <tr>
 <td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
-<td data-label="定义">模型针对完整年度报告回答金融问题，需要检索原文并进行数值推理。</td>
-<td data-label="评测指标定义与公式" class="metric-cell">当前项目评分器计算数值／布尔答案准确率。数值答案允许 1% 相对误差，标准答案为 0 时允许 0.005 绝对误差，并检查百分数的 ×100／÷100 等价表示；布尔答案须匹配 yes／no。<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 在第 i 题通过评分器时为 1，否则为 0。</td>
+<td data-label="定义">模型在给定的完整年度报告内定位证据并计算金融答案，主要考查长文档检索与数值推理。</td>
+<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 在第 i 题通过项目评分器时为1，否则为0：数值容差为1%相对误差，标准答案为0时为0.005绝对误差；检查百分数的×100／÷100等价表示，布尔答案匹配 yes／no。</td>
 
 <td data-label="任务形式（Task format）">多轮检索 → 最终答案</td>
 <td data-label="问题示例（简写）" class="sample-cell">根据年报，公司全部设施中租赁设施占多少百分比？<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA训练题</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
-<td data-label="定义">模型检索市场与公司信息，回答专家编写的金融推理问题；本项目使用有离线来源支持的子集。</td>
-<td data-label="评测指标定义与公式" class="metric-cell">任务成功率要求最终答案满足该题全部参考项，数值容差、日期和文本别名由逐题答案约束指定。<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 表示该题全部要求是否通过；这是项目离线子集的成绩。</td>
+<td data-label="定义">模型定位市场与公司信息，完成时效数据查询、历史事实检索及多步调查；本项目使用有离线来源支持的子集。</td>
+<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 表示该题全部要求是否通过。</td>
 
 <td data-label="任务形式（Task format）">多轮检索 → 最终答案</td>
 <td data-label="问题示例（简写）" class="sample-cell">2023年3月，美联储将准备金余额利率上调至多少？以百分比作答，保留一位小数。<span class="sample-source"><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">Global T2 · 题号503</a></span></td>
@@ -109,7 +109,7 @@
 <tr>
 <td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
 <td data-label="定义">模型完成格式、长度、关键词、语言等可由程序检查的指令；一条提示可包含多条要求。</td>
-<td data-label="评测指标定义与公式" class="metric-cell">严格整题准确率要求同一提示的全部指令通过；严格逐指令准确率统计通过的指令占比。<span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N 是提示数，m<sub>i</sub> 是第 i 条提示的指令数，c<sub>ij</sub> 在第 j 条指令通过严格检查时为 1，否则为 0。</td>
+<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N 是提示数，m<sub>i</sub> 是第 i 条提示的指令数，c<sub>ij</sub> 在第 j 条指令通过严格检查时为 1，否则为 0。</td>
 
 <td data-label="任务形式（Task format）">单轮回答</td>
 <td data-label="问题示例（简写）" class="sample-cell">撰写一篇介绍日本旅行的博客，少于300词。<span class="sample-source"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">题号1092</a></span></td>
@@ -117,24 +117,20 @@
 <tr>
 <td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">官方任务说明</a></td>
 <td data-label="定义">模型按指定分析结构检索、计算并生成完整 Markdown 公司研究报告；原始基准涵盖八个市场、四种语言，每份报告有 247 个评分项，评分项不计作独立任务。</td>
-<td data-label="评测指标定义与公式" class="metric-cell">加权内容质量分别衡量识别、计算、概括与解释；另报结构分。<span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N 是报告数；s<sub>ij</sub> ∈ [0,1] 是官方判官给出的匹配、关键主张覆盖或归一化细项得分；w<sub>j</sub> 为识别／计算项的 1 分或概括／解释项的 2 分，满分 350；f<sub>i</sub> 为标题、子标题与表格的结构得分，满分 42。<a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">评分协议</a>；<a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">权重</a>。</td>
+<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N 是报告数；s<sub>ij</sub> ∈ [0,1] 是官方判官给出的匹配、关键主张覆盖或归一化细项得分；w<sub>j</sub> 为识别／计算项的 1 分或概括／解释项的 2 分，满分 350；f<sub>i</sub> 为标题、子标题与表格的结构得分，满分 42。<a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">评分协议</a>；<a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">权重</a>。</td>
 
 <td data-label="任务形式（Task format）">多轮投研 → 完整报告</td>
 <td data-label="问题示例（简写）" class="sample-cell">根据UnitedHealth的2023、2024财年年报及截至2025年9月20日的证据，按指定Markdown研究表格分析财务表现、估值与风险。<span class="sample-source"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch/blob/d6f80827caf60492fd0aa2769391d5137bc6aa2e/Analytical%20Structure/test004.md" target="_blank" rel="noopener">UnitedHealth · 任务test004</a></span></td>
 </tr>
 <tr>
-<td><a href="https://github.com/openai/mle-bench/tree/507f92e1138bb6e40dac5c6ee7a6758e6424bf97" target="_blank" rel="noopener">MLE-bench 项目子集</a><br><a href="https://github.com/openai/mle-bench#dataset" target="_blank" rel="noopener">Kaggle 来源</a></td>
-<td data-label="定义">模型读取竞赛数据、编写与执行机器学习训练代码，并提交竞赛规定的预测 CSV；一个完整竞赛任务不等于一行数据。项目子集仍待资格核验。</td>
-<td data-label="评测指标定义与公式" class="metric-cell">保留各竞赛原生分数及方向：AUC 衡量排序质量，越高越好；log loss 衡量概率误差，RMSLE 衡量对数尺度的回归误差，两者越低越好。<span class="metric-formula">Native score<sub>i</sub> = G<sub>i</sub>(prediction CSV<sub>i</sub>, hidden labels<sub>i</sub>)</span>G<sub>i</sub> 是该竞赛固定的原生评分器，另报有效提交率、达到铜牌线的比例及高于参赛者中位数的比例。<span class="metric-formula">Valid rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub>]</span><span class="metric-formula">Medal rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ⪰<sub>i</sub> b<sub>i</sub>]</span><span class="metric-formula">Above-median rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ≻<sub>i</sub> h<sub>i</sub>]</span>N 是评测任务数，s<sub>i</sub> 是原生分数，b<sub>i</sub>／h<sub>i</sub> 是该竞赛铜牌线／中位数；⪰<sub>i</sub>、≻<sub>i</sub> 按该指标方向比较，1[·] 在条件满足时为 1，否则为 0。</td>
-
-<td data-label="任务形式（Task format）">多轮编程 → 预测 CSV</td>
-<td data-label="问题示例（简写）" class="sample-cell">训练模型识别99种叶片，提交包含各类别预测概率的CSV文件。<span class="sample-source"><a href="https://github.com/openai/mle-bench/blob/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/mlebench/competitions/leaf-classification/description.md" target="_blank" rel="noopener">Leaf Classification · 竞赛题面</a></span></td>
+<td><a href="https://github.com/xlang-ai/DS-1000" target="_blank" rel="noopener">DS-1000 Python 数据分析子集</a><br><a href="https://huggingface.co/datasets/xlangai/DS-1000" target="_blank" rel="noopener">数据来源</a></td>
+<td data-label="定义">合并561条代码补全题：Pandas291条、Matplotlib／Seaborn155条、Scikit-learn115条，覆盖数据处理、绘图和机器学习库调用。已下载；同源题去重、执行验收与训练切分尚未完成。完整建模与结果解释覆盖有限。</td>
+<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> e<sub>i</sub>a<sub>i</sub></span>N 为评测题数；e<sub>i</sub> 在第 i 题全部执行测试通过时为1，否则为0；a<sub>i</sub> 在 API／代码形式约束通过或未设置该约束时为1，否则为0。</td>
+<td data-label="任务形式（Task format）">单轮代码补全</td>
+<td data-label="问题示例（简写）" class="sample-cell">将 DataFrame 的日期列转换为 Jan-2018 这样的“月份缩写－年份”格式。<span class="sample-source"><a href="https://github.com/xlang-ai/DS-1000/blob/6f8579252c07f7e04624c5ec25569c0f9c1b1f4f/data/ds1000.jsonl.gz" target="_blank" rel="noopener">Pandas · 题号23</a></span></td>
 </tr>
 </tbody>
 </table>
-<p class="data-note">Task format 描述期望的求解形式：一次回答，或多次模型／工具交互后提交最终产物的智能体任务，不按最初有几次用户请求判断。给齐材料的 SFT 视图可省去检索，检索阶段则保留多轮任务。示例经过简写或改写，中文为译文，完整要求见对应来源。</p>
-<p class="data-note">各数据集保留自己的输出与评分含义；公司报告的内容分、机器学习竞赛分数与问答准确率分别报告。</p>
-<p class="data-note">本表定义原始基准。公开金融资料为新增 FinSearchComp 题目提供证据，资料本身不增加原始基准题数；自行编写的新题另记为派生／合成任务。资料获取与出题步骤统一在方法管线中说明。</p>
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
@@ -201,7 +197,7 @@
 <h4 class="pipeline-group" id="native-contract">共同外层接口保留各任务的原生输出</h4>
 <ul>
 <li>
-<b>Task adapter:</b> 计划中的五数据集接口将来源身份与输入文件、隔离的工具轨迹、提交产物及各数据集评分结果绑定起来；共用这份外层记录，让同一运行器管理不同任务，同时保留报告写作和机器学习工程的任务形式。</li>
+<b>Task adapter:</b> 计划中的五数据集接口将来源身份与输入文件、隔离的工具轨迹、提交产物及各数据集评分结果绑定起来；共用这份外层记录，让同一运行器管理不同任务，同时保留报告写作和 Python 编程的任务形式。</li>
 <li>
 <b>Qualification:</b> 新适配器须先通过证据访问、原生评分、产物格式与评分端隔离检查，再准入任务；<a href="#co-data">数据集表</a>定义任务输出和指标，<a href="#original-pools">共同数据控制</a>使各候选使用一致的原题及评测条件。</li>
 </ul>
@@ -361,7 +357,7 @@
 <li>
 <b>Shared budget:</b> 每个条件全程共用 6,553,600 个有效监督 token 和 100 次更新，初始每阶段各 3,276,800 token／50 次更新。token 数只核对监督暴露量，沿用现有损失求平均方式；初始阶段比例尚未经效果验证。</li>
 <li>
-<b>Launch gates:</b> 新一轮 SFT 尚未开始；证据、方法审查、必要的实际配对探测、完整示范、固定合成池和精确预算检查全部通过后，五数据集共同训练入口才能放行。</li>
+<b>Launch gates:</b> 新一轮 SFT 尚未开始；证据、方法审查、必要的实际配对探测、完整示范、固定合成池和精确预算检查全部通过后，共同训练入口才能放行。</li>
 </ul>
 </div>
 </div>
@@ -394,32 +390,14 @@
 </div>
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
-<nav class="flow" aria-label="共同评测">
-<a class="flow-node" href="#eval-original">原始基准</a> <a class="flow-node" href="#eval-synthetic">合成挑战</a> <a class="flow-node" href="#eval-comparison">配对比较</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-7-zh.svg" alt="九组使用相同冻结评测版本；原始基准与合成挑战分别评分，只有验证集选择检查点，最终测试结果不反馈出题。" loading="lazy"></div><figcaption>九组使用相同冻结评测版本；原始基准与合成挑战分别评分，只有验证集选择检查点，最终测试结果不反馈出题。</figcaption></figure>
 <div class="content">
-<span class="status-tag">尚未开始</span>
-<h4 class="pipeline-group" id="eval-original">各阶段使用同一批原始任务测量</h4>
-<ul>
-<li>
-<b>Native metrics:</b> 每个数据集采用<a href="#co-data">数据集表</a>中的指标定义与公式，分别报告问答准确率、严格指令遵循、报告质量和机器学习竞赛表现，并注明各指标方向及评测队列。</li>
-<li>
-<b>Shared protocol:</b> Base、SFT、DAPO 结果使用相同题目 ID、工具条件、采样规则与评分器版本，以支持阶段之间的比较。</li>
-</ul>
-<h4 class="pipeline-group" id="eval-synthetic">新增挑战集评测独立审查的 FinSearchComp 题目</h4>
-<ul>
-<li><b>Separate reporting:</b> 经过审查的 FinSearchComp 挑战题与原始队列分别报告；新增题保留各自的来源支持、任务要求和评分器，其成绩不替代原始基准成绩。</li>
-<li>
-<b>Limits:</b> 扩大的合成测试测量生成题族的覆盖；泛化结论限于实际评测过的保留来源、题族与执行预算。</li>
-</ul>
-<h4 class="pipeline-group" id="eval-comparison">配对差异检验声明的数据变化</h4>
-<ul>
-<li>
-<b>Stage comparisons:</b> 比较 S1 与 S0 检验 SFT 增量；从同一检查点比较加合成与原题 DAPO 检验 DAPO 增量；将 DAPO 结果与自身起点比较检验额外训练的作用。</li>
-<li>
-<b>Selection:</b> 只有验证集用于选择检查点和混合配比；最终配对置信区间使用相同冻结测试，不反馈给出题器。</li>
-</ul>
+<h4 class="pipeline-group" id="eval-original">SFT 加入新增题的分数差</h4>
+<p>\[ \Delta_{\mathrm{SFT},d,m}=S_{d,m}(S1)-S_{d,m}(S0) \]</p>
+<h4 class="pipeline-group" id="eval-synthetic">DAPO 相对起始检查点的分数差</h4>
+<p>\[ \Delta_{\mathrm{DAPO},d,m}^{(c,a)}=S_{d,m}(cR_a)-S_{d,m}(c) \]</p>
+<h4 class="pipeline-group" id="eval-comparison">DAPO 加入新增题的分数差</h4>
+<p>\[ \Delta_{\mathrm{additional},d,m}^{(c)}=S_{d,m}(cR_1)-S_{d,m}(cR_0) \]</p>
+<p>\(S_{d,m}(k)\) 为候选 \(k\) 在数据集 \(d\) 的同一冻结评测队列上，按<a href="#co-data">数据集表</a>中指标 \(m\) 得到的分数；\(k\) 为 <a href="#baselines">Candidates and Settings</a> 中九个代号之一；\(c\in\{\mathrm{Base},S0,S1\}\)，\(a\in\{0,1\}\)；\(cR_0\)、\(cR_1\) 分别为从 \(c\) 开始的仅原题与加入新增题的 DAPO 设置。\(\Delta_{\mathrm{SFT},d,m}\)、\(\Delta_{\mathrm{DAPO},d,m}^{(c,a)}\)、\(\Delta_{\mathrm{additional},d,m}^{(c)}\) 分别为 SFT 加题、DAPO 相对起点、DAPO 加题的分数差。</p>
 </div>
 </div>
 </div>
@@ -439,7 +417,6 @@
 <tr><td>FinSearchComp／金融检索</td><td><code>search_securities</code>、<code>get_prices</code>、<code>get_corporate_actions</code>、<code>trading_day</code>、<code>count_trading_days</code>、<code>search_fred</code>、<code>get_fred</code>、<code>search_financial_tags</code>、<code>get_financials</code>、<code>run_python</code>、<code>finish</code></td><td>固定只读快照提供行情、FRED 和 SEC 数据。显式启用的 v2 Python 适配器仅把运行环境和声明的数据挂载到隔离进程，禁用网络并限制时间与内存；检索证明适配器在解题进程之外记录来源查询。</td></tr>
 <tr><td>IFEval</td><td><code>finish</code></td><td>严格指令检查器只评提交的回答，不套用金融证据要求。</td></tr>
 <tr><td>FinDeepResearch 证据试运行</td><td><code>list_documents</code>、<code>search_documents</code>、<code>read_document</code>、<code>run_python</code>、<code>write_report_part</code>、<code>write_sentiment_labels</code>、<code>sentiment_windows</code>、<code>finish</code>；分阶段工作上下文另有 <code>read_dependency</code></td><td>仅允许访问白名单证据；所列工具属于现有试运行环境，工具执行不代表完整基准任务或训练示范已合格。</td></tr>
-<tr><td>MLE-bench 项目子集</td><td><code>mlebench_describe</code>、<code>run_python</code>、<code>finish</code></td><td>CPU Python 仅能读取声明的公开数据并写入输出目录。结束后由宿主冻结提交文件，再用隐藏标签独立评分；解题期间不返回私有分数。</td></tr>
 </tbody></table></div>
 <p>H1 另外开放 <code>set_checklist</code>，并在工具结果之后重述完成进度。声明为耗时操作的工具在线程中执行，避免某条尝试的 Python 运算阻塞其他尝试。</p>
 <h3 class="title is-5" id="harness-checks">纠错反馈帮助修改，独立准入检查保存的结果</h3>
@@ -447,7 +424,7 @@
 <p>独立评分器检查保存的答案或提交文件。金融数字匹配只检查答案是否有结果支持，不能单独证明推理正确；实际来源查询记录和执行回放提供额外证据。题目合格、完整示范合格和训练准入分别检查。</p>
 <h3 class="title is-5" id="harness-api">合成数据的角色另走 Messages 路由</h3>
 <p>出题、盲解和对抗审查分别使用独立的新 API 请求，提示词由调用方明确提供。在原生代理请求发出前，客户端检查冻结的题目与来源范围及费用预留；出题按保守配置的输入上界预留，盲解与对抗审查使用经过校准的原生输入 token 计数。返回后把用量和失败尝试记入只追加的账本。盲解角色编写的代码交给宿主实际执行，API 文本请求本身不执行工具；对抗审查读取实际回放证据，不继承先前审查结论。</p>
-<p class="data-note">上述运行控制见<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/02_harness/code/v3/harness/agent.py" target="_blank" rel="noopener">模型循环</a>、<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/01_data-processing/code/synthesis_v2/harness.py" target="_blank" rel="noopener">v2 环境适配器</a>和<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/scripts/01_data-processing/experiments/run_pre_synthesis_acceptance.py" target="_blank" rel="noopener">有限额度原生 API 验收入口</a>。FinDeepResearch 采集器与 MLE 运行环境仍属于候选／试运行路径，执行成功不授予训练准入。</p>
+<p class="data-note">上述运行控制见<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/02_harness/code/v3/harness/agent.py" target="_blank" rel="noopener">模型循环</a>、<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/01_data-processing/code/synthesis_v2/harness.py" target="_blank" rel="noopener">v2 环境适配器</a>和<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/scripts/01_data-processing/experiments/run_pre_synthesis_acceptance.py" target="_blank" rel="noopener">有限额度原生 API 验收入口</a>。FinDeepResearch 采集器仍属于试运行路径；DS-1000 已保留原始参考代码与测试代码，尚未接入此 Harness。</p>
 </div></div></section>
 
 <footer class="footer">
