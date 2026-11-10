@@ -580,7 +580,7 @@ html[lang="zh-CN"] .teaser {
 #harness .table { min-width: 650px; }
 #harness .table-container { overflow-x: auto; }
 
-.harness-dimensions { width: 100%; table-layout: fixed; }
+#harness .harness-dimensions { width: 100%; min-width: 0; table-layout: fixed; }
 .harness-dimensions th:first-child { width: 16%; }
 .harness-dimensions th:nth-child(2) { width: 27%; }
 .harness-dimensions td { overflow-wrap: anywhere; }
