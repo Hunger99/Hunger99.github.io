@@ -26,7 +26,7 @@
 </script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
 </script>
-  <link rel="stylesheet" href="static/css/main.css?v=20261110-four-dimensions-wrap">
+  <link rel="stylesheet" href="static/css/main.css?v=20261110-core-alignment">
 </head>
 <body>
 
@@ -171,13 +171,34 @@
 </section>
 <section class="section hero is-light" id="harness">
 <div class="container is-max-widescreen"><h2 class="title is-3 has-text-centered">Harness</h2>
-<div class="table-container"><table class="table setting-table harness-dimensions"><thead><tr><th scope="col">Harness element</th><th scope="col">Core content</th><th scope="col">Implementation in this project</th></tr></thead><tbody>
-<tr><th scope="row">Context management</th><td class="harness-core" data-label="Core content">提示工程、Agent 状态栏、上下文压缩、Agent Skills</td><td data-label="Implementation in this project"><ul><li>Prompt engineering: Task environments supply system prompts, questions, output requirements and allowed tools.</li><li>Agent status panel: H1 (the runtime configuration with checklist, constraint checks, verification and bounded correction) stores a checklist with set_checklist and restates completion markers after observations as text.</li><li>Context compression: - (No history summary/compression; messages are append-only and new tool results are length-capped.)</li><li>Agent Skills: - (No skill-package loading or invocation in the model runtime.)</li></ul></td></tr>
-<tr><th scope="row">Context management across sessions</th><td class="harness-core" data-label="Core content">用户记忆、RAG、结构化索引、智能体化 RAG</td><td data-label="Implementation in this project"><ul><li>User memory: - (Attempts initialize independently; no cross-session user-memory store.)</li><li>RAG: DocFinQA retrieves evidence from the assigned report for the current task; no user-memory storage.</li><li>Structured indexing: Numbered report chunks use a BM25 index and chunk_id-based neighboring reads; no cross-session personal-knowledge index.</li><li>Agentic RAG: The model can search, read and calculate repeatedly within a task. Cross-session updates are - (no memory-write/update protocol).</li></ul></td></tr>
-<tr><th scope="row">Tool interfaces and constraints</th><td class="harness-core" data-label="Core content">工具分类、权限控制、MCP 标准、主动工具发现</td><td data-label="Implementation in this project"><ul><li>Tool categories: Task environments register allowlists and JSON argument formats; only known tools are dispatched.</li><li>Access control: H1 checks arguments and rules before declared writes. The existing v2 Python adapter has bubblewrap isolation, read-only mounts, no network and time/memory limits; DS-1000 is not yet integrated.</li><li>MCP standard: - (Direct function-tool registration; no MCP integration.)</li><li>Active tool discovery: - (Tool lists are fixed at attempt initialization; no dynamic search or loading.)</li></ul></td></tr>
-<tr><th scope="row">Verification and correction</th><td class="harness-core" data-label="Core content">Coding Agent 的 Harness、测试驱动、代码化规则</td><td data-label="Implementation in this project"><ul><li>Coding Agent Harness: The model→tool→real observation→model loop and trajectory recording exist; DS-1000 code-completion integration is incomplete.</li><li>Test-driven execution: - (Offline tests and graders exist; no runtime test-first coding workflow.)</li><li>Codified rules: H1 checks checklist completion, environment requirements and result grounding. Errors include valid-call examples; repeated calls get hints; rejected completion permits bounded correction.</li></ul></td></tr>
-</tbody></table></div>
-<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-en.svg" alt="Independent tasks may run concurrently; tools execute in sequence within each task. Retrieval or isolation returns real observations; H1 checks and bounded correction precede saved outputs and independent grading." width="1200" height="740" loading="lazy"></div></figure>
+<div class="table-container"><table class="table setting-table harness-dimensions">
+<colgroup><col class="harness-dimension-column"><col class="harness-core-column"><col class="harness-definition-column"></colgroup>
+<thead><tr><th scope="col">Harness element</th><th scope="col">Core content</th><th scope="col">Implementation in this project</th></tr></thead>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="4">Context management</th><td class="harness-core" data-label="Core content">Prompt engineering</td><td class="harness-definition" data-label="Implementation in this project">Task environments supply the system instructions, question, output requirements and allowed tools.</td></tr>
+<tr><td class="harness-core" data-label="Core content">Agent state tracking</td><td class="harness-definition" data-label="Implementation in this project">A task checklist records work items and completion marks; tool responses display the updated checklist.</td></tr>
+<tr><td class="harness-core" data-label="Core content">Context compression</td><td class="harness-definition" data-label="Implementation in this project">- (Conversation history is stored by appending messages; history summarization and compression are unimplemented.)</td></tr>
+<tr><td class="harness-core" data-label="Core content">Agent Skills</td><td class="harness-definition" data-label="Implementation in this project">- (The model runtime has no skill-package loader.)</td></tr>
+</tbody>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="4">Context management: retrieval and cross-session memory</th><td class="harness-core" data-label="Core content">User memory</td><td class="harness-definition" data-label="Implementation in this project">- (Persistent user-memory storage is unimplemented.)</td></tr>
+<tr><td class="harness-core" data-label="Core content">RAG</td><td class="harness-definition" data-label="Implementation in this project">Document search and passage reading supply evidence from the report assigned to the current task.</td></tr>
+<tr><td class="harness-core" data-label="Core content">Structured indexing</td><td class="harness-definition" data-label="Implementation in this project">Reports are split into numbered passages and indexed by word relevance with BM25; passage numbers select a passage and the passages before and after it.</td></tr>
+<tr><td class="harness-core" data-label="Core content">Agentic RAG</td><td class="harness-definition" data-label="Implementation in this project">The model selects and repeats searches, passage reads and calculations to gather evidence for the current task.</td></tr>
+</tbody>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="4">Tool interfaces and constraints</th><td class="harness-core" data-label="Core content">Tool categories</td><td class="harness-definition" data-label="Implementation in this project">Each task environment defines its callable tools and their JSON argument formats.</td></tr>
+<tr><td class="harness-core" data-label="Core content">Access control</td><td class="harness-definition" data-label="Implementation in this project">A tool allowlist restricts callable functions; declared write operations are checked against argument formats and business rules before execution. The Python sandbox adapter applies read-only data mounts, network isolation and time and memory limits.</td></tr>
+<tr><td class="harness-core" data-label="Core content">MCP standard</td><td class="harness-definition" data-label="Implementation in this project">- (Tools use direct function registration; an MCP connection is unimplemented.)</td></tr>
+<tr><td class="harness-core" data-label="Core content">Active tool discovery</td><td class="harness-definition" data-label="Implementation in this project">- (Tool lists are fixed when a task starts; dynamic tool lookup and loading are unimplemented.)</td></tr>
+</tbody>
+<tbody>
+<tr><th class="harness-dimension" scope="rowgroup" rowspan="3">Verification and correction</th><td class="harness-core" data-label="Core content">Coding Agent Harness</td><td class="harness-definition" data-label="Implementation in this project">The runtime connects model requests, tool execution, tool results and subsequent model requests into a loop and records the trajectory.</td></tr>
+<tr><td class="harness-core" data-label="Core content">Test-driven execution</td><td class="harness-definition" data-label="Implementation in this project">- (Tests and graders run offline; a runtime workflow that writes tests before coding is unimplemented.)</td></tr>
+<tr><td class="harness-core" data-label="Core content">Codified rules</td><td class="harness-definition" data-label="Implementation in this project">Program checks assess checklist completion, task requirements and numerical evidence at completion; tool errors provide valid-call examples, repeated calls receive hints and rejected completion triggers bounded correction.</td></tr>
+</tbody>
+</table></div>
+<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-en.svg" alt="A serial Python tool loop connects Prompt engineering, Coding Agent Harness, Tool categories, Access control, sandbox, Codified rules and Agent state tracking, then returns to the model." width="1200" height="500" loading="lazy"></div></figure>
 </div></section>
 
 <footer class="footer">
