@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="A 4B financial agent study using public-source FinSearchComp questions, independent review, two-stage SFT and DAPO">
+  <meta name="description" content="A 4B financial agent study using DocFinQA, investment research reports and Python data-analysis tasks">
   <meta property="og:title" content="Post-Training a 4B Financial LLM Agent"/>
-  <meta property="og:description" content="A 4B financial agent study using public-source FinSearchComp questions, independent review, two-stage SFT and DAPO"/>
+  <meta property="og:description" content="A 4B financial agent study using DocFinQA, investment research reports and Python data-analysis tasks"/>
   <meta property="og:url" content="https://hunger99.github.io/projects/capital-one/"/>
   <meta name="twitter:title" content="Post-Training a 4B Financial LLM Agent">
-  <meta name="twitter:description" content="A 4B financial agent study using public-source FinSearchComp questions, independent review, two-stage SFT and DAPO">
+  <meta name="twitter:description" content="A 4B financial agent study using DocFinQA, investment research reports and Python data-analysis tasks">
   <meta name="twitter:card" content="summary">
-  <meta name="keywords" content="financial LLM agent, post-training, agent SFT, DAPO, tool use, FinSearchComp, Qwen3.5">
+  <meta name="keywords" content="financial LLM agent, post-training, agent SFT, DAPO, tool use, DocFinQA, Qwen3.5">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Financial LLM Agent with SFT and DAPO</title>
@@ -26,7 +26,7 @@
 </script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
 </script>
-  <link rel="stylesheet" href="static/css/main.css?v=20261109-pipeline-harness">
+  <link rel="stylesheet" href="static/css/main.css?v=20261110-four-dimensions">
 </head>
 <body>
 
@@ -79,7 +79,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Abstract</h2>
 <div class="content has-text-justified">
-<p>This project compares nine post-training settings for Qwen3.5-4B-Base across DocFinQA, FinSearchComp, IFEval, FinDeepResearch and a 561-question DS-1000 Python analysis subset. Supervised fine-tuning (SFT) learns from verified demonstrations; DAPO learns from tool-assisted attempts and task-specific rewards. The FinSearchComp expansion route starts with real public financial materials and constructs new, evidence-backed questions through programmatic and Claude authors. Both branches use independent computation, tool execution, blind solving and adversarial review. All settings share the same original cohorts and evaluation protocol to compare adding FinSearchComp questions at SFT, DAPO or both stages. The DS-1000 subset has been downloaded; source-family deduplication, execution qualification and training splits remain pending. The new training experiment has not started.</p>
+<p>This project compares nine post-training settings for Qwen3.5-4B-Base using DocFinQA, IFEval, FinDeepResearch and one combined 561-question DS-1000 Python analysis subset. Supervised fine-tuning (SFT) learns from verified demonstrations; DAPO learns from tool-assisted attempts and task-specific rewards. DocFinQA covers financial document QA, FinDeepResearch covers investment research reports, and the DS-1000 subset covers basic data processing, plotting and machine-learning library use. DS-1000 source-family deduplication, execution qualification and training splits remain pending; the new training experiment has not started.</p>
 </div>
 </div>
 </section>
@@ -96,14 +96,6 @@
 
 <td data-label="Task format">Multi-turn retrieval → final answer</td>
 <td data-label="Sample question (abridged)" class="sample-cell">Using the annual report, what percentage of the company’s total facilities are leased?<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA train · question</a></span></td>
-</tr>
-<tr>
-<td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
-<td data-label="Definition">The model locates market and company information to answer time-sensitive lookups, historical questions and multi-step investigations. This project uses an offline-supported subset.</td>
-<td data-label="Evaluation metric: definition and formula" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> indicates that all required items pass.</td>
-
-<td data-label="Task format">Multi-turn retrieval → final answer</td>
-<td data-label="Sample question (abridged)" class="sample-cell">In March 2023, to what percentage did the Federal Reserve raise interest on reserve balances? Round to one decimal place.<span class="sample-source"><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">Global T2 · prompt 503</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
@@ -153,7 +145,7 @@
 <li><b>Base model:</b> Qwen3.5-4B-Base. S0 and S1 start independently from the same weights; paired DAPO runs use the same starting checkpoint.</li>
 <li><b>Teacher Model:</b> Qwen3.8-27B generates demonstration trajectories for SFT.</li>
 <li id="original-pools"><b>Original data and evaluation:</b> Original task identities are shared wherever training is applied. All nine candidates use the same frozen validation and testing sets, tool conditions and grader versions. Only validation selects checkpoints.</li>
-<li id="synthetic-pools"><b>Additional data:</b> Every S1 descendant shares the same FinSearchComp SFT additions; every R1 candidate shares the same separate DAPO additions. These pools are not regenerated per candidate.</li>
+<li id="synthetic-pools"><b>Additional data:</b> Every S1 descendant shares the same SFT additions; every R1 candidate shares the same separate DAPO additions. These pools are not regenerated per candidate. The additional-task pools are not yet frozen.</li>
 </ul></div>
 </div>
 </section>
@@ -163,268 +155,30 @@
 <p class="has-text-centered">Select a stage to see what it does.</p>
 <div class="pipeline" id="co-pipeline" data-pipeline>
 <div class="pipeline-steps" role="tablist" aria-label="Method Pipeline">
-<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
-<span class="pipeline-step-num">1</span>Sources, task contracts and splits</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-acquisition" aria-controls="co-panel-acquisition"><span class="pipeline-step-num">2</span>Data acquisition</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
-<span class="pipeline-step-num">3</span>FinSearchComp question construction</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
-<span class="pipeline-step-num">4</span>Common task review</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4">
-<span class="pipeline-step-num">5</span>Calibration and demonstrations</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5">
-<span class="pipeline-step-num">6</span>Multi-turn SFT (next)</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6">
-<span class="pipeline-step-num">7</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7">
-<span class="pipeline-step-num">8</span>Shared evaluation</button>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true"><span class="pipeline-step-num">1</span>Data acquisition &amp; preprocessing</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>Data synthesize</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>SFTV</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>Evaluation</button>
 </div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-<nav class="flow" aria-label="Sources, task contracts and splits">
-<a class="flow-node" href="#canon-report">Canonical reports</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#native-contract">Task contracts</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">Source isolation</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">Frozen pools</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-1-en.svg" alt="Original files → one report version → source meaning and task contract → isolated source roles → frozen pools. Failure at a source check holds the affected task." loading="lazy"></div><figcaption>Original files → one report version → source meaning and task contract → isolated source roles → frozen pools. Failure at a source check holds the affected task.</figcaption></figure>
-<div class="content">
-<h4 class="pipeline-group" id="canon-report">One original report version represents each filing</h4>
-<ul>
-<li>
-<b>Canonicalization:</b> The entry filter groups DocFinQA reports by registrant and fiscal end, selects one verbatim version by source quality and preserves the alternatives and source hashes. This keeps equivalent reports from appearing as different source documents.</li>
-<li>
-<b>Evidence retention:</b> Post-selection checks quarantine questions that lose required source operands; they do not rewrite reports or choose versions by model scores.</li>
-<li><b>Original filing semantics:</b> Before financial generation, source checks bind the metric meaning, consolidated report context, period, unit and sign to the original filing. Negative debt deductions are rejected or quarantined rather than converted to a positive balance; source approval does not itself qualify a task.</li>
-</ul>
-<h4 class="pipeline-group" id="native-contract">A common outer interface preserves each task’s native output</h4>
-<ul>
-<li>
-<b>Task adapter:</b> The planned five-dataset interface will bind source identities and input artifacts, an isolated tool trajectory, a submitted artifact and a dataset-specific grader result. Sharing this outer record lets one runner manage different tasks without converting report writing or Python coding into question answering.</li>
-<li>
-<b>Qualification:</b> New adapters must pass evidence-access, native-grader, artifact-validation and evaluator-isolation checks before admission. The <a href="#co-data">Data Sets table</a> defines the task outputs and metrics; the <a href="#original-pools">shared-data controls</a> keep original tasks and evaluation conditions consistent across candidates.</li>
-</ul>
-<h4 class="pipeline-group" id="source-split">Source identities precede question sampling</h4>
-<ul>
-<li>
-<b>Decontamination:</b> The splitter checks report identities, normalized questions, task ancestry and financial support periods across roles. Unresolved report identities remain outside the eligible pools.</li>
-<li>
-<b>Stratification:</b> DocFinQA retains its official split membership and a proportional half of each numeric/boolean stratum; FinSearchComp and IFEval use deterministic category-aware project splits. This preserves category coverage while retaining test questions.</li>
-</ul>
-<h4 class="pipeline-group" id="pool-freeze">One release serves every model setting</h4>
-<ul>
-<li>
-<b>Immutable inputs:</b> Existing original task IDs, text, canonical sources and graders are bound to a frozen release. New cohorts and adapters will join the same shared release only after qualification; the <a href="#baselines">candidate settings</a> define the shared comparison conditions.</li>
-<li>
-<b>Reserved evaluation:</b> Synthetic validation and test items use separate source support and independent review. Their acceptance quotas do not authorize filling a shortfall with duplicates or unreviewed candidates.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-acquisition" aria-labelledby="co-tab-acquisition" tabindex="0">
-<nav class="flow" aria-label="Data acquisition"><a class="flow-node" href="#acquire-sources">Public sources</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#acquire-cache">Raw evidence cache</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#acquire-checks">Checked source bank</a></nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/source-acquisition-en.svg" alt="Public filings and macroeconomic observations enter a preserved source cache. Source identity, factual meaning and reserved evaluation support are checked before a source bank supplies either question author." loading="lazy"></div><figcaption>Public filings and macroeconomic observations enter a preserved source cache. Source identity, factual meaning and reserved evaluation support are checked before a source bank supplies either question author.</figcaption></figure>
-<div class="content"><p class="pipeline-note">FinSearchComp expansion begins by obtaining real financial materials. Source documents and observations supply evidence; the next stage authors new questions from those facts. The existing acquisition path covers the SEC/FRED source bank; an additional website needs its own verified connector.</p>
-<h4 class="pipeline-group" id="acquire-sources">Public records supply source facts</h4>
-<ul>
-<li><b>Source selection:</b> The source bank uses company disclosures and official economic observations selected for a declared task family and data role. The existing inputs include <a href="https://www.sec.gov/search-filings/edgar-application-programming-interfaces" target="_blank" rel="noopener">SEC filings</a> and <a href="https://fred.stlouisfed.org/docs/api/fred/" target="_blank" rel="noopener">FRED series</a>; a new provider must establish source identity, access conditions and an evidence path before it supplies questions.</li>
-<li><b>Original documents:</b> The acquisition path locates the original filing or series response and preserves its raw material and provenance. A company report, a copied disclosure and a question derived from it retain their relationship, so repeated material cannot inflate question counts.</li>
-</ul>
-<h4 class="pipeline-group" id="acquire-cache">Acquisition preserves raw evidence before normalization</h4>
-<ul>
-<li><b>Source cache:</b> Downloads and reused snapshots retain their source identity and version. Normalized facts link back to the original disclosure or series, including the entity, reporting period and units, so a reviewer can verify the operand instead of trusting generated prose.</li>
-<li><b>Time convention:</b> Each task uses a declared frozen snapshot. A current or revised observation is not automatically evidence of what was available at an earlier decision date. Historical information-availability and live-market tasks require separately verified dates, vintages and provider access.</li>
-</ul>
-<h4 class="pipeline-group" id="acquire-checks">Source checks protect the shared evaluation cohorts</h4>
-<ul>
-<li><b>Evidence checks:</b> Filing-semantic checks verify the metric meaning, consolidated context, period, unit and sign before generation. Missing or ambiguous support holds the affected source facts rather than asking an author to fill the gap.</li>
-<li><b>Source isolation:</b> The source bank excludes protected evaluation support and binds eligible facts to their declared SFT, DAPO, validation or test role. Both question-author branches use this same checked bank; original benchmark definitions remain in the Data Sets table.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
-<nav class="flow" aria-label="Two generation branches">
-<a class="flow-node" href="#gen-program">Program branch</a> <a class="flow-node" href="#gen-claude">Claude branch</a> <a class="flow-node" href="#gen-compile">Compile and merge</a> <a class="flow-node" href="#gen-native">API call boundary</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-2-en.svg" alt="The upper CPU lane and lower Claude-author lane are parallel alternatives. The lower lane binds the prompt and reserves cost from a conservative configured input bound before the proxy call, then settles actual usage. Both lanes merge into one compiler and semantic inventory before common review." loading="lazy"></div><figcaption>The upper CPU lane and lower Claude-author lane are parallel alternatives. The lower lane binds the prompt and reserves cost from a conservative configured input bound before the proxy call, then settles actual usage. Both lanes merge into one compiler and semantic inventory before common review.</figcaption></figure>
-<div class="content">
-<p class="pipeline-note">This stage creates additional FinSearchComp questions from the checked public-material bank. Programs expand supported weak task families; Claude explores source-supported combinations within its task contract. Both routes create new questions and converge on the same review gates. Importing an existing question-answer pair is a separate intake operation, not what this generation stage does.</p>
-<h4 class="pipeline-group" id="gen-program">Programs expand reproducible weaknesses</h4>
-<ul>
-<li><b>Financial diagnostics:</b> The generator separates errors in amount, company, period and unit from formatting or source-identity failures before choosing a capability to strengthen. This prevents format failures from being mistaken for difficult financial reasoning.</li>
-<li><b>Programmatic generation:</b> Source-bound templates vary facts and dependencies for repeatable weak skills. The strengthened financial compiler filters the complete candidate set, selects a unique eligible company and derives the comparison company only after selection; fixed names cannot disclose the answer.</li>
-</ul>
-<h4 class="pipeline-group" id="gen-claude">Claude proposes supported tasks from fixed sources</h4>
-<ul>
-<li><b>Source-bound generation:</b> Opus 5.5 at Extra High effort selects a structured plan from a reviewed source bank. The host compiler renders the learner task and computes its reference; author-written prose and private answers do not become authoritative task content.</li>
-<li><b>Coverage:</b> Supported financial contracts combine SEC/FRED retrieval, comparison and dependent calculation. A new task structure requires available source evidence and an executable verifier; proposals outside the supported contract are held.</li>
-</ul>
-<h4 class="pipeline-group" id="gen-compile">Both branches produce new, source-bound candidate identities</h4>
-<ul>
-<li><b>Canonical task:</b> The latest strengthened financial contract normalizes node and output labels and renders selection, ranking, comparison and unit rules from typed fields. A substantive change produces a new task identity and invalidates earlier reviews.</li>
-<li><b>Candidate inventory:</b> One immutable semantic inventory groups equivalent supported tasks across both branches and fixes their SFT, DAPO, validation or test role. Duplicate aliases retain their history but cannot add a quota slot or repeat a paid review through the guarded path.</li>
-</ul>
-<h4 class="pipeline-group" id="gen-native">Accounting runs before and after each native request</h4>
-<ul>
-<li><b>Request sequence:</b> The host binds the complete prompt and reserves the maximum in-flight cost under a shared lock before sending a fresh native Messages conversation through CLIProxyAPI. Authors use a conservative configured input bound; blind-solving and critic roles use calibrated native input-token counts. The host then saves the raw response and settles actual token usage in the append-only ledger. Generation uses Extra High; blind solving and criticism use Medium.</li>
-<li><b>Failure handling:</b> Failed and retried calls consume the same authorization; missing usage, changed input or an exceeded bound stops subsequent calls. The proxy forwards explicit caller prompts; OAuth metadata and billing fields remain, so this is not claimed to be a zero-overhead direct API.</li>
-<li><b>Execution scope:</b> Independent candidates may run concurrently after source, inventory and spending checks pass. Each changed task contract requires its own review evidence; earlier-version acceptance never grants formal training admission.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
-<nav class="flow" aria-label="Common task review">
-<a class="flow-node" href="#review-gold">Source and reference checks</a> <a class="flow-node" href="#review-tools">Actual tool execution</a> <a class="flow-node" href="#review-cloud">Blind solve and criticism</a> <a class="flow-node" href="#review-admission">Question admission</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-3-en.svg" alt="For each candidate, CPU checks precede paid blind solving; its code is executed before criticism, and the critic’s different solver is executed too. Every model call independently reserves and settles usage. Any unresolved gate holds the candidate." loading="lazy"></div><figcaption>For each candidate, CPU checks precede paid blind solving; its code is executed before criticism, and the critic’s different solver is executed too. Every model call independently reserves and settles usage. Any unresolved gate holds the candidate.</figcaption></figure>
-<div class="content">
-<h4 class="pipeline-group" id="review-gold">Source meaning and independent answers must agree</h4>
-<ul>
-<li><b>Financial reference:</b> Independent arithmetic implementations check the answer, units, source periods and rounding. Candidate selection must be complete, effective and unique; ties, unsupported facts, missing dependencies and zero denominators are rejected.</li>
-<li><b>Semantic deduplication:</b> The guarded typed-review entry accepts only the canonical inventory member before a paid review. The key preserves supported economic meaning and source periods while ignoring branch or cosmetic labels; it does not prove equivalence of arbitrary prose or algebra.</li>
-</ul>
-<h4 class="pipeline-group" id="review-tools">The host executes the actual source reads and submissions</h4>
-<ul>
-<li><b>Sandbox replay:</b> Financial solvers query the fixed read-only evidence snapshot and must agree with an independently computed reference. Actual source reads, code and results are retained; model claims alone do not certify execution.</li>
-<li><b>Retrieval evidence:</b> Host records bind real queries, returned data, code and snapshot identity. A real model → retrieval → model check confirmed that returned evidence entered the follow-up model request; intervention tests separately check evidence use by retained model-written code. This does not prove every internal reasoning step or replace a full same-model tools-on/tools-off comparison.</li>
-
-</ul>
-<h4 class="pipeline-group" id="review-cloud">Independent model roles must survive executable counter-checks</h4>
-<ul>
-<li><b>Blind solve:</b> A fresh Medium conversation receives the learner task and tool contract without the private answer. The host executes the returned solver and grades the actual result.</li>
-<li><b>Adversarial review:</b> A separate Medium conversation checks ambiguity, missing evidence, units, answer leakage and grader loopholes. Its distinct counter-solver must also execute correctly; a plausible review sentence is insufficient.</li>
-<li><b>Evidence adjudication:</b> A memory-based objection can be reconsidered only with independent source proof bound to that exact task, response and execution. Original reject or unresolved judgments remain preserved; unresolved substantive concerns keep the task quarantined.</li>
-</ul>
-<h4 class="pipeline-group" id="review-admission">Passing a sample does not release a training dataset</h4>
-<ul>
-<li><b>Version-bound checks:</b> Each accepted FinSearchComp question binds its exact task contract, source facts, model responses and executed solutions. A revised task or source needs matching new checks; question quality, difficulty, demonstrations and release remain separate gates.</li>
-<li><b>Production boundary:</b> The semantic-inventory guard currently covers the new typed review path. Legacy continuous, batch, graph and cycle paths require the same guard or routing through it before formal use. Question quality, difficulty, complete demonstration and final dataset release remain separate decisions.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
-<nav class="flow" aria-label="Calibration and demonstrations">
-<a class="flow-node" href="#collect-harness">Recorded attempts</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-difficulty">Difficulty measurement</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-demo">Demonstration admission</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-4-en.svg" alt="Teacher and student attempts may run independently for one task. Their results route SFT candidates to complete, grounded demonstration review and packing; DAPO tasks follow a separate rollout path, and held tasks stop." loading="lazy"></div><figcaption>Teacher and student attempts may run independently for one task. Their results route SFT candidates to complete, grounded demonstration review and packing; DAPO tasks follow a separate rollout path, and held tasks stop.</figcaption></figure>
-<div class="content">
-<h4 class="pipeline-group" id="collect-harness">The harness saves model actions and real tool results</h4>
-<ul>
-<li><b>Recorded execution:</b> The harness preserves model messages, tool calls, real results and completion state. Financial attempts use read-only evidence tools and restricted Python; the <a href="#harness">Harness section</a> describes context and correction behavior.</li>
-<li><b>IFEval:</b> Its final answer is scored with the fixed strict instruction checker. Financial evidence requirements are not applied to instruction-only answers.</li>
-</ul>
-<h4 class="pipeline-group" id="collect-difficulty">Local teacher and student trials determine the training route</h4>
-<ul>
-<li><b>Difficulty measurement:</b> Multiple teacher and student attempts use training or calibration tasks only. A larger teacher supplies candidate demonstrations, while student successes and failures distinguish unstable skills from tasks requiring diagnosis or SFT support.</li>
-<li><b>DAPO signal:</b> A group needs reward variation to distinguish better attempts. Always-correct or always-wrong groups do not automatically provide a useful DAPO learning signal, and sealed test outcomes never choose training difficulty.</li>
-</ul>
-<h4 class="pipeline-group" id="collect-demo">Complete, grounded demonstrations qualify separately</h4>
-<ul>
-<li><b>Trace qualification:</b> Admission checks source receipts, successful evidence reads, tool schemas, grounding, units and task completion, followed by independent trajectory review. A historical trace cannot be rebound to a different source or revised question without matching proof.</li>
-
-
-<li><b>Training release:</b> Qualified questions, qualified demonstrations and tokenizer-bound packed data are separate products. Only complete reviewed trajectories proceed to exact token, mask and common-release checks.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
-<nav class="flow" aria-label="Multi-turn SFT">
-<a class="flow-node" href="#sft-models">Independent starts</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-given">Given-evidence reasoning</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-retrieve">Retrieval + reasoning</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">Masks and budget</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-5-en.svg" alt="S0 and S1 independently start from the same Base. Within either arm, supplied-evidence reasoning precedes retrieval and reasoning in one continuous training run; the two phases share the fixed total budget. Formal training has not started." loading="lazy"></div><figcaption>S0 and S1 independently start from the same Base. Within either arm, supplied-evidence reasoning precedes retrieval and reasoning in one continuous training run; the two phases share the fixed total budget. Formal training has not started.</figcaption></figure>
-<div class="content">
-<span class="status-tag">not started</span>
-<p>The two-stage implementation has passed CPU checks; the full model training run and its effect have not been measured.</p>
-<h4 class="pipeline-group" id="sft-models">Two supervised checkpoints serve the comparison</h4>
-<ul>
-<li>
-<b>Supervised fine-tuning:</b> S0 will train on admitted demonstrations from the common original pool; S1 will add admitted demonstrations for the fixed shared pool of synthetic SFT tasks. Both will independently start from the same Base and follow the same two phases, with identical original tasks and evidence views; the <a href="#synthetic-pools">additional-data control</a> fixes one shared SFT addition pool across S1 descendants.</li>
-</ul>
-<h4 class="pipeline-group" id="sft-given">Phase 1 supplies the evidence needed for reasoning</h4>
-<ul>
-<li>
-<b>Given-evidence reasoning:</b> The first phase will supply all facts needed for the task and permits Python calculation, so the model can learn financial reasoning, unit conversion, conditional calculations, self-checking and instruction following.</li>
-<li>
-<b>Phase assignment:</b> Verified missing information determines the phase, rather than the dataset name or Python use. Unverified evidence views remain held.</li>
-</ul>
-<h4 class="pipeline-group" id="sft-retrieve">Phase 2 retrieves missing evidence before reasoning</h4>
-<ul>
-<li>
-<b>Retrieval and reasoning:</b> The second phase will use tasks that require information absent from the prompt, so the model must retrieve authorized sources and align entities, periods and units before reasoning.</li>
-<li>
-<b>State continuity:</b> One training run will retain the optimizer, which holds the parameter-update state, and the learning-rate schedule across both phases, saving their full state with the model. Each model’s second phase will continue its own first-phase state.</li>
-</ul>
-<h4 class="pipeline-group" id="sft-loss">Only verified assistant behavior contributes to loss</h4>
-<ul>
-<li>
-<b>Loss masking:</b> Admitted assistant reasoning, tool calls and final answers receive supervision; system and user text, tool returns and invalid assistant content provide context only. Complete trajectories retain their masks and tokenizer binding; overlong or infeasible schedules are held without clipping.</li>
-<li>
-<b>Shared budget:</b> Each condition has one total of 6,553,600 supervised tokens and 100 updates, initially split into 3,276,800 tokens and 50 updates per phase. These tokens count supervised exposure; existing loss averaging is unchanged, and the initial allocation has not been evaluated.</li>
-<li>
-<b>Launch gates:</b> The new SFT stage has not started. Evidence, method review, actual paired probes where required, complete demonstrations, fixed synthetic pools and exact budget checks must pass before the common training gate can open.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
-<nav class="flow" aria-label="DAPO">
-<a class="flow-node" href="#dapo-models">Six continuations</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-length">Generated length</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-mask">Incomplete rollouts</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-6-en.svg" alt="Each starting checkpoint has an original-only and an original-plus-synthetic continuation. Reward shaping counts generated tokens, while the entire policy-loss mask is zero for an unfinished rollout. The distributed training run remains unverified." loading="lazy"></div><figcaption>Each starting checkpoint has an original-only and an original-plus-synthetic continuation. Reward shaping counts generated tokens, while the entire policy-loss mask is zero for an unfinished rollout. The distributed training run remains unverified.</figcaption></figure>
-<div class="content">
-<span class="status-tag">not started</span>
-<h4 class="pipeline-group" id="dapo-models">Six reinforcement-learning jobs complete the nine settings</h4>
-<ul>
-<li>
-<b>Matched continuations:</b> Each SFT checkpoint and the original Base model receives an original-only DAPO continuation or one that also uses synthetic tasks. Candidates and Settings identifies the shared task pools.</li>
-<li>
-<b>Dynamic filtering:</b> DAPO filters groups without reward variation. Record tasks retained after filtering, updates, generated tokens and tool-compute exposure; planned report and ML grading-to-reward adapters must be qualified before those tasks enter training.</li>
-</ul>
-<h4 class="pipeline-group" id="dapo-length">The soft penalty counts model-generated tokens</h4>
-<ul>
-<li>
-<b>Generated-token penalty:</b> The repository reward manager excludes tool returns, inserted context and padding from the soft length penalty. The hard response budget still includes the full context, keeping the resource limit explicit.</li>
-</ul>
-<h4 class="pipeline-group" id="dapo-mask">Unfinished attempts contribute no policy loss</h4>
-<ul>
-<li>
-<b>Whole-rollout masking:</b> An unfinished truncated or aborted rollout has its entire policy mask zeroed. Completed wrong answers remain trainable, and an entirely masked microbatch returns finite loss and gradients.</li>
-<li>
-<b>Launch gates:</b> These fixes are implemented and CPU-checked; the new six-job experiment has not started. Shared data, checkpoints and executable budget controls must be ready before launch.</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
-<div class="content">
-<h4 class="pipeline-group" id="eval-original">SFT data-addition score difference</h4>
-<p>\[ \Delta_{\mathrm{SFT},d,m}=S_{d,m}(S1)-S_{d,m}(S0) \]</p>
-<h4 class="pipeline-group" id="eval-synthetic">DAPO score difference from its starting checkpoint</h4>
-<p>\[ \Delta_{\mathrm{DAPO},d,m}^{(c,a)}=S_{d,m}(cR_a)-S_{d,m}(c) \]</p>
-<h4 class="pipeline-group" id="eval-comparison">DAPO data-addition score difference</h4>
-<p>\[ \Delta_{\mathrm{additional},d,m}^{(c)}=S_{d,m}(cR_1)-S_{d,m}(cR_0) \]</p>
-<p>\(S_{d,m}(k)\) is candidate \(k\)'s score on the same frozen evaluation cohort of dataset \(d\), using metric \(m\) from the <a href="#co-data">Data Sets table</a>; \(k\) ranges over the nine codes in <a href="#baselines">Candidates and Settings</a>. \(c\in\{\mathrm{Base},S0,S1\}\) and \(a\in\{0,1\}\); \(cR_0\) and \(cR_1\) are original-only and original-plus-additional DAPO settings starting from \(c\). \(\Delta_{\mathrm{SFT},d,m}\), \(\Delta_{\mathrm{DAPO},d,m}^{(c,a)}\) and \(\Delta_{\mathrm{additional},d,m}^{(c)}\) are the SFT data-addition, DAPO-from-start and DAPO data-addition score differences, respectively.</p>
-</div>
-</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0"></div>
 </div>
 </div>
 </section>
 <section class="section hero is-light" id="harness">
-<div class="container is-max-widescreen">
-<h2 class="title is-3 has-text-centered">Harness</h2>
-<p class="data-note">The Harness is the runtime around the model: it manages the conversation, executes declared tools and returns observations and correction feedback. The same environment interface selects tools and grading rules for each task type. H1 is the configuration of this runtime that adds a checklist, constraint checks, verification and bounded correction; these extra controls apply when an attempt selects H1.</p>
-<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-en.svg" alt="The rollout loop appends real tool observations, returns bounded verification feedback and grades completed artifacts separately; synthetic-data API roles use a separate metered Messages route." width="1000" height="650" loading="lazy"></div><figcaption>Tool execution and grading belong to the host; a model's claim that it used evidence does not replace an execution record.</figcaption></figure>
-<div class="content">
-<h3 class="title is-5" id="harness-context">Context preserves what the model actually saw</h3>
-<p>Each episode starts with its environment prompt and task. Messages are appended without rewriting previous turns; Qwen retains its previous reasoning when the serving template supports it. New tool results are capped when produced (8,000 characters by default), with an explicit truncation notice; searches, document reads and long lists use pages or bounded ranges. Run settings bound task turns, checklist updates, correction turns and each model reply; context overflow ends the attempt.</p>
-<h3 class="title is-5" id="harness-tools">Each task exposes only its environment's tools</h3>
-<div class="table-container"><table class="table setting-table"><thead><tr><th>Task environment</th><th>Tools exposed to the model</th><th>Execution boundary</th></tr></thead><tbody>
-<tr><td>DocFinQA</td><td><code>search_document</code>, <code>read_chunk</code>, <code>calculator</code>, <code>finish</code></td><td>BM25 finds passages in the assigned report; chunk reads provide the evidence used for arithmetic.</td></tr>
-<tr><td>FinSearchComp / financial retrieval</td><td><code>search_securities</code>, <code>get_prices</code>, <code>get_corporate_actions</code>, <code>trading_day</code>, <code>count_trading_days</code>, <code>search_fred</code>, <code>get_fred</code>, <code>search_financial_tags</code>, <code>get_financials</code>, <code>run_python</code>, <code>finish</code></td><td>A fixed read-only snapshot supplies market, FRED and SEC data. The opt-in v2 Python adapter mounts only the runtime and declared data in an isolated process, with no network and explicit time/memory limits. The retrieval-proof adapter records source queries outside the solver process.</td></tr>
-<tr><td>IFEval</td><td><code>finish</code></td><td>The strict instruction checker grades only the submitted answer; financial evidence checks do not apply.</td></tr>
-<tr><td>FinDeepResearch evidence pilot</td><td><code>list_documents</code>, <code>search_documents</code>, <code>read_document</code>, <code>run_python</code>, <code>write_report_part</code>, <code>write_sentiment_labels</code>, <code>sentiment_windows</code>, <code>finish</code>; phased workers also have <code>read_dependency</code></td><td>Only allowlisted evidence is visible. The listed tools belong to the existing pilot runtime; their execution does not qualify a complete benchmark task or a training demonstration.</td></tr>
+<div class="container is-max-widescreen"><h2 class="title is-3 has-text-centered">Harness</h2>
+<div class="table-container"><table class="table setting-table harness-dimensions"><thead><tr><th scope="col">Harness element</th><th scope="col">Core content</th><th scope="col">Implementation in this project</th></tr></thead><tbody>
+<tr><th scope="row">Context management</th><td class="harness-core" data-label="Core content">提示工程、Agent 状态栏、上下文压缩、Agent Skills</td><td data-label="Implementation in this project"><ul><li>Prompt engineering: Task environments supply system prompts, questions, output requirements and allowed tools.</li><li>Agent status panel: H1 (the runtime configuration with checklist, constraint checks, verification and bounded correction) stores a checklist with set_checklist and restates completion markers after observations as text.</li><li>Context compression: - (No history summary/compression; messages are append-only and new tool results are length-capped.)</li><li>Agent Skills: - (No skill-package loading or invocation in the model runtime.)</li></ul></td></tr>
+<tr><th scope="row">Context management across sessions</th><td class="harness-core" data-label="Core content">用户记忆、RAG、结构化索引、智能体化 RAG</td><td data-label="Implementation in this project"><ul><li>User memory: - (Attempts initialize independently; no cross-session user-memory store.)</li><li>RAG: DocFinQA retrieves evidence from the assigned report for the current task; no user-memory storage.</li><li>Structured indexing: Numbered report chunks use a BM25 index and chunk_id-based neighboring reads; no cross-session personal-knowledge index.</li><li>Agentic RAG: The model can search, read and calculate repeatedly within a task. Cross-session updates are - (no memory-write/update protocol).</li></ul></td></tr>
+<tr><th scope="row">Tool interfaces and constraints</th><td class="harness-core" data-label="Core content">工具分类、权限控制、MCP 标准、主动工具发现</td><td data-label="Implementation in this project"><ul><li>Tool categories: Task environments register allowlists and JSON argument formats; only known tools are dispatched.</li><li>Access control: H1 checks arguments and rules before declared writes. The existing v2 Python adapter has bubblewrap isolation, read-only mounts, no network and time/memory limits; DS-1000 is not yet integrated.</li><li>MCP standard: - (Direct function-tool registration; no MCP integration.)</li><li>Active tool discovery: - (Tool lists are fixed at attempt initialization; no dynamic search or loading.)</li></ul></td></tr>
+<tr><th scope="row">Verification and correction</th><td class="harness-core" data-label="Core content">Coding Agent 的 Harness、测试驱动、代码化规则</td><td data-label="Implementation in this project"><ul><li>Coding Agent Harness: The model→tool→real observation→model loop and trajectory recording exist; DS-1000 code-completion integration is incomplete.</li><li>Test-driven execution: - (Offline tests and graders exist; no runtime test-first coding workflow.)</li><li>Codified rules: H1 checks checklist completion, environment requirements and result grounding. Errors include valid-call examples; repeated calls get hints; rejected completion permits bounded correction.</li></ul></td></tr>
 </tbody></table></div>
-<p>H1 additionally exposes <code>set_checklist</code> and restates its progress after tool results. Slow declared tools run in worker threads so one episode's Python execution does not stall other episodes.</p>
-<h3 class="title is-5" id="harness-checks">Feedback supports correction; admission checks the saved result</h3>
-<p>The host parses tool arguments as JSON and dispatches only known tools. H1 checks declared writes before execution; known-tool execution errors include a valid-call example when H1 correction is enabled, and repeated identical calls receive a hint. On <code>finish</code>, H1 checks checklist completion and the environment's evidence or output requirements, then returns specific failures for a bounded number of corrections. Exhausting that allowance can end the episode, so completion alone does not establish correctness.</p>
-<p>Independent graders evaluate the saved answer or submission. Financial number matching is a grounding check, not a proof of reasoning; actual source-query records and replay checks provide additional evidence. Question approval, complete demonstration approval and training admission remain separate gates.</p>
-<h3 class="title is-5" id="harness-api">Synthetic-data roles use a separate Messages route</h3>
-<p>Authors, blind solvers and adversarial reviewers receive separate fresh API requests with explicit caller prompts. Before the native-proxy request, the client checks the frozen task/source scope and spending reservation. Authors reserve against a conservative configured input bound; blind solvers and critics use calibrated native input-token counts. After the request returns, usage and failed attempts enter the append-only ledger. Blind solvers write code for the host to execute: the API text request itself does not execute tools. A critic receives actual replay evidence without inheriting an earlier review verdict.</p>
-<p class="data-note">These runtime controls are implemented in the <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/02_harness/code/v3/harness/agent.py" target="_blank" rel="noopener">episode loop</a>, <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/01_data-processing/code/synthesis_v2/harness.py" target="_blank" rel="noopener">v2 environment adapter</a> and <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/scripts/01_data-processing/experiments/run_pre_synthesis_acceptance.py" target="_blank" rel="noopener">bounded native-API acceptance runner</a>. The FinDeepResearch collector remains a pilot path. DS-1000 reference code and tests are preserved, but this Harness does not yet integrate that subset.</p>
-</div></div></section>
+<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-en.svg" alt="Independent tasks may run concurrently; tools execute in sequence within each task. Retrieval or isolation returns real observations; H1 checks and bounded correction precede saved outputs and independent grading." width="1200" height="740" loading="lazy"></div></figure>
+</div></section>
 
 <footer class="footer">
   <div class="container">

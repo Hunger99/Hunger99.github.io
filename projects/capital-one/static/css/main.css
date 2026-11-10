@@ -579,3 +579,17 @@ html[lang="zh-CN"] .teaser {
 #harness .architecture-figure figcaption { margin-top: .5rem; color: #565061; font-size: .85rem; }
 #harness .table { min-width: 650px; }
 #harness .table-container { overflow-x: auto; }
+
+.harness-dimensions { width: 100%; table-layout: fixed; }
+.harness-dimensions th:first-child { width: 16%; }
+.harness-dimensions th:nth-child(2) { width: 27%; }
+.harness-dimensions td { overflow-wrap: anywhere; }
+.harness-dimensions ul { margin: 0; padding-left: 1.1em; }
+@media screen and (max-width: 768px) {
+  .harness-dimensions, .harness-dimensions tbody, .harness-dimensions tr,
+  .harness-dimensions th, .harness-dimensions td { display: block; width: 100%; min-width: 0; }
+  .harness-dimensions thead { display: none; }
+  .harness-dimensions tr { margin-bottom: 1.5rem; border-bottom: 1px solid #d4d8e3; }
+  .harness-dimensions th:first-child { width: 100%; }
+  .harness-dimensions td::before { content: attr(data-label); display: block; font-weight: 700; margin-bottom: .4rem; }
+}

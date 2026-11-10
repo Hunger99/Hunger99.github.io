@@ -2,14 +2,14 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="基于公开资料构造 FinSearchComp 新题，结合独立审查、两阶段 SFT 与 DAPO 的 4B 金融智能体研究">
+  <meta name="description" content="基于DocFinQA、投研报告与Python数据分析任务的4B金融智能体研究">
   <meta property="og:title" content="Post-Training a 4B Financial LLM Agent"/>
-  <meta property="og:description" content="基于公开资料构造 FinSearchComp 新题，结合独立审查、两阶段 SFT 与 DAPO 的 4B 金融智能体研究"/>
+  <meta property="og:description" content="基于DocFinQA、投研报告与Python数据分析任务的4B金融智能体研究"/>
   <meta property="og:url" content="https://hunger99.github.io/projects/capital-one/index-zh.html"/>
   <meta name="twitter:title" content="Post-Training a 4B Financial LLM Agent">
-  <meta name="twitter:description" content="基于公开资料构造 FinSearchComp 新题，结合独立审查、两阶段 SFT 与 DAPO 的 4B 金融智能体研究">
+  <meta name="twitter:description" content="基于DocFinQA、投研报告与Python数据分析任务的4B金融智能体研究">
   <meta name="twitter:card" content="summary">
-  <meta name="keywords" content="financial LLM agent, post-training, agent SFT, DAPO, tool use, FinSearchComp, Qwen3.5">
+  <meta name="keywords" content="financial LLM agent, post-training, agent SFT, DAPO, tool use, DocFinQA, Qwen3.5">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>金融 LLM Agent：SFT 与 DAPO</title>
@@ -27,7 +27,7 @@
 </script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
 </script>
-  <link rel="stylesheet" href="static/css/main.css?v=20261109-pipeline-harness">
+  <link rel="stylesheet" href="static/css/main.css?v=20261110-four-dimensions">
 </head>
 <body>
 
@@ -80,7 +80,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">摘要</h2>
 <div class="content has-text-justified">
-<p>本项目使用 DocFinQA、FinSearchComp、IFEval、FinDeepResearch 和合并的561题 DS-1000 Python 数据分析子集，比较 Qwen3.5-4B-Base 的九个训练设置。监督微调（SFT）学习经过验证的示范，DAPO 从工具辅助试答与任务专属奖励中学习。FinSearchComp 的扩充先获取真实公开金融资料，再由程序或 Claude 基于证据出新题；两路共用独立计算、工具执行、盲解与对抗审查。所有设置保留相同原题队列及评测协议，以比较在 SFT、DAPO 或两个阶段增加 FinSearchComp 题目的作用。DS-1000 子集已下载，同源题去重、执行验收和训练切分尚未完成。新一轮训练实验尚未开始。</p>
+<p>本项目使用DocFinQA、IFEval、FinDeepResearch和合并的561题DS-1000 Python数据分析子集，比较Qwen3.5-4B-Base的九个训练设置。监督微调（SFT）学习经过验证的示范，DAPO从工具辅助试答与任务专属奖励中学习。DocFinQA负责金融长文档问答，FinDeepResearch负责投研报告，DS-1000子集覆盖基础数据处理、绘图与机器学习库调用。DS-1000的同源题去重、执行验收和训练切分尚未完成；新一轮训练尚未开始。</p>
 </div>
 </div>
 </section>
@@ -97,14 +97,6 @@
 
 <td data-label="任务形式（Task format）">多轮检索 → 最终答案</td>
 <td data-label="问题示例（简写）" class="sample-cell">根据年报，公司全部设施中租赁设施占多少百分比？<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA训练题</a></span></td>
-</tr>
-<tr>
-<td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
-<td data-label="定义">模型定位市场与公司信息，完成时效数据查询、历史事实检索及多步调查；本项目使用有离线来源支持的子集。</td>
-<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 表示该题全部要求是否通过。</td>
-
-<td data-label="任务形式（Task format）">多轮检索 → 最终答案</td>
-<td data-label="问题示例（简写）" class="sample-cell">2023年3月，美联储将准备金余额利率上调至多少？以百分比作答，保留一位小数。<span class="sample-source"><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">Global T2 · 题号503</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
@@ -154,7 +146,7 @@
 <li><b>Base model:</b> Qwen3.5-4B-Base。S0、S1 分别从相同权重独立开始；配对 DAPO 实验使用相同的起始检查点。</li>
 <li><b>Teacher Model:</b> Qwen3.8-27B 用于采集 SFT 示范轨迹。</li>
 <li id="original-pools"><b>原题与评测:</b> 执行训练的设置共用相同原题身份；九组共用同一份冻结的验证集和测试集，以及相同的工具条件和评分器版本。仅使用验证集选择检查点。</li>
-<li id="synthetic-pools"><b>新增数据:</b> 所有 S1 后续设置共用同一份 FinSearchComp SFT 新增题；所有 R1 设置共用另一份固定的 DAPO 新增题，不为不同候选重新生成。</li>
+<li id="synthetic-pools"><b>新增数据:</b> 所有 S1 后续设置共用同一份 SFT 新增题；所有 R1 设置共用另一份固定的 DAPO 新增题，不为不同候选重新生成。新增题池尚未冻结。</li>
 </ul></div>
 </div>
 </section>
@@ -164,268 +156,30 @@
 <p class="has-text-centered">点击下面的环节查看它做什么。</p>
 <div class="pipeline" id="co-pipeline" data-pipeline>
 <div class="pipeline-steps" role="tablist" aria-label="方法管线">
-<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true">
-<span class="pipeline-step-num">1</span>来源、任务约束与划分</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-acquisition" aria-controls="co-panel-acquisition"><span class="pipeline-step-num">2</span>资料获取与爬取</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2">
-<span class="pipeline-step-num">3</span>FinSearchComp 新题构造</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3">
-<span class="pipeline-step-num">4</span>共同题目审查</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4">
-<span class="pipeline-step-num">5</span>难度校准与示范</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5">
-<span class="pipeline-step-num">6</span>多轮监督微调（下一步）</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-6" aria-controls="co-panel-6">
-<span class="pipeline-step-num">7</span>DAPO 强化学习</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step is-planned" type="button" role="tab" id="co-tab-7" aria-controls="co-panel-7">
-<span class="pipeline-step-num">8</span>共同评测</button>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true"><span class="pipeline-step-num">1</span>数据获取与预处理</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>数据合成</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>SFTV</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>评测</button>
 </div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0">
-<nav class="flow" aria-label="来源、任务约束与划分">
-<a class="flow-node" href="#canon-report">规范报告</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#native-contract">任务约束</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#source-split">来源隔离</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#pool-freeze">冻结题目池</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-1-zh.svg" alt="原始文件 → 一份规范报告 → 来源含义与任务合同 → 隔离来源用途 → 冻结题目池；来源检查失败的任务保持隔离。" loading="lazy"></div><figcaption>原始文件 → 一份规范报告 → 来源含义与任务合同 → 隔离来源用途 → 冻结题目池；来源检查失败的任务保持隔离。</figcaption></figure>
-<div class="content">
-<h4 class="pipeline-group" id="canon-report">每份财报只引用一个原始版本</h4>
-<ul>
-<li>
-<b>Canonicalization:</b> 入口按注册主体与财年结束日期归并 DocFinQA 报告，依据来源质量选择一份原文，并保留其他版本及来源哈希，避免等价报告被当成不同材料。</li>
-<li>
-<b>Evidence retention:</b> 选择后的检查隔离丢失必要运算依据的问题；检查不改写报告，也不依据模型成绩选择报告版本。</li>
-<li><b>Original filing semantics:</b> 金融生成前先将指标含义、合并报告上下文、期间、单位和正负号绑定到原始申报；负债减项须拒收或隔离，不能取绝对值修成余额，来源通过也不等于题目合格。</li>
-</ul>
-<h4 class="pipeline-group" id="native-contract">共同外层接口保留各任务的原生输出</h4>
-<ul>
-<li>
-<b>Task adapter:</b> 计划中的五数据集接口将来源身份与输入文件、隔离的工具轨迹、提交产物及各数据集评分结果绑定起来；共用这份外层记录，让同一运行器管理不同任务，同时保留报告写作和 Python 编程的任务形式。</li>
-<li>
-<b>Qualification:</b> 新适配器须先通过证据访问、原生评分、产物格式与评分端隔离检查，再准入任务；<a href="#co-data">数据集表</a>定义任务输出和指标，<a href="#original-pools">共同数据控制</a>使各候选使用一致的原题及评测条件。</li>
-</ul>
-<h4 class="pipeline-group" id="source-split">先核对来源身份，再抽取题目</h4>
-<ul>
-<li>
-<b>Decontamination:</b> 划分器跨集合核对报告身份、规范化题面、题目派生关系及金融答案支持期间；身份未识别的报告留在合格题目池之外。</li>
-<li>
-<b>Stratification:</b> DocFinQA 保留官方划分归属，按数值／布尔类别比例各保留一半；FinSearchComp 与 IFEval 使用确定性的类别分层项目划分，以保留类别覆盖及足够的测试题。</li>
-</ul>
-<h4 class="pipeline-group" id="pool-freeze">一个版本服务所有模型设置</h4>
-<ul>
-<li>
-<b>Immutable inputs:</b> 现有原题 ID、原始文本、规范报告与评分器绑定到冻结版本；新增队列及适配器通过资格核验后才并入共同版本，<a href="#baselines">候选设置</a>规定共同对照条件。</li>
-<li>
-<b>Reserved evaluation:</b> 合成验证、测试题使用隔离的答案支持来源并独立审查；不能用重复题或未审查候选填补验收配额。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-acquisition" aria-labelledby="co-tab-acquisition" tabindex="0">
-<nav class="flow" aria-label="资料获取与爬取"><a class="flow-node" href="#acquire-sources">公开来源</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#acquire-cache">原始证据缓存</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#acquire-checks">合格来源库</a></nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/source-acquisition-zh.svg" alt="公开申报与宏观观测先进入保留原文的来源缓存，再核对来源身份、事实含义及受保护评测来源；通过后，来源库才向两条出题支线提供事实。" loading="lazy"></div><figcaption>公开申报与宏观观测先进入保留原文的来源缓存，再核对来源身份、事实含义及受保护评测来源；通过后，来源库才向两条出题支线提供事实。</figcaption></figure>
-<div class="content"><p class="pipeline-note">FinSearchComp 扩充先取得真实金融资料，原文与观测值作为证据交给下一阶段出新题。当前获取路径覆盖已有 SEC／FRED 来源，新增网站须完成相应的接入核验。</p>
-<h4 class="pipeline-group" id="acquire-sources">公开材料提供可核验的事实</h4>
-<ul>
-<li><b>Source selection:</b> 来源库按题型及资料用途选择公司披露与官方经济观测；已有输入包括 <a href="https://www.sec.gov/search-filings/edgar-application-programming-interfaces" target="_blank" rel="noopener">SEC 申报</a>和 <a href="https://fred.stlouisfed.org/docs/api/fred/" target="_blank" rel="noopener">FRED 序列</a>。新增提供方须先核实来源身份、访问条件和证据取得路径，再用于出题。</li>
-<li><b>Original documents:</b> 获取过程定位原始申报或序列响应，保留原材料及来源记录；公司报告、披露转载与派生题保留关联，避免重复材料增加独立题数。</li>
-</ul>
-<h4 class="pipeline-group" id="acquire-cache">先保存原始证据，再规范事实字段</h4>
-<ul>
-<li><b>Source cache:</b> 下载材料与复用快照保留来源身份和版本；规范化事实关联原始披露或序列，并记录主体、报告期间及单位，让审查者核对计算依据，而非信任生成文字。</li>
-<li><b>Time convention:</b> 每题使用明确的冻结快照；今天取得或修订的观测值，不自动代表过去决策时点已经知道的信息。历史可得信息题与实时行情题须另行核实日期、数据版本及提供方权限。</li>
-</ul>
-<h4 class="pipeline-group" id="acquire-checks">来源检查保护共同评测队列</h4>
-<ul>
-<li><b>Evidence checks:</b> 生成前核对原始申报中的指标含义、合并报告上下文、期间、单位和正负号；支持缺失或有歧义时保留待审，不要求出题模型自行补造事实。</li>
-<li><b>Source isolation:</b> 来源库排除受保护的评测支持材料，将合格事实绑定到声明的 SFT、DAPO、验证或测试用途；两条出题支线共用这份已核对来源库。原始基准定义保留在数据集表中。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0">
-<nav class="flow" aria-label="两条生成支线">
-<a class="flow-node" href="#gen-program">程序支线</a> <a class="flow-node" href="#gen-claude">Claude 支线</a> <a class="flow-node" href="#gen-compile">编译与合并</a> <a class="flow-node" href="#gen-native">逐次 API 计量</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-2-zh.svg" alt="上方 CPU 程序支线与下方 Claude 出题支线并行；下方先绑定提示并按保守配置的输入上界预留费用，再经原生代理调用并结算实际用量。两路汇入同一编译器和语义索引，再进入共同审查。" loading="lazy"></div><figcaption>上方 CPU 程序支线与下方 Claude 出题支线并行；下方先绑定提示并按保守配置的输入上界预留费用，再经原生代理调用并结算实际用量。两路汇入同一编译器和语义索引，再进入共同审查。</figcaption></figure>
-<div class="content">
-<p class="pipeline-note">本阶段从已核对的公开资料库构造 FinSearchComp 新题。程序扩充现有合同支持的薄弱题族，Claude 在来源和任务合同内探索新的组合；两路都属于基于真实材料自行出题，之后进入相同审查关卡。导入已有问答是另一种数据接入操作，不属于本阶段的生成步骤。</p>
-<h4 class="pipeline-group" id="gen-program">程序扩展可复现的薄弱题型</h4>
-<ul>
-<li><b>Financial diagnostics:</b> 生成器先区分金额、公司、时期、单位错误与格式、来源标识错误，再决定强化的能力，避免将格式失败当成金融推理难题。</li>
-<li><b>Programmatic generation:</b> 模板在固定来源内改变事实与依赖关系，扩展可重复的薄弱题型。强化金融编译器先筛选完整候选集合，唯一定位合格公司，再据选择结果决定比较公司；固定名字不能泄露答案。</li>
-</ul>
-<h4 class="pipeline-group" id="gen-claude">Claude 基于固定来源提出支持的任务</h4>
-<ul>
-<li><b>Source-bound generation:</b> Opus 5.5 以 Extra High 强度从已审来源库选择结构化计划；宿主编译器生成学习者任务并计算参考答案，作者自由叙述与私有答案不成为权威题面。</li>
-<li><b>Coverage:</b> 当前金融合同支持 SEC／FRED 检索、比较与依赖计算；新增任务结构须有可取得的来源证据和可执行验证器，超出支持合同的提案保留隔离。</li>
-</ul>
-<h4 class="pipeline-group" id="gen-compile">两条支线都产生绑定来源的新候选身份</h4>
-<ul>
-<li><b>Canonical task:</b> 最新强化金融合同统一节点及输出标签，并从类型字段渲染筛选、排序、比较和单位规则；实质改题产生新任务身份，旧审查随之失效。</li>
-<li><b>Candidate inventory:</b> 同一份不可变语义索引跨两条支线归并支持的等价任务，并固定其 SFT、DAPO、验证或测试用途。重复别名保留历史，但在受守卫入口不能重复占配额或重复付费审查。</li>
-</ul>
-<h4 class="pipeline-group" id="gen-native">计量在每次原生请求前后执行</h4>
-<ul>
-<li><b>Request sequence:</b> 宿主绑定完整提示，在共享锁内预留所有在途请求的最坏费用，再经 CLIProxyAPI 发出独立原生 Messages 对话。出题按保守配置的输入上界预留，盲解与对抗审查使用经过校准的原生输入 token 计数；随后保存原始响应，并将实际 token 用量结算到追加式账本。出题用 Extra High，盲解和对抗审查用 Medium。</li>
-<li><b>Failure handling:</b> 失败和重试都消耗同一授权，缺失用量、输入改变或超出已绑定上界即停止后续调用。代理转发明确的自定义提示，OAuth 身份元数据与计费字段仍会保留，不宣称是零附加输入的直接 API。</li>
-<li><b>Execution scope:</b> 独立候选通过来源、规范题索引和额度检查后才可并发。改动后的任务合同须有对应的新审查，前版验收不直接授予正式训练资格。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0">
-<nav class="flow" aria-label="共同题目审查">
-<a class="flow-node" href="#review-gold">来源与参考答案</a> <a class="flow-node" href="#review-tools">真实工具执行</a> <a class="flow-node" href="#review-cloud">盲解与对抗审查</a> <a class="flow-node" href="#review-admission">题目准入</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-3-zh.svg" alt="每题先做 CPU 检查，再付费盲解；实际执行盲解程序后才做对抗审查，审查者的不同程序也须执行。每次模型调用独立预留、结算；任一关卡未决则隔离。" loading="lazy"></div><figcaption>每题先做 CPU 检查，再付费盲解；实际执行盲解程序后才做对抗审查，审查者的不同程序也须执行。每次模型调用独立预留、结算；任一关卡未决则隔离。</figcaption></figure>
-<div class="content">
-<h4 class="pipeline-group" id="review-gold">来源含义与独立答案必须一致</h4>
-<ul>
-<li><b>Financial reference:</b> 独立算术实现核对答案、单位、来源期间与舍入规则；候选筛选须完整、有效且唯一，并列、无依据事实、依赖遗漏和零分母均拒收。</li>
-<li><b>Semantic deduplication:</b> 有守卫的 typed 审查入口在付费审查前只接收索引中的规范任务；索引保留支持的经济含义与来源期间，忽略分支或修饰标签，但不证明任意文字和代数表达都已去重。</li>
-</ul>
-<h4 class="pipeline-group" id="review-tools">宿主实际执行来源读取与产物提交</h4>
-<ul>
-<li><b>Sandbox replay:</b> 金融解法查询固定只读证据快照，并须与独立计算的参考答案一致；实际来源读取、程序与返回结果均保留，模型文字不能单独证明已执行。</li>
-<li><b>Retrieval evidence:</b> 宿主记录绑定真实查询、返回、代码与快照身份；真实“模型→检索→模型”检查已确认返回证据进入后续模型请求，干预实验另检查保留模型代码是否使用证据。这不能证明模型每个内部推理步骤，也不替代完整同模型允许／禁止工具配对实验。</li>
-
-</ul>
-<h4 class="pipeline-group" id="review-cloud">独立模型角色还须通过可执行反查</h4>
-<ul>
-<li><b>Blind solve:</b> 独立 Medium 对话只接收学习者任务及工具合同，不接收私有答案；宿主实际执行其程序，并对执行结果评分。</li>
-<li><b>Adversarial review:</b> 另一个独立 Medium 对话查找歧义、缺证据、单位、答案泄露与评分漏洞，其不同解法也须实际执行正确，不能仅凭一段看似合理的审查文字放行。</li>
-<li><b>Evidence adjudication:</b> 仅凭记忆提出的疑点，只有获得绑定到同题、同响应、同执行的独立来源证明后才可重新裁决；原始拒绝或未决记录保留，实质疑点未解决时继续隔离。</li>
-</ul>
-<h4 class="pipeline-group" id="review-admission">样例通过不等于训练数据集已发布</h4>
-<ul>
-<li><b>Version-bound checks:</b> 每道准入的 FinSearchComp 题绑定确切的任务合同、来源事实、模型响应与已执行解法；题目或来源改变后须有匹配的新检查。题目质量、难度、示范及发布分别核验。</li>
-<li><b>Production boundary:</b> 语义索引守卫目前覆盖新的 typed 审查路径；旧 continuous、batch、graph、cycle 路径在正式使用前须接入同一守卫或统一路由。题目质量、难度、完整示范与最终数据发布分别核验。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0">
-<nav class="flow" aria-label="难度校准与示范">
-<a class="flow-node" href="#collect-harness">保存实际试答</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-difficulty">难度测量</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#collect-demo">示范准入</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-4-zh.svg" alt="同题教师与学生试答可独立进行，真实结果将 SFT 候选送往完整且有依据的示范审查及打包；DAPO 任务另行采集试答，隔离题停止。" loading="lazy"></div><figcaption>同题教师与学生试答可独立进行，真实结果将 SFT 候选送往完整且有依据的示范审查及打包；DAPO 任务另行采集试答，隔离题停止。</figcaption></figure>
-<div class="content">
-<h4 class="pipeline-group" id="collect-harness">框架保存模型行为与真实工具返回</h4>
-<ul>
-<li><b>Recorded execution:</b> 框架保留模型消息、工具调用、真实返回与完成状态；金融试答使用只读证据工具和受限 Python，<a href="#harness">Harness 部分</a>说明上下文及纠错行为。</li>
-<li><b>IFEval:</b> 固定严格指令检查器仅评分其最终答案，金融证据要求不应用于纯指令回答。</li>
-</ul>
-<h4 class="pipeline-group" id="collect-difficulty">本地教师与学生试答决定训练去向</h4>
-<ul>
-<li><b>Difficulty measurement:</b> 教师与学生多次试答仅使用训练或校准题；较大的教师提供候选示范，学生成功与失败模式区分不稳定能力与需要诊断或补充 SFT 的任务。</li>
-<li><b>DAPO signal:</b> 同题回答组需要奖励差异才能区分较好的尝试；全对或全错不自动产生有效 DAPO 信号，封存测试结果不用于选择训练难度。</li>
-</ul>
-<h4 class="pipeline-group" id="collect-demo">完整且有依据的示范另行准入</h4>
-<ul>
-<li><b>Trace qualification:</b> 准入核对来源凭据、成功证据读取、工具格式、事实依据、单位与任务完成，再独立审查轨迹；旧轨迹不能在缺少匹配证明时换绑到其他来源或改写后的任务。</li>
-
-
-<li><b>Training release:</b> 合格题、合格示范和绑定分词器的打包数据分别产出；只有完整且经过审查的轨迹才进入精确 token、掩码和共同版本检查。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
-<nav class="flow" aria-label="多轮监督微调">
-<a class="flow-node" href="#sft-models">独立起点</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-given">给齐材料的推理</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-retrieve">检索与推理</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#sft-loss">掩码与预算</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-5-zh.svg" alt="S0、S1 分别从相同 Base 独立开始；每个条件内部先给齐材料推理，再检索推理，在同一次训练中连续执行并共用总预算。正式训练尚未开始。" loading="lazy"></div><figcaption>S0、S1 分别从相同 Base 独立开始；每个条件内部先给齐材料推理，再检索推理，在同一次训练中连续执行并共用总预算。正式训练尚未开始。</figcaption></figure>
-<div class="content">
-<span class="status-tag">尚未开始</span>
-<p>两阶段实现已通过 CPU 检查；完整模型训练与能力效果尚未实测。</p>
-<h4 class="pipeline-group" id="sft-models">两个监督检查点服务对照</h4>
-<ul>
-<li>
-<b>Supervised fine-tuning:</b> S0 将使用共同原题池的合格示范，S1 将加入固定共用的 SFT 合成池；二者将各自从相同 Base 独立开始，执行相同两阶段并共用原题与材料视图，<a href="#synthetic-pools">新增数据控制</a>固定所有 S1 后续设置共用的 SFT 新增题池。</li>
-</ul>
-<h4 class="pipeline-group" id="sft-given">第一阶段给齐推理必需的材料</h4>
-<ul>
-<li>
-<b>Given-evidence reasoning:</b> 第一阶段将给齐完成题目所需的事实，并允许 Python 计算，让模型学习金融推理、单位换算、条件计算、自检和指令遵循。</li>
-<li>
-<b>Phase assignment:</b> 阶段依据每题还缺什么必要信息来确定，不按数据集名称或是否使用 Python 划分；未核验的材料视图保持待审。</li>
-</ul>
-<h4 class="pipeline-group" id="sft-retrieve">第二阶段先检索缺失材料，再完成推理</h4>
-<ul>
-<li>
-<b>Retrieval and reasoning:</b> 第二阶段将使用题面缺少必要信息的任务，让模型检索获准来源，对齐实体、时期与单位后再推理作答。</li>
-<li>
-<b>State continuity:</b> 同一训练作业将跨阶段保留优化器（参数更新状态）与学习率计划，并连同模型保存完整检查点；每个模型的第二阶段将承接自己的第一阶段状态。</li>
-</ul>
-<h4 class="pipeline-group" id="sft-loss">仅核验后的助手行为参与损失</h4>
-<ul>
-<li>
-<b>Loss masking:</b> 已准入的助手推理、工具调用与最终答案参与监督；system、user 文本、工具返回和无效助手内容仅作上下文。完整轨迹保留原有掩码与分词器绑定，过长或无法精确调度时待审，不截断凑量。</li>
-<li>
-<b>Shared budget:</b> 每个条件全程共用 6,553,600 个有效监督 token 和 100 次更新，初始每阶段各 3,276,800 token／50 次更新。token 数只核对监督暴露量，沿用现有损失求平均方式；初始阶段比例尚未经效果验证。</li>
-<li>
-<b>Launch gates:</b> 新一轮 SFT 尚未开始；证据、方法审查、必要的实际配对探测、完整示范、固定合成池和精确预算检查全部通过后，共同训练入口才能放行。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-6" aria-labelledby="co-tab-6" tabindex="0">
-<nav class="flow" aria-label="DAPO 强化学习">
-<a class="flow-node" href="#dapo-models">六个继续训练作业</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-length">生成长度</a> <span class="flow-arrow" aria-hidden="true">&rarr;</span> <a class="flow-node" href="#dapo-mask">未完成回合</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-6-zh.svg" alt="每个起始检查点分别接原题和加合成的 DAPO；奖励长度只统计模型生成内容，未完成回合整条策略损失掩码归零。实际分布式训练仍待验证。" loading="lazy"></div><figcaption>每个起始检查点分别接原题和加合成的 DAPO；奖励长度只统计模型生成内容，未完成回合整条策略损失掩码归零。实际分布式训练仍待验证。</figcaption></figure>
-<div class="content">
-<span class="status-tag">尚未开始</span>
-<h4 class="pipeline-group" id="dapo-models">六个强化学习作业补全九组设置</h4>
-<ul>
-<li>
-<b>Matched continuations:</b> 两个 SFT 检查点和原始 Base 模型分别接受原题或加合成的 DAPO 继续训练，共用题目池的关系在 Candidates and Settings 中标明。</li>
-<li>
-<b>Dynamic filtering:</b> DAPO 过滤奖励没有差别的回答组；记录过滤后真正进入更新的任务、更新次数、生成 token 和工具计算曝光量，计划中的报告及机器学习评分到奖励的适配须先通过资格核验。</li>
-</ul>
-<h4 class="pipeline-group" id="dapo-length">软长度惩罚只统计模型生成内容</h4>
-<ul>
-<li>
-<b>Generated-token penalty:</b> 项目奖励管理器从软长度惩罚中排除工具返回、插入上下文与填充；硬响应预算仍包含全部上下文，保留明确的资源上限。</li>
-</ul>
-<h4 class="pipeline-group" id="dapo-mask">未完成试答不参与策略损失</h4>
-<ul>
-<li>
-<b>Whole-rollout masking:</b> 未完成的截断或中止回合整条策略掩码归零；完成但答错的回合仍可训练，全掩码小批次保持有限损失与梯度。</li>
-<li>
-<b>Launch gates:</b> 两项修复已实现并通过 CPU 检查，新一轮六个强化学习作业尚未开始；共同数据、检查点与可执行预算控制就绪后才能启动。</li>
-</ul>
-</div>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
-<div class="content">
-<h4 class="pipeline-group" id="eval-original">SFT 加入新增题的分数差</h4>
-<p>\[ \Delta_{\mathrm{SFT},d,m}=S_{d,m}(S1)-S_{d,m}(S0) \]</p>
-<h4 class="pipeline-group" id="eval-synthetic">DAPO 相对起始检查点的分数差</h4>
-<p>\[ \Delta_{\mathrm{DAPO},d,m}^{(c,a)}=S_{d,m}(cR_a)-S_{d,m}(c) \]</p>
-<h4 class="pipeline-group" id="eval-comparison">DAPO 加入新增题的分数差</h4>
-<p>\[ \Delta_{\mathrm{additional},d,m}^{(c)}=S_{d,m}(cR_1)-S_{d,m}(cR_0) \]</p>
-<p>\(S_{d,m}(k)\) 为候选 \(k\) 在数据集 \(d\) 的同一冻结评测队列上，按<a href="#co-data">数据集表</a>中指标 \(m\) 得到的分数；\(k\) 为 <a href="#baselines">Candidates and Settings</a> 中九个代号之一；\(c\in\{\mathrm{Base},S0,S1\}\)，\(a\in\{0,1\}\)；\(cR_0\)、\(cR_1\) 分别为从 \(c\) 开始的仅原题与加入新增题的 DAPO 设置。\(\Delta_{\mathrm{SFT},d,m}\)、\(\Delta_{\mathrm{DAPO},d,m}^{(c,a)}\)、\(\Delta_{\mathrm{additional},d,m}^{(c)}\) 分别为 SFT 加题、DAPO 相对起点、DAPO 加题的分数差。</p>
-</div>
-</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0"></div>
 </div>
 </div>
 </section>
 <section class="section hero is-light" id="harness">
-<div class="container is-max-widescreen">
-<h2 class="title is-3 has-text-centered">Harness</h2>
-<p class="data-note">Harness 是围绕模型运行的一层程序：管理对话、执行声明的工具，把真实结果和纠错反馈交回模型。统一的环境接口按任务类型选择工具与评分规则。H1 是其中启用清单、约束检查、结果验证与有限纠错的配置；试答选用 H1 时，才启用这些附加控制。</p>
-<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-zh.svg" alt="模型循环追加真实工具结果，接收有限次数的验证反馈；答案由独立评分器检查。合成数据的 API 角色使用单独计量的 Messages 路由。" width="1000" height="650" loading="lazy"></div><figcaption>工具执行和评分由宿主程序负责；模型声称已检索，不能代替实际执行记录。</figcaption></figure>
-<div class="content">
-<h3 class="title is-5" id="harness-context">上下文保留模型实际看到的内容</h3>
-<p>每次尝试从环境提示词和任务开始，随后只追加消息，不改写先前轮次；服务模板支持时，Qwen 保留先前的推理。新工具结果在产生时限制长度，默认上限为 8,000 字符，超出后给出截断提示；检索、文档读取和长列表通过分页或限定范围返回。运行配置分别限制任务轮次、清单更新、纠错轮次和单次回复长度；上下文溢出会结束尝试。</p>
-<h3 class="title is-5" id="harness-tools">每类任务只开放对应环境的工具</h3>
-<div class="table-container"><table class="table setting-table"><thead><tr><th>任务环境</th><th>模型可用工具</th><th>执行范围</th></tr></thead><tbody>
-<tr><td>DocFinQA</td><td><code>search_document</code>、<code>read_chunk</code>、<code>calculator</code>、<code>finish</code></td><td>在指定报告中用 BM25 检索段落，再读取文本并计算。</td></tr>
-<tr><td>FinSearchComp／金融检索</td><td><code>search_securities</code>、<code>get_prices</code>、<code>get_corporate_actions</code>、<code>trading_day</code>、<code>count_trading_days</code>、<code>search_fred</code>、<code>get_fred</code>、<code>search_financial_tags</code>、<code>get_financials</code>、<code>run_python</code>、<code>finish</code></td><td>固定只读快照提供行情、FRED 和 SEC 数据。显式启用的 v2 Python 适配器仅把运行环境和声明的数据挂载到隔离进程，禁用网络并限制时间与内存；检索证明适配器在解题进程之外记录来源查询。</td></tr>
-<tr><td>IFEval</td><td><code>finish</code></td><td>严格指令检查器只评提交的回答，不套用金融证据要求。</td></tr>
-<tr><td>FinDeepResearch 证据试运行</td><td><code>list_documents</code>、<code>search_documents</code>、<code>read_document</code>、<code>run_python</code>、<code>write_report_part</code>、<code>write_sentiment_labels</code>、<code>sentiment_windows</code>、<code>finish</code>；分阶段工作上下文另有 <code>read_dependency</code></td><td>仅允许访问白名单证据；所列工具属于现有试运行环境，工具执行不代表完整基准任务或训练示范已合格。</td></tr>
+<div class="container is-max-widescreen"><h2 class="title is-3 has-text-centered">Harness</h2>
+<div class="table-container"><table class="table setting-table harness-dimensions"><thead><tr><th scope="col">Harness 要素</th><th scope="col">核心内容</th><th scope="col">核心内容在我们这里如何实现</th></tr></thead><tbody>
+<tr><th scope="row">上下文管理</th><td class="harness-core" data-label="核心内容">提示工程、Agent 状态栏、上下文压缩、Agent Skills</td><td data-label="核心内容在我们这里如何实现"><ul><li>提示工程：按任务环境注入system、题面、输出要求及允许工具。</li><li>Agent 状态栏：H1（启用清单、约束检查、结果核验与有限纠错的运行配置）用set_checklist保存清单，并在工具结果后以文本回显完成标记。</li><li>上下文压缩：-（未实现历史摘要或压缩；消息只追加，新工具结果按长度截取）。</li><li>Agent Skills：-（模型运行时未实现技能包加载与调用）。</li></ul></td></tr>
+<tr><th scope="row">上下文管理（跨会话）</th><td class="harness-core" data-label="核心内容">用户记忆、RAG、结构化索引、智能体化 RAG</td><td data-label="核心内容在我们这里如何实现"><ul><li>用户记忆：-（每次尝试独立初始化，未建立跨会话用户记忆库）。</li><li>RAG：DocFinQA检索并读取指定报告证据；仅在本任务内使用，不存储用户记忆。</li><li>结构化索引：报告按编号分块、建立BM25索引，支持chunk_id及邻近段落读取；无跨会话个人知识索引。</li><li>智能体化 RAG：模型可在任务内多次检索、读取和计算；跨会话知识更新为-（未实现记忆写入与更新协议）。</li></ul></td></tr>
+<tr><th scope="row">工具接口与约束</th><td class="harness-core" data-label="核心内容">工具分类、权限控制、MCP 标准、主动工具发现</td><td data-label="核心内容在我们这里如何实现"><ul><li>工具分类：按任务环境注册工具白名单和JSON参数格式，仅分派已知工具。</li><li>权限控制：H1在声明的写操作前检查参数和规则；已有v2 Python适配器用bubblewrap隔离、只读挂载、断网及时间／内存限制，DS-1000尚未接入。</li><li>MCP 标准：-（当前直接注册函数工具，未接入MCP协议）。</li><li>主动工具发现：-（工具列表在尝试开始时固定，未实现动态搜索或加载）。</li></ul></td></tr>
+<tr><th scope="row">验证与纠正</th><td class="harness-core" data-label="核心内容">Coding Agent 的 Harness、测试驱动、代码化规则</td><td data-label="核心内容在我们这里如何实现"><ul><li>Coding Agent 的 Harness：模型→工具→真实返回→模型的循环及轨迹保存已实现；DS-1000代码补全适配尚未完成。</li><li>测试驱动：-（已有离线测试与评分检查，未实现运行时先写测试、再驱动编码的流程）。</li><li>代码化规则：H1核对清单、环境要求与结果依据；工具错误附有效调用示例，重复调用给出提示，拒绝结束后仅允许有限纠错。</li></ul></td></tr>
 </tbody></table></div>
-<p>H1 另外开放 <code>set_checklist</code>，并在工具结果之后重述完成进度。声明为耗时操作的工具在线程中执行，避免某条尝试的 Python 运算阻塞其他尝试。</p>
-<h3 class="title is-5" id="harness-checks">纠错反馈帮助修改，独立准入检查保存的结果</h3>
-<p>宿主把工具参数解析为 JSON，只分派已知工具。H1 在执行声明的写操作之前检查约束；H1 启用纠错时，已知工具执行报错附有效调用示例；重复相同调用时提示更换方法。收到 <code>finish</code> 后，H1 检查清单及该环境的证据或输出要求，并在有限次数内返回具体问题供模型纠正；用尽纠错次数后仍可能结束，因此结束状态本身不代表答对。</p>
-<p>独立评分器检查保存的答案或提交文件。金融数字匹配只检查答案是否有结果支持，不能单独证明推理正确；实际来源查询记录和执行回放提供额外证据。题目合格、完整示范合格和训练准入分别检查。</p>
-<h3 class="title is-5" id="harness-api">合成数据的角色另走 Messages 路由</h3>
-<p>出题、盲解和对抗审查分别使用独立的新 API 请求，提示词由调用方明确提供。在原生代理请求发出前，客户端检查冻结的题目与来源范围及费用预留；出题按保守配置的输入上界预留，盲解与对抗审查使用经过校准的原生输入 token 计数。返回后把用量和失败尝试记入只追加的账本。盲解角色编写的代码交给宿主实际执行，API 文本请求本身不执行工具；对抗审查读取实际回放证据，不继承先前审查结论。</p>
-<p class="data-note">上述运行控制见<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/02_harness/code/v3/harness/agent.py" target="_blank" rel="noopener">模型循环</a>、<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/01_data-processing/code/synthesis_v2/harness.py" target="_blank" rel="noopener">v2 环境适配器</a>和<a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/scripts/01_data-processing/experiments/run_pre_synthesis_acceptance.py" target="_blank" rel="noopener">有限额度原生 API 验收入口</a>。FinDeepResearch 采集器仍属于试运行路径；DS-1000 已保留原始参考代码与测试代码，尚未接入此 Harness。</p>
-</div></div></section>
+<figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-zh.svg" alt="独立任务可并发；每任务内工具按顺序分派，检索或隔离执行返回真实结果，H1核验与有限纠错后保存，再由独立评分器检查。" width="1200" height="740" loading="lazy"></div></figure>
+</div></section>
 
 <footer class="footer">
   <div class="container">
