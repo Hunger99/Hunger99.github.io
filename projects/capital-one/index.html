@@ -79,7 +79,7 @@
 <div class="container is-max-desktop">
 <h2 class="title is-3 has-text-centered">Abstract</h2>
 <div class="content has-text-justified">
-<p>This project compares nine post-training settings for Qwen3.5-4B-Base across DocFinQA, FinSearchComp, IFEval, FinDeepResearch and an MLE-bench project subset. Supervised fine-tuning (SFT) learns from verified demonstrations; DAPO learns from tool-assisted attempts and task-specific rewards. The FinSearchComp expansion route starts with real public financial materials and constructs new, evidence-backed questions through programmatic and Claude authors. Both branches use independent computation, tool execution, blind solving and adversarial review. All settings share the same original cohorts and evaluation protocol to compare adding FinSearchComp questions at SFT, DAPO or both stages. The FinDeepResearch and MLE-bench entries describe original benchmark tasks; their additional-task construction is outside the scope presented here. The new training experiment has not started.</p>
+<p>This project compares nine post-training settings for Qwen3.5-4B-Base across DocFinQA, FinSearchComp, IFEval, FinDeepResearch and a 561-question DS-1000 Python analysis subset. Supervised fine-tuning (SFT) learns from verified demonstrations; DAPO learns from tool-assisted attempts and task-specific rewards. The FinSearchComp expansion route starts with real public financial materials and constructs new, evidence-backed questions through programmatic and Claude authors. Both branches use independent computation, tool execution, blind solving and adversarial review. All settings share the same original cohorts and evaluation protocol to compare adding FinSearchComp questions at SFT, DAPO or both stages. The DS-1000 subset has been downloaded; source-family deduplication, execution qualification and training splits remain pending. The new training experiment has not started.</p>
 </div>
 </div>
 </section>
@@ -91,16 +91,16 @@
 <tbody>
 <tr>
 <td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
-<td data-label="Definition">The model answers financial questions over full annual reports by retrieving passages and reasoning with numbers.</td>
-<td data-label="Evaluation metric: definition and formula" class="metric-cell">The current project grader measures numeric/boolean answer accuracy. It allows 1% relative numerical error (0.005 absolute error for a zero reference), checks ×100/÷100 percentage equivalents, and requires a matching yes/no answer.<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> is 1 when question i passes the grader and 0 otherwise.</td>
+<td data-label="Definition">The model receives a full annual report, finds the relevant passages and computes a financial answer within that supplied document.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> is 1 when question i passes the project grader and 0 otherwise: numerical tolerance is 1% relative error, or 0.005 absolute error for a zero reference; percentage equivalents ×100/÷100 and matching yes/no answers are checked.</td>
 
 <td data-label="Task format">Multi-turn retrieval → final answer</td>
 <td data-label="Sample question (abridged)" class="sample-cell">Using the annual report, what percentage of the company’s total facilities are leased?<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA train · question</a></span></td>
 </tr>
 <tr>
 <td><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">FinSearchComp</a></td>
-<td data-label="Definition">The model searches market and company information to solve expert-authored financial reasoning questions; this project uses an offline-supported subset.</td>
-<td data-label="Evaluation metric: definition and formula" class="metric-cell">Task success requires every reference item in the final answer to pass its task-specific numeric tolerance, date or text-alias contract.<span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> indicates that all required items pass. This score describes the project’s offline subset.</td>
+<td data-label="Definition">The model locates market and company information to answer time-sensitive lookups, historical questions and multi-step investigations. This project uses an offline-supported subset.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N is the number of questions; correct<sub>i</sub> indicates that all required items pass.</td>
 
 <td data-label="Task format">Multi-turn retrieval → final answer</td>
 <td data-label="Sample question (abridged)" class="sample-cell">In March 2023, to what percentage did the Federal Reserve raise interest on reserve balances? Round to one decimal place.<span class="sample-source"><a href="https://huggingface.co/datasets/ByteSeedXpert/FinSearchComp" target="_blank" rel="noopener">Global T2 · prompt 503</a></span></td>
@@ -108,7 +108,7 @@
 <tr>
 <td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
 <td data-label="Definition">The model follows programmatically checkable requirements for format, length, keywords or language; one prompt may contain several instructions.</td>
-<td data-label="Evaluation metric: definition and formula" class="metric-cell">Prompt-level strict accuracy requires all instructions in a prompt to pass; instruction-level strict accuracy measures the fraction of instructions passed.<span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N is the number of prompts, m<sub>i</sub> the instruction count for prompt i, and c<sub>ij</sub> is 1 when instruction j passes its strict check and 0 otherwise.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell"><span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N is the number of prompts, m<sub>i</sub> the instruction count for prompt i, and c<sub>ij</sub> is 1 when instruction j passes its strict check and 0 otherwise.</td>
 
 <td data-label="Task format">Single-turn answer</td>
 <td data-label="Sample question (abridged)" class="sample-cell">Write a blog post about visiting Japan in fewer than 300 words.<span class="sample-source"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">Prompt 1092</a></span></td>
@@ -116,24 +116,20 @@
 <tr>
 <td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">Official task</a></td>
 <td data-label="Definition">The model retrieves evidence, calculates metrics and writes a full Markdown company report in a prescribed structure. The source benchmark spans eight markets and four languages; its 247 grading items per report are not separate tasks.</td>
-<td data-label="Evaluation metric: definition and formula" class="metric-cell">Weighted content quality measures recognition, calculation, abstraction and interpretation; structure is scored separately.<span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N is the number of reports; s<sub>ij</sub> ∈ [0,1] is native judge attainment from matching, claim coverage or normalized criterion points. The weights w<sub>j</sub> are 1 for recognition/calculation and 2 for abstraction/interpretation, totaling 350; f<sub>i</sub> is the header, subsection and table structure score out of 42. <a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">Scoring protocol</a>; <a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">weights</a>.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell"><span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N is the number of reports; s<sub>ij</sub> ∈ [0,1] is native judge attainment from matching, claim coverage or normalized criterion points. The weights w<sub>j</sub> are 1 for recognition/calculation and 2 for abstraction/interpretation, totaling 350; f<sub>i</sub> is the header, subsection and table structure score out of 42. <a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">Scoring protocol</a>; <a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">weights</a>.</td>
 
 <td data-label="Task format">Multi-turn research → full report</td>
 <td data-label="Sample question (abridged)" class="sample-cell">Using UnitedHealth’s FY2023–2024 annual reports and evidence available on 20 September 2025, complete the supplied Markdown research tables on performance, valuation and risks.<span class="sample-source"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch/blob/d6f80827caf60492fd0aa2769391d5137bc6aa2e/Analytical%20Structure/test004.md" target="_blank" rel="noopener">UnitedHealth · task test004</a></span></td>
 </tr>
 <tr>
-<td><a href="https://github.com/openai/mle-bench/tree/507f92e1138bb6e40dac5c6ee7a6758e6424bf97" target="_blank" rel="noopener">MLE-bench project subset</a><br><a href="https://github.com/openai/mle-bench#dataset" target="_blank" rel="noopener">Kaggle sources</a></td>
-<td data-label="Definition">The model reads competition data, writes and runs machine-learning training code, and submits the required prediction CSV. One complete competition task is not one data row. The project subset awaits qualification.</td>
-<td data-label="Evaluation metric: definition and formula" class="metric-cell">Retain each competition’s native score and direction: AUC measures ranking quality (higher is better), log loss measures probability error, and RMSLE measures regression error on a logarithmic scale (both lower are better).<span class="metric-formula">Native score<sub>i</sub> = G<sub>i</sub>(prediction CSV<sub>i</sub>, hidden labels<sub>i</sub>)</span>G<sub>i</sub> is the competition’s fixed native grader. Also report valid submissions, bronze-medal attainment and above-median performance.<span class="metric-formula">Valid rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub>]</span><span class="metric-formula">Medal rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ⪰<sub>i</sub> b<sub>i</sub>]</span><span class="metric-formula">Above-median rate = (1/N) ∑<sub>i=1</sub><sup>N</sup> 1[valid<sub>i</sub> ∧ s<sub>i</sub> ≻<sub>i</sub> h<sub>i</sub>]</span>N is the number of evaluated tasks; s<sub>i</sub> is the native score, and b<sub>i</sub>/h<sub>i</sub> are that competition’s bronze threshold/median. The comparisons ⪰<sub>i</sub> and ≻<sub>i</sub> follow its metric direction; 1[·] is 1 when the condition holds and 0 otherwise.</td>
-
-<td data-label="Task format">Multi-turn coding → prediction CSV</td>
-<td data-label="Sample question (abridged)" class="sample-cell">Train a model to identify 99 leaf species and submit a CSV containing a predicted probability for each species.<span class="sample-source"><a href="https://github.com/openai/mle-bench/blob/507f92e1138bb6e40dac5c6ee7a6758e6424bf97/mlebench/competitions/leaf-classification/description.md" target="_blank" rel="noopener">Leaf Classification · competition brief</a></span></td>
+<td><a href="https://github.com/xlang-ai/DS-1000" target="_blank" rel="noopener">DS-1000 Python analysis subset</a><br><a href="https://huggingface.co/datasets/xlangai/DS-1000" target="_blank" rel="noopener">Dataset source</a></td>
+<td data-label="Definition">One combined pool of 561 code-completion questions: 291 Pandas, 155 Matplotlib/Seaborn and 115 Scikit-learn tasks on data processing, plotting and machine-learning library use. Downloaded; source-family deduplication, execution qualification and training splits remain pending. Complete modeling and result interpretation have limited coverage.</td>
+<td data-label="Evaluation metric: definition and formula" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> e<sub>i</sub>a<sub>i</sub></span>N is the number of evaluated questions; e<sub>i</sub> is 1 if all execution tests for question i pass and 0 otherwise; a<sub>i</sub> is 1 if its API/code-form constraints pass or are absent, and 0 otherwise.</td>
+<td data-label="Task format">Single-turn code completion</td>
+<td data-label="Sample question (abridged)" class="sample-cell">Format a DataFrame date column as an abbreviated month and year, such as Jan-2018.<span class="sample-source"><a href="https://github.com/xlang-ai/DS-1000/blob/6f8579252c07f7e04624c5ec25569c0f9c1b1f4f/data/ds1000.jsonl.gz" target="_blank" rel="noopener">Pandas · problem 23</a></span></td>
 </tr>
 </tbody>
 </table>
-<p class="data-note">Task format describes the expected solution: a single answer or an agent task with successive model/tool exchanges and a final artifact. It does not count initial user requests. Given-evidence SFT views may supply the facts and omit retrieval; the retrieval phase retains the multi-turn task. Samples are abridged; full requirements remain at the linked sources.</p>
-<p class="data-note">Each dataset retains its native output and grading meaning. Report content quality, ML competition scores and question-answer accuracy are reported separately.</p>
-<p class="data-note">The table defines the original benchmarks. Public financial materials supply evidence for new FinSearchComp questions; they are not additional original benchmark questions. Newly authored questions are recorded separately as derived/synthetic tasks. The acquisition and question-construction steps appear in the Method Pipeline.</p>
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
@@ -200,7 +196,7 @@
 <h4 class="pipeline-group" id="native-contract">A common outer interface preserves each task’s native output</h4>
 <ul>
 <li>
-<b>Task adapter:</b> The planned five-dataset interface will bind source identities and input artifacts, an isolated tool trajectory, a submitted artifact and a dataset-specific grader result. Sharing this outer record lets one runner manage different tasks without converting report writing or ML engineering into question answering.</li>
+<b>Task adapter:</b> The planned five-dataset interface will bind source identities and input artifacts, an isolated tool trajectory, a submitted artifact and a dataset-specific grader result. Sharing this outer record lets one runner manage different tasks without converting report writing or Python coding into question answering.</li>
 <li>
 <b>Qualification:</b> New adapters must pass evidence-access, native-grader, artifact-validation and evaluator-isolation checks before admission. The <a href="#co-data">Data Sets table</a> defines the task outputs and metrics; the <a href="#original-pools">shared-data controls</a> keep original tasks and evaluation conditions consistent across candidates.</li>
 </ul>
@@ -360,7 +356,7 @@
 <li>
 <b>Shared budget:</b> Each condition has one total of 6,553,600 supervised tokens and 100 updates, initially split into 3,276,800 tokens and 50 updates per phase. These tokens count supervised exposure; existing loss averaging is unchanged, and the initial allocation has not been evaluated.</li>
 <li>
-<b>Launch gates:</b> The new SFT stage has not started. Evidence, method review, actual paired probes where required, complete demonstrations, fixed synthetic pools and exact budget checks must pass before the common five-dataset training gate can open.</li>
+<b>Launch gates:</b> The new SFT stage has not started. Evidence, method review, actual paired probes where required, complete demonstrations, fixed synthetic pools and exact budget checks must pass before the common training gate can open.</li>
 </ul>
 </div>
 </div>
@@ -393,32 +389,14 @@
 </div>
 </div>
 <div class="pipeline-panel" role="tabpanel" id="co-panel-7" aria-labelledby="co-tab-7" tabindex="0">
-<nav class="flow" aria-label="Shared evaluation">
-<a class="flow-node" href="#eval-original">Original benchmarks</a> <a class="flow-node" href="#eval-synthetic">Synthetic challenge</a> <a class="flow-node" href="#eval-comparison">Paired comparisons</a>
-</nav>
-<figure class="architecture-diagram"><div class="architecture-scroll" tabindex="0"><img src="static/images/pipeline-7-en.svg" alt="All nine candidates use the same frozen evaluation release. Original benchmarks and synthetic challenges remain separately scored, and only validation can select a checkpoint; final test outcomes do not return to generation." loading="lazy"></div><figcaption>All nine candidates use the same frozen evaluation release. Original benchmarks and synthetic challenges remain separately scored, and only validation can select a checkpoint; final test outcomes do not return to generation.</figcaption></figure>
 <div class="content">
-<span class="status-tag">not started</span>
-<h4 class="pipeline-group" id="eval-original">Every stage is measured on the same original tasks</h4>
-<ul>
-<li>
-<b>Native metrics:</b> Evaluate each dataset with the definitions and formulas in the <a href="#co-data">Data Sets table</a>. Report QA accuracy, strict instruction following, report quality and ML competition performance separately, with each native metric’s direction and evaluation cohort.</li>
-<li>
-<b>Shared protocol:</b> Base, SFT and DAPO outputs use the same task IDs, tool conditions, sampling policy and grader versions. This makes stage-to-stage comparisons possible.</li>
-</ul>
-<h4 class="pipeline-group" id="eval-synthetic">The additional challenge evaluates reviewed FinSearchComp questions</h4>
-<ul>
-<li><b>Separate reporting:</b> Report the reviewed FinSearchComp challenge separately from the original cohort. Additional questions retain their own source support, task requirements and grader; their score does not replace the original benchmark score.</li>
-<li>
-<b>Limits:</b> A larger synthetic test measures coverage of generated task families. Generalization claims remain limited to the held-out sources, task families and execution budgets actually evaluated.</li>
-</ul>
-<h4 class="pipeline-group" id="eval-comparison">Paired differences isolate the declared intervention</h4>
-<ul>
-<li>
-<b>Stage comparisons:</b> Compare S1 with S0 for the SFT increment; compare DAPO with and without synthetic tasks from the same checkpoint for the DAPO increment; compare each DAPO result with its own starting checkpoint for the extra-training effect.</li>
-<li>
-<b>Selection:</b> Only validation guides checkpoint and mixture selection. Final paired confidence intervals use the common frozen test and do not feed the data generator.</li>
-</ul>
+<h4 class="pipeline-group" id="eval-original">SFT data-addition score difference</h4>
+<p>\[ \Delta_{\mathrm{SFT},d,m}=S_{d,m}(S1)-S_{d,m}(S0) \]</p>
+<h4 class="pipeline-group" id="eval-synthetic">DAPO score difference from its starting checkpoint</h4>
+<p>\[ \Delta_{\mathrm{DAPO},d,m}^{(c,a)}=S_{d,m}(cR_a)-S_{d,m}(c) \]</p>
+<h4 class="pipeline-group" id="eval-comparison">DAPO data-addition score difference</h4>
+<p>\[ \Delta_{\mathrm{additional},d,m}^{(c)}=S_{d,m}(cR_1)-S_{d,m}(cR_0) \]</p>
+<p>\(S_{d,m}(k)\) is candidate \(k\)'s score on the same frozen evaluation cohort of dataset \(d\), using metric \(m\) from the <a href="#co-data">Data Sets table</a>; \(k\) ranges over the nine codes in <a href="#baselines">Candidates and Settings</a>. \(c\in\{\mathrm{Base},S0,S1\}\) and \(a\in\{0,1\}\); \(cR_0\) and \(cR_1\) are original-only and original-plus-additional DAPO settings starting from \(c\). \(\Delta_{\mathrm{SFT},d,m}\), \(\Delta_{\mathrm{DAPO},d,m}^{(c,a)}\) and \(\Delta_{\mathrm{additional},d,m}^{(c)}\) are the SFT data-addition, DAPO-from-start and DAPO data-addition score differences, respectively.</p>
 </div>
 </div>
 </div>
@@ -438,7 +416,6 @@
 <tr><td>FinSearchComp / financial retrieval</td><td><code>search_securities</code>, <code>get_prices</code>, <code>get_corporate_actions</code>, <code>trading_day</code>, <code>count_trading_days</code>, <code>search_fred</code>, <code>get_fred</code>, <code>search_financial_tags</code>, <code>get_financials</code>, <code>run_python</code>, <code>finish</code></td><td>A fixed read-only snapshot supplies market, FRED and SEC data. The opt-in v2 Python adapter mounts only the runtime and declared data in an isolated process, with no network and explicit time/memory limits. The retrieval-proof adapter records source queries outside the solver process.</td></tr>
 <tr><td>IFEval</td><td><code>finish</code></td><td>The strict instruction checker grades only the submitted answer; financial evidence checks do not apply.</td></tr>
 <tr><td>FinDeepResearch evidence pilot</td><td><code>list_documents</code>, <code>search_documents</code>, <code>read_document</code>, <code>run_python</code>, <code>write_report_part</code>, <code>write_sentiment_labels</code>, <code>sentiment_windows</code>, <code>finish</code>; phased workers also have <code>read_dependency</code></td><td>Only allowlisted evidence is visible. The listed tools belong to the existing pilot runtime; their execution does not qualify a complete benchmark task or a training demonstration.</td></tr>
-<tr><td>MLE-bench project subset</td><td><code>mlebench_describe</code>, <code>run_python</code>, <code>finish</code></td><td>CPU Python sees only the declared public data and writable output. The host freezes the submission after finish and grades it separately with hidden labels; the learner receives no private score during the episode.</td></tr>
 </tbody></table></div>
 <p>H1 additionally exposes <code>set_checklist</code> and restates its progress after tool results. Slow declared tools run in worker threads so one episode's Python execution does not stall other episodes.</p>
 <h3 class="title is-5" id="harness-checks">Feedback supports correction; admission checks the saved result</h3>
@@ -446,7 +423,7 @@
 <p>Independent graders evaluate the saved answer or submission. Financial number matching is a grounding check, not a proof of reasoning; actual source-query records and replay checks provide additional evidence. Question approval, complete demonstration approval and training admission remain separate gates.</p>
 <h3 class="title is-5" id="harness-api">Synthetic-data roles use a separate Messages route</h3>
 <p>Authors, blind solvers and adversarial reviewers receive separate fresh API requests with explicit caller prompts. Before the native-proxy request, the client checks the frozen task/source scope and spending reservation. Authors reserve against a conservative configured input bound; blind solvers and critics use calibrated native input-token counts. After the request returns, usage and failed attempts enter the append-only ledger. Blind solvers write code for the host to execute: the API text request itself does not execute tools. A critic receives actual replay evidence without inheriting an earlier review verdict.</p>
-<p class="data-note">These runtime controls are implemented in the <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/02_harness/code/v3/harness/agent.py" target="_blank" rel="noopener">episode loop</a>, <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/01_data-processing/code/synthesis_v2/harness.py" target="_blank" rel="noopener">v2 environment adapter</a> and <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/scripts/01_data-processing/experiments/run_pre_synthesis_acceptance.py" target="_blank" rel="noopener">bounded native-API acceptance runner</a>. The FinDeepResearch collector and MLE runtime remain candidate/pilot paths; their execution does not grant training admission.</p>
+<p class="data-note">These runtime controls are implemented in the <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/02_harness/code/v3/harness/agent.py" target="_blank" rel="noopener">episode loop</a>, <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/src/01_data-processing/code/synthesis_v2/harness.py" target="_blank" rel="noopener">v2 environment adapter</a> and <a href="https://github.com/Hunger99/llm-pipeline/blob/feat/pipeline-v2/scripts/01_data-processing/experiments/run_pre_synthesis_acceptance.py" target="_blank" rel="noopener">bounded native-API acceptance runner</a>. The FinDeepResearch collector remains a pilot path. DS-1000 reference code and tests are preserved, but this Harness does not yet integrate that subset.</p>
 </div></div></section>
 
 <footer class="footer">
