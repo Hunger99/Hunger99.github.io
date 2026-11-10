@@ -27,7 +27,7 @@
 </script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.getElementById('co-pipeline'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}], throwOnError: false})">
 </script>
-  <link rel="stylesheet" href="static/css/main.css?v=20261110-core-alignment">
+  <link rel="stylesheet" href="static/css/main.css?v=20261110-datasets-evaluation">
 </head>
 <body>
 
@@ -87,42 +87,12 @@
 <section class="section hero data-section" id="data-sets">
 <div class="container is-max-widescreen">
 <h2 class="title is-3 has-text-centered" id="co-data">数据集</h2>
-<table class="table is-narrow data-table dataset-metrics">
-<thead><tr><th scope="col">数据集与来源</th><th scope="col">定义</th><th scope="col">评测指标定义与公式</th><th scope="col">任务形式（Task format）</th><th scope="col">问题示例（简写）</th></tr></thead>
-<tbody>
-<tr>
-<td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td>
-<td data-label="定义">模型在给定的完整年度报告内定位证据并计算金融答案，主要考查长文档检索与数值推理。</td>
-<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 在第 i 题通过项目评分器时为1，否则为0：数值容差为1%相对误差，标准答案为0时为0.005绝对误差；检查百分数的×100／÷100等价表示，布尔答案匹配 yes／no。</td>
-
-<td data-label="任务形式（Task format）">多轮检索 → 最终答案</td>
-<td data-label="问题示例（简写）" class="sample-cell">根据年报，公司全部设施中租赁设施占多少百分比？<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA训练题</a></span></td>
-</tr>
-<tr>
-<td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td>
-<td data-label="定义">模型完成格式、长度、关键词、语言等可由程序检查的指令；一条提示可包含多条要求。</td>
-<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N 是提示数，m<sub>i</sub> 是第 i 条提示的指令数，c<sub>ij</sub> 在第 j 条指令通过严格检查时为 1，否则为 0。</td>
-
-<td data-label="任务形式（Task format）">单轮回答</td>
-<td data-label="问题示例（简写）" class="sample-cell">撰写一篇介绍日本旅行的博客，少于300词。<span class="sample-source"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">题号1092</a></span></td>
-</tr>
-<tr>
-<td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">官方任务说明</a></td>
-<td data-label="定义">模型按指定分析结构检索、计算并生成完整 Markdown 公司研究报告；原始基准涵盖八个市场、四种语言，每份报告有 247 个评分项，评分项不计作独立任务。</td>
-<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N 是报告数；s<sub>ij</sub> ∈ [0,1] 是官方判官给出的匹配、关键主张覆盖或归一化细项得分；w<sub>j</sub> 为识别／计算项的 1 分或概括／解释项的 2 分，满分 350；f<sub>i</sub> 为标题、子标题与表格的结构得分，满分 42。<a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">评分协议</a>；<a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">权重</a>。</td>
-
-<td data-label="任务形式（Task format）">多轮投研 → 完整报告</td>
-<td data-label="问题示例（简写）" class="sample-cell">根据UnitedHealth的2023、2024财年年报及截至2025年9月20日的证据，按指定Markdown研究表格分析财务表现、估值与风险。<span class="sample-source"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch/blob/d6f80827caf60492fd0aa2769391d5137bc6aa2e/Analytical%20Structure/test004.md" target="_blank" rel="noopener">UnitedHealth · 任务test004</a></span></td>
-</tr>
-<tr>
-<td><a href="https://github.com/xlang-ai/DS-1000" target="_blank" rel="noopener">DS-1000 Python 数据分析子集</a><br><a href="https://huggingface.co/datasets/xlangai/DS-1000" target="_blank" rel="noopener">数据来源</a></td>
-<td data-label="定义">合并561条代码补全题：Pandas291条、Matplotlib／Seaborn155条、Scikit-learn115条，覆盖数据处理、绘图和机器学习库调用。已下载；同源题去重、执行验收与训练切分尚未完成。完整建模与结果解释覆盖有限。</td>
-<td data-label="评测指标定义与公式" class="metric-cell"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> e<sub>i</sub>a<sub>i</sub></span>N 为评测题数；e<sub>i</sub> 在第 i 题全部执行测试通过时为1，否则为0；a<sub>i</sub> 在 API／代码形式约束通过或未设置该约束时为1，否则为0。</td>
-<td data-label="任务形式（Task format）">单轮代码补全</td>
-<td data-label="问题示例（简写）" class="sample-cell">将 DataFrame 的日期列转换为 Jan-2018 这样的“月份缩写－年份”格式。<span class="sample-source"><a href="https://github.com/xlang-ai/DS-1000/blob/6f8579252c07f7e04624c5ec25569c0f9c1b1f4f/data/ds1000.jsonl.gz" target="_blank" rel="noopener">Pandas · 题号23</a></span></td>
-</tr>
-</tbody>
-</table>
+<table class="table is-narrow data-table dataset-overview"><colgroup><col class="dataset-column-0"><col class="dataset-column-1"><col class="dataset-column-2"><col class="dataset-column-3"><col class="dataset-column-4"><col class="dataset-column-5"></colgroup><thead><tr><th scope="col">数据集与来源</th><th scope="col">定义与子集</th><th scope="col">是否筛选与总样本数</th><th scope="col">Train / Valid / Test 切分</th><th scope="col">任务形式</th><th scope="col">题目示例（节选）</th></tr></thead><tbody>
+<tr><td data-label="数据集与来源"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td><td data-label="定义与子集">模型在给定的完整年度报告内定位证据并计算金融答案，主要考查长文档检索与数值推理。<details class="dataset-subsets"><summary>2 个项目答案类型分组</summary><ul class="subset-list"><li><strong>数值题</strong> — 从财报证据计算数值答案。 <span class="subset-count">1467</span></li><li><strong>布尔题</strong> — 根据财报证据回答是或否。 <span class="subset-count">30</span></li></ul></details></td><td data-label="是否筛选与总样本数">已完成报告版本筛选、来源隔离与分区内 50% 抽样；7,437 道原题 → 1,497 道保留题。</td><td data-label="Train / Valid / Test 切分">是；保留筛选后的官方分区。<br>Train: 942<br>Valid: 182<br>Test: 373</td><td data-label="任务形式">多轮检索 → 最终答案</td><td data-label="题目示例（节选）" class="sample-cell">根据年报，公司全部设施中租赁设施占多少百分比？<span class="sample-source"><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA训练题</a></span></td></tr>
+<tr><td data-label="数据集与来源"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td><td data-label="定义与子集">模型完成格式、长度、关键词、语言等可由程序检查的指令；一条提示可包含多条要求。<details class="dataset-subsets"><summary>25 个指令类型分组（可重叠）</summary><p class="subset-note">数量为包含该类指令的题目数；一道题可属于多个分组。</p><ul class="subset-list"><li><strong>大写词数量</strong> — 要求指定数量的全大写单词。 <span class="subset-count">20</span></li><li><strong>英文全大写</strong> — 英文字母使用大写。 <span class="subset-count">25</span></li><li><strong>英文全小写</strong> — 英文字母使用小写。 <span class="subset-count">39</span></li><li><strong>复述题面</strong> — 先复述指定请求，再回答该请求。 <span class="subset-count">39</span></li><li><strong>两份回答</strong> — 按指定格式给出两份回答。 <span class="subset-count">24</span></li><li><strong>占位符</strong> — 包含指定数量的方括号占位符。 <span class="subset-count">27</span></li><li><strong>附言</strong> — 包含以指定标记开头的附言。 <span class="subset-count">26</span></li><li><strong>固定回答</strong> — 使用规定的回答短语之一。 <span class="subset-count">10</span></li><li><strong>JSON 输出</strong> — 返回有效的 JSON 回答。 <span class="subset-count">17</span></li><li><strong>分节</strong> — 使用指定数量的带标签章节。 <span class="subset-count">14</span></li><li><strong>项目符号数量</strong> — 使用指定数量的项目符号条目。 <span class="subset-count">31</span></li><li><strong>高亮片段</strong> — 包含至少指定数量的 Markdown 高亮文本片段。 <span class="subset-count">47</span></li><li><strong>标题</strong> — 用规定的双尖括号标记包围标题。 <span class="subset-count">36</span></li><li><strong>必含关键词</strong> — 包含所有指定关键词。 <span class="subset-count">39</span></li><li><strong>禁用词</strong> — 不使用列表中的词语。 <span class="subset-count">49</span></li><li><strong>关键词频次</strong> — 按指定频次使用关键词。 <span class="subset-count">38</span></li><li><strong>字母频次</strong> — 按指定频次使用指定字母。 <span class="subset-count">32</span></li><li><strong>回答语言</strong> — 使用指定语言回答。 <span class="subset-count">31</span></li><li><strong>段落首词</strong> — 指定段落以要求的单词开头。 <span class="subset-count">12</span></li><li><strong>段落数量</strong> — 使用指定数量的段落。 <span class="subset-count">27</span></li><li><strong>句子数量</strong> — 满足指定的句子数量条件。 <span class="subset-count">45</span></li><li><strong>单词数量</strong> — 满足指定的单词数量条件。 <span class="subset-count">50</span></li><li><strong>禁用逗号</strong> — 回答中不使用逗号。 <span class="subset-count">65</span></li><li><strong>指定结尾</strong> — 以指定短语结束回答。 <span class="subset-count">26</span></li><li><strong>引号包围</strong> — 整份回答用双引号包围。 <span class="subset-count">40</span></li></ul></details></td><td data-label="是否筛选与总样本数">已排除 3 道指令冲突题；541 道原题 → 538 道保留题。</td><td data-label="Train / Valid / Test 切分">是；项目切分。<br>Train: 213<br>Valid: 108<br>Test: 217</td><td data-label="任务形式">单轮回答</td><td data-label="题目示例（节选）" class="sample-cell">撰写一篇介绍日本旅行的博客，少于300词。<span class="sample-source"><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">题号1092</a></span></td></tr>
+<tr><td data-label="数据集与来源"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">官方任务说明</a></td><td data-label="定义与子集">模型按指定分析结构检索、计算并生成完整 Markdown 公司研究报告；原始基准涵盖八个市场、四种语言，每份报告有 247 个评分项，评分项不计作独立任务。<details class="dataset-subsets"><summary>8 个市场分组</summary><ul class="subset-list"><li><strong>澳大利亚</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>中国内地</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>中国香港</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>印度尼西亚</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>马来西亚</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>新加坡</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>英国</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">8</span></li><li><strong>美国</strong> — 该市场上市公司的研究报告任务。 <span class="subset-count">7</span></li></ul></details></td><td data-label="是否筛选与总样本数">已检查题目重复并隔离 1 道来源重叠题；64 道原题 → 63 道保留题。完整报告质量准入尚未完成。</td><td data-label="Train / Valid / Test 切分">是；项目切分。<br>Train: 24<br>Valid: 16<br>Test: 23</td><td data-label="任务形式">多轮投研 → 完整报告</td><td data-label="题目示例（节选）" class="sample-cell">根据UnitedHealth的2023、2024财年年报及截至2025年9月20日的证据，按指定Markdown研究表格分析财务表现、估值与风险。<span class="sample-source"><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch/blob/d6f80827caf60492fd0aa2769391d5137bc6aa2e/Analytical%20Structure/test004.md" target="_blank" rel="noopener">UnitedHealth · 任务test004</a></span></td></tr>
+<tr><td data-label="数据集与来源"><a href="https://github.com/xlang-ai/DS-1000" target="_blank" rel="noopener">DS-1000 Python 数据分析子集</a><br><a href="https://huggingface.co/datasets/xlangai/DS-1000" target="_blank" rel="noopener">数据来源</a></td><td data-label="定义与子集">将 Pandas、Matplotlib/Seaborn 和 Scikit-learn 的原生代码补全题合为一个题池，覆盖数据处理、绘图和机器学习库调用；完整建模与结果解释的覆盖有限。<details class="dataset-subsets"><summary>3 个库子集</summary><ul class="subset-list"><li><strong>Pandas</strong> — 数据整理、筛选、日期与类别变量处理。 <span class="subset-count">291</span></li><li><strong>Matplotlib / Seaborn</strong> — 绘图、图表样式与可视化设置。 <span class="subset-count">155</span></li><li><strong>Scikit-learn</strong> — 预处理、模型调用、参数设置及模型评估。 <span class="subset-count">115</span></li></ul></details></td><td data-label="是否筛选与总样本数">已按库选择 561 道题；语义去重和执行质量筛选尚未完成。</td><td data-label="Train / Valid / Test 切分">否。<br>Train: -<br>Valid: -<br>Test: -</td><td data-label="任务形式">单轮代码补全</td><td data-label="题目示例（节选）" class="sample-cell">将 DataFrame 的日期列转换为 Jan-2018 这样的“月份缩写－年份”格式。<span class="sample-source"><a href="https://github.com/xlang-ai/DS-1000/blob/6f8579252c07f7e04624c5ec25569c0f9c1b1f4f/data/ds1000.jsonl.gz" target="_blank" rel="noopener">Pandas · 题号23</a></span></td></tr>
+</tbody></table>
 </div>
 </section>
 <section class="section hero is-light" id="baselines">
@@ -148,26 +118,6 @@
 <li id="original-pools"><b>原题与评测:</b> 执行训练的设置共用相同原题身份；九组共用同一份冻结的验证集和测试集，以及相同的工具条件和评分器版本。仅使用验证集选择检查点。</li>
 <li id="synthetic-pools"><b>新增数据:</b> 所有 S1 后续设置共用同一份 SFT 新增题；所有 R1 设置共用另一份固定的 DAPO 新增题，不为不同候选重新生成。新增题池尚未冻结。</li>
 </ul></div>
-</div>
-</section>
-<section class="section hero">
-<div class="container is-max-desktop">
-<h2 class="title is-3 has-text-centered">方法管线</h2>
-<p class="has-text-centered">点击下面的环节查看它做什么。</p>
-<div class="pipeline" id="co-pipeline" data-pipeline>
-<div class="pipeline-steps" role="tablist" aria-label="方法管线">
-<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true"><span class="pipeline-step-num">1</span>数据获取与预处理</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>数据合成</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>SFTV</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
-<button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>评测</button>
-</div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0"></div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0"></div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0"></div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0"></div>
-<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0"></div>
-</div>
 </div>
 </section>
 <section class="section hero is-light" id="harness">
@@ -201,6 +151,28 @@
 </table></div>
 <figure class="architecture-figure"><div class="architecture-scroll" tabindex="0"><img src="static/images/harness-four-dimensions-zh.svg" alt="Python 工具调用按串行循环执行：提示工程、编码智能体运行框架、工具分类、权限控制、sandbox、代码化规则、智能体状态记录，再返回模型。" width="1200" height="500" loading="lazy"></div></figure>
 </div></section>
+<section class="section hero">
+<div class="container is-max-desktop">
+<h2 class="title is-3 has-text-centered">方法管线</h2>
+<p class="has-text-centered">点击下面的环节查看它做什么。</p>
+<div class="pipeline" id="co-pipeline" data-pipeline>
+<div class="pipeline-steps" role="tablist" aria-label="方法管线">
+<button class="pipeline-step" type="button" role="tab" id="co-tab-1" aria-controls="co-panel-1" aria-selected="true"><span class="pipeline-step-num">1</span>数据获取与预处理</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-2" aria-controls="co-panel-2"><span class="pipeline-step-num">2</span>数据合成</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-3" aria-controls="co-panel-3"><span class="pipeline-step-num">3</span>SFTV</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-4" aria-controls="co-panel-4"><span class="pipeline-step-num">4</span>DAPO</button> <span class="pipeline-arrow" aria-hidden="true">&rarr;</span>
+<button class="pipeline-step" type="button" role="tab" id="co-tab-5" aria-controls="co-panel-5"><span class="pipeline-step-num">5</span>评测</button>
+</div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-1" aria-labelledby="co-tab-1" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-2" aria-labelledby="co-tab-2" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-3" aria-labelledby="co-tab-3" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-4" aria-labelledby="co-tab-4" tabindex="0"></div>
+<div class="pipeline-panel" role="tabpanel" id="co-panel-5" aria-labelledby="co-tab-5" tabindex="0">
+<h3 class="title is-5" id="dataset-evaluation">评测指标</h3><table class="table is-narrow data-table evaluation-table"><thead><tr><th scope="col">数据集</th><th scope="col">公式与符号解释</th></tr></thead><tbody><tr><td><a href="https://huggingface.co/datasets/kensho/DocFinQA" target="_blank" rel="noopener">DocFinQA</a></td><td class="metric-cell" data-label="公式与符号解释"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> correct<sub>i</sub></span>N 是题数，correct<sub>i</sub> 在第 i 题通过项目评分器时为1，否则为0：数值容差为1%相对误差，标准答案为0时为0.005绝对误差；检查百分数的×100／÷100等价表示，布尔答案匹配 yes／no。</td></tr><tr><td><a href="https://huggingface.co/datasets/google/IFEval" target="_blank" rel="noopener">IFEval</a></td><td class="metric-cell" data-label="公式与符号解释"><span class="metric-formula">Prompt-strict = (1/N) ∑<sub>i=1</sub><sup>N</sup> ∏<sub>j=1</sub><sup>mᵢ</sup> c<sub>ij</sub></span><span class="metric-formula">Instruction-strict = (∑<sub>i</sub> ∑<sub>j</sub> c<sub>ij</sub>) / (∑<sub>i</sub> m<sub>i</sub>)</span>N 是提示数，m<sub>i</sub> 是第 i 条提示的指令数，c<sub>ij</sub> 在第 j 条指令通过严格检查时为 1，否则为 0。</td></tr><tr><td><a href="https://huggingface.co/datasets/OpenFinArena/FinDeepResearch" target="_blank" rel="noopener">FinDeepResearch</a><br><a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/FinDeepResearch_README.md" target="_blank" rel="noopener">官方任务说明</a></td><td class="metric-cell" data-label="公式与符号解释"><span class="metric-formula">Content (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (∑<sub>j=1</sub><sup>247</sup> w<sub>j</sub>s<sub>ij</sub> / 350)</span><span class="metric-formula">Structure (%) = (100/N) ∑<sub>i=1</sub><sup>N</sup> (f<sub>i</sub> / 42)</span>N 是报告数；s<sub>ij</sub> ∈ [0,1] 是官方判官给出的匹配、关键主张覆盖或归一化细项得分；w<sub>j</sub> 为识别／计算项的 1 分或概括／解释项的 2 分，满分 350；f<sub>i</sub> 为标题、子标题与表格的结构得分，满分 42。<a href="https://arxiv.org/html/2510.13936v2#S2.SS4" target="_blank" rel="noopener">评分协议</a>；<a href="https://github.com/OpenFinArena/OpenFinArena/blob/103ce6b33e8db6fccbc0dfcf2782a4b3cec0312c/competitions/resources/findeepresearch_weights.json" target="_blank" rel="noopener">权重</a>。</td></tr><tr><td><a href="https://github.com/xlang-ai/DS-1000" target="_blank" rel="noopener">DS-1000 Python 数据分析子集</a><br><a href="https://huggingface.co/datasets/xlangai/DS-1000" target="_blank" rel="noopener">数据来源</a></td><td class="metric-cell" data-label="公式与符号解释"><span class="metric-formula">Accuracy = (1/N) ∑<sub>i=1</sub><sup>N</sup> e<sub>i</sub>a<sub>i</sub></span>N 为评测题数；e<sub>i</sub> 在第 i 题全部执行测试通过时为1，否则为0；a<sub>i</sub> 在 API／代码形式约束通过或未设置该约束时为1，否则为0。</td></tr></tbody></table>
+</div>
+</div>
+</div>
+</section>
 
 <footer class="footer">
   <div class="container">
