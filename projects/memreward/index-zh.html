@@ -140,6 +140,11 @@
           <p>
             强化学习（RL）微调利用采样 rollout 上的奖励信号提升大模型（LLM）的推理能力。当只有部分 rollout 有奖励标签时，只用这部分 rollout 更新策略，其余 rollout 就没有用于策略优化。半监督学习把标签从有标签样本传播到无标签样本，但现有方法要么用固定的相似度权重扩散标签，要么独立处理每个样本，忽略了问题、思考过程和答案之间的关系。我们提出 <b>MemReward</b>，一种基于图的经验记忆，在在线策略优化中把奖励传播到无标签的 rollout。MemReward 把问题和初始 LLM 策略的 rollout（思考过程和最终答案）存为异构图的节点，用相似度边和结构边连接，并在有标签的 rollout 上预热一个 GNN，让它在图上传播奖励。在线 RL 微调时，无标签的 rollout 按问题相似度接入图中，策略用有标签 rollout 的真实奖励和其余 rollout 的 GNN 预测奖励更新。我们在数学、问答和代码生成的 13 个可验证奖励基准上评测 MemReward，并进一步评测了 LLM 评判奖励、人类偏好奖励和连续奖励。只有 20% 的 rollout 有真实奖励时，MemReward 在 Qwen2.5-1.5B 上达到全监督训练（Oracle）性能的 96.6%，在 Qwen2.5-3B 上达到 97.3%，且在后者上优于标签传播和 FixMatch 式自训练。它可以用到最大 8B 的 Llama 模型上，并在域外任务上非常接近 Oracle。
           </p>
+          <p id="contributions-heading"><strong>我们的贡献如下：</strong></p>
+          <ul class="has-text-left" aria-labelledby="contributions-heading">
+            <li><strong>Graph-based experience memory 利用经验之间的关系预测奖励。</strong> 我们用 query、thinking process 和 answer 三类节点构建带有相似度边和结构边的 heterogeneous graph，并训练 graph neural network（GNN）按关系类型聚合信息，联合数学、问答和代码任务中的经验预测奖励。</li>
+            <li><strong>无标签 rollout 也参与 online policy optimization。</strong> 我们将新的无标签 query 按相似度接入已有图，再用有标签 rollout 的真实奖励与其余 rollout 的 GNN 预测奖励更新策略。</li>
+          </ul>
         </div>
       </div>
     </div>
