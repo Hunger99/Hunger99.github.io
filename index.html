@@ -147,7 +147,7 @@
                 <p class="entry-name">CME Group Inc.</p>
                 <p class="entry-role">Apprentice Researcher, Sponsored Practicum Project</p>
                 <div class="entry-meta">
-                  <p class="entry-date">Jan. 2025 - May 2025</p>
+                  <p class="entry-date">Jan. 2026 - Apr. 2026</p>
                   <span class="entry-sep" aria-hidden="true">·</span>
                   <p class="entry-place">Chicago, IL, USA (Remote)</p>
                 </div>
@@ -238,23 +238,22 @@
       <h2 class="pub-header"><i class="fas fa-flask" aria-hidden="true"></i> Projects</h2>
       <div class="pub-list">
 
-        <!-- Financial LLM agent post-training, sponsored by Capital One -->
+        <!-- Agent Learning Flywheel, sponsored by Capital One -->
         <article class="pub">
           <div class="pub-grid">
             <div class="pub-media">
-              <a class="cover-media" href="assets/images/teasers/capital-one.svg" target="_blank" rel="noopener noreferrer" aria-label="Open original image: market-data test success rates">
-                <img src="assets/images/teasers/capital-one.svg" alt="Success rates on the market-data test set: base 16.7, official 57.7, ours 87.3, teacher 94.7" loading="lazy" draggable="false">
+              <a class="cover-media" href="assets/images/teasers/flywheel.svg" target="_blank" rel="noopener noreferrer" aria-label="Open Agent Learning Flywheel workflow">
+                <img src="assets/images/teasers/flywheel.svg" alt="Agent Learning Flywheel: analyze failed tasks, edit skill or train LoRA, compare versions and retain an update" loading="lazy" draggable="false">
               </a>
             </div>
             <div class="pub-text">
-              <h3 class="pub-title"><strong>Post-Training a Financial LLM Agent with Multi-Turn Agent SFT and DAPO</strong></h3>
+              <h3 class="pub-title"><strong>Agent Learning Flywheel: Improving a 180B Financial LLM Agent</strong></h3>
               <p class="pub-venue">
                 <span><em>Ongoing practicum project, Sep. 2026 - mid-Nov. 2026 (expected).</em></span>
               </p>
-              <p class="pub-desc">Post-trains Qwen3.5-4B-Base into a tool-using agent that retrieves and computes over market, macro and filing data, through a self-built data pipeline and multi-turn agent SFT, with DAPO training as the next step. On 300 test tasks of the trained types but on held-out stocks or later periods, the SFT model solves 87.3%, against 57.7% for the official Qwen3.5-4B and 94.7% for its Qwen3.8-27B teacher.</p>
+              <p class="pub-desc">Designed a workflow for a 180B financial LLM agent that chooses one update per round from task failures: edit skill instructions, or generate verified tool-use records for LoRA supervised fine-tuning. The Claude Code harness, which manages tools and sessions, stays fixed; old and new versions are compared on identical tasks before retaining an update.</p>
               <div class="pub-links">
-                <a class="btn btn-project" href="projects/capital-one/index.html"><i class="fas fa-globe-americas" aria-hidden="true"></i>Project Page</a>
-                <a class="btn btn-code" href="https://github.com/Hunger99/fin-agent-posttrain" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>Code</a>
+                <a class="btn btn-project" href="projects/agent-learning-flywheel/?lang=en"><i class="fas fa-globe-americas" aria-hidden="true"></i>Project Page</a>
                 <a class="btn btn-sponsor" href="https://www.capitalone.com/" target="_blank" rel="noopener noreferrer"><img src="assets/images/badges/Capital-One.png" alt="Capital One">Sponsored Practicum Project</a>
               </div>
             </div>

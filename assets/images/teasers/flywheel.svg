@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc" font-family="Arial,sans-serif">
+  <title id="title">Agent Learning Flywheel</title>
+  <desc id="desc">Analyze failed tasks, choose skill editing or LoRA training, then compare versions on the same tasks.</desc>
+  <rect width="1200" height="675" rx="24" fill="#f8f6fc"/>
+  <text x="600" y="85" text-anchor="middle" font-size="48" font-weight="700" fill="#3d2869">Agent Learning Flywheel</text>
+  <text x="600" y="135" text-anchor="middle" font-size="28" fill="#615975">180B financial agent · fixed Claude Code harness</text>
+  <g fill="#fff" stroke="#7954b8" stroke-width="3">
+    <rect x="280" y="185" width="640" height="90" rx="16"/>
+    <rect x="100" y="350" width="450" height="100" rx="16"/>
+    <rect x="650" y="350" width="450" height="100" rx="16"/>
+    <rect x="280" y="535" width="640" height="90" rx="16"/>
+  </g>
+  <g fill="none" stroke="#7954b8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M600 275v32H325v34m-9-10 9 10 9-10M600 307h275v34m-9-10 9 10 9-10M325 450v42h275v34m-9-10 9 10 9-10M875 450v42H600"/>
+  </g>
+  <g fill="#302640" font-size="32" text-anchor="middle">
+    <text x="600" y="241">Analyze failed tasks</text>
+    <text x="325" y="410">Edit skill</text>
+    <text x="875" y="393">Verify trajectories</text>
+    <text x="875" y="432">and train LoRA</text>
+    <text x="600" y="590">Compare versions · retain an update</text>
+  </g>
+  <text x="600" y="407" text-anchor="middle" font-size="27" font-weight="700" fill="#7954b8">OR</text>
+</svg>

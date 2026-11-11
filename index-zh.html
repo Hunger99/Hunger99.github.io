@@ -147,7 +147,7 @@
                 <p class="entry-name">CME Group Inc.</p>
                 <p class="entry-role">学徒研究员，赞助实践项目</p>
                 <div class="entry-meta">
-                  <p class="entry-date">2025 年 1 月 - 2025 年 5 月</p>
+                  <p class="entry-date">2026 年 1 月 - 2026 年 4 月</p>
                   <span class="entry-sep" aria-hidden="true">·</span>
                   <p class="entry-place">美国芝加哥（远程）</p>
                 </div>
@@ -238,23 +238,22 @@
       <h2 class="pub-header"><i class="fas fa-flask" aria-hidden="true"></i> 项目</h2>
       <div class="pub-list">
 
-        <!-- Financial LLM agent post-training, sponsored by Capital One -->
+        <!-- Agent Learning Flywheel, sponsored by Capital One -->
         <article class="pub">
           <div class="pub-grid">
             <div class="pub-media">
-              <a class="cover-media" href="assets/images/teasers/capital-one-zh.svg" target="_blank" rel="noopener noreferrer" aria-label="打开原图：行情测试集成功率">
-                <img src="assets/images/teasers/capital-one-zh.svg" alt="行情测试集成功率：起点 16.7，官方 57.7，本项目 87.3，教师 94.7" loading="lazy" draggable="false">
+              <a class="cover-media" href="assets/images/teasers/flywheel-zh.svg" target="_blank" rel="noopener noreferrer" aria-label="打开 Agent Learning Flywheel 流程图">
+                <img src="assets/images/teasers/flywheel-zh.svg" alt="Agent Learning Flywheel：分析失败任务，修改 skill 或训练 LoRA，比较新旧版本并决定是否保留更新" loading="lazy" draggable="false">
               </a>
             </div>
             <div class="pub-text">
-              <h3 class="pub-title"><strong>基于多轮 Agent SFT 与 DAPO 后训练金融 LLM Agent</strong></h3>
+              <h3 class="pub-title"><strong>Agent Learning Flywheel：逐轮改进 180B 金融 LLM Agent</strong></h3>
               <p class="pub-venue">
                 <span><em>进行中的实践项目，2026 年 9 月 - 预计 11 月中旬。</em></span>
               </p>
-              <p class="pub-desc">通过自建数据管线和多轮 agent SFT，把 Qwen3.5-4B-Base 后训练成会调用工具的 agent，能在行情、宏观和财报数据上检索和计算，DAPO 训练是下一步。在 300 道题型与训练相同、但股票留出或时间段更晚的测试题上，SFT 模型做对 87.3%，官方 Qwen3.5-4B 为 57.7%，它的教师 Qwen3.8-27B 为 94.7%。</p>
+              <p class="pub-desc">为 180B 金融 LLM agent 设计逐轮改进流程，根据任务失败原因，每轮选择修改 skill 操作说明，或生成经检查的工具执行记录用于 LoRA supervised fine-tuning。负责工具调用和会话管理的 Claude Code harness 保持固定；在相同题目上比较新旧版本，再决定是否保留更新。</p>
               <div class="pub-links">
-                <a class="btn btn-project" href="projects/capital-one/index-zh.html"><i class="fas fa-globe-americas" aria-hidden="true"></i>项目主页</a>
-                <a class="btn btn-code" href="https://github.com/Hunger99/fin-agent-posttrain" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>代码</a>
+                <a class="btn btn-project" href="projects/agent-learning-flywheel/?lang=zh"><i class="fas fa-globe-americas" aria-hidden="true"></i>项目主页</a>
                 <a class="btn btn-sponsor" href="https://www.capitalone.com/" target="_blank" rel="noopener noreferrer"><img src="assets/images/badges/Capital-One.png" alt="Capital One">赞助实践项目</a>
               </div>
             </div>
