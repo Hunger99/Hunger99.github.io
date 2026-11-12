@@ -1,4 +1,4 @@
-// Pipeline stage buttons: each button shows its stage's panel below and hides the others.
+// Pipeline buttons and fragment links reveal the matching stage panel.
 (function () {
   document.querySelectorAll('[data-pipeline]').forEach(function (root) {
     var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
@@ -28,6 +28,30 @@
       });
     });
 
+    function revealHash() {
+      var id;
+      try { id = decodeURIComponent(window.location.hash.slice(1)); }
+      catch (e) { return; }
+      var target = document.getElementById(id);
+      if (!target) return;
+      var index = panels.findIndex(function (panel) {
+        return panel === target || panel.contains(target);
+      });
+      if (index < 0) return;
+      select(index, false);
+      window.requestAnimationFrame(function () {
+        target.scrollIntoView({ block: 'center' });
+        target.focus({ preventScroll: true });
+      });
+    }
+
     select(0, false);
+    revealHash();
+    window.addEventListener('hashchange', revealHash);
+    document.addEventListener('click', function (event) {
+      if (!(event.target instanceof Element)) return;
+      var link = event.target.closest('a[href^="#"]');
+      if (link && link.getAttribute('href') === window.location.hash) revealHash();
+    });
   });
 })();
