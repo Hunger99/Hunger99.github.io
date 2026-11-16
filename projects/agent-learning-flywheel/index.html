@@ -64,6 +64,33 @@ summary:focus-visible, .diagram-scroll:focus-visible { outline: 3px solid #9171b
 #pipeline tr:target { outline: 2px solid #79548f; outline-offset: -2px; }
 .diagram-return { display: block; width: fit-content; margin-top: .6em; font-size: .82em; }
 .diagram-hint { text-align: center; color: #593887; }
+
+.page-toc { position: sticky; top: 0; z-index: 15; padding: 0 20px; background: rgb(255 255 255 / 97%); border-bottom: 1px solid #e7e1ed; }
+.toc-title { display: none; }
+.toc-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 52px; padding: 12px 0; border: 0; background: transparent; color: #593887; font-size: 15px; font-weight: 600; text-align: left; }
+.page-toc nav { display: none; max-height: 60vh; overflow-y: auto; padding: 0 0 12px; }
+.page-toc nav[data-expanded="true"] { display: block; }
+.page-toc ol { margin: 0; padding: 0; list-style: none; }
+.page-toc li { margin: 0; }
+.page-toc a { display: block; padding: 10px 12px; border-left: 2px solid transparent; color: #645b70; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.page-toc a:hover { background: #f7f4fb; color: #593887; text-decoration: none; }
+.page-toc a[aria-current="location"] { color: #593887; background: #f1eaf8; border-left-color: #79548f; font-weight: 600; }
+.page-with-toc > section { scroll-margin-top: 64px; }
+@media (min-width: 1200px) {
+  .page-with-toc { padding-left: 224px; }
+  .page-toc { position: fixed; left: 18px; top: 84px; width: 188px; max-height: calc(100vh - 110px); overflow-y: auto; padding: 0; border: 0; background: transparent; }
+  .page-toc .toc-title { display: block; margin: 0 0 14px; padding: 0 12px; font-size: 14px; line-height: 1.4; letter-spacing: 0; text-align: left; color: #8a7d99; font-weight: 600; }
+  .toc-toggle { display: none; }
+  .page-toc nav { display: block; max-height: none; padding: 0; }
+  .page-toc a { padding: 9px 12px; font-size: 13px; }
+  .page-with-toc > section { scroll-margin-top: 32px; }
+}
+@media print { .page-toc { display: none; } .page-with-toc { padding-left: 0; } }
+
+.page-with-toc > .lang-switch { z-index: 20; }
+@media (max-width: 1199px) { .toc-toggle { padding-right: 90px; } }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 /* END FLYWHEEL OVERRIDES */
 </style>
 </head>
@@ -113,6 +140,46 @@ function Table({ headers, rows, rowIds, backLabel }) {
                     rowId && j === 0 && l.createElement("a", { className: "diagram-return", href: region ? `#diagram-node-${region.id}` : "#architecture" }, backLabel))));
             }))));
 }
+function PageContents({ lang }) {
+    const [entries, setEntries] = useState([]);
+    const [expanded, setExpanded] = useState(false);
+    const [current, setCurrent] = useState("");
+    useEffect(() => {
+        const sections = Array.from(document.querySelectorAll("main > section[id]"));
+        setEntries(sections.map(section => ({ id: section.id, label: section.querySelector("h2")?.textContent ?? section.id })));
+        let frame = 0;
+        function updateCurrent() {
+            const threshold = window.matchMedia("(min-width: 1200px)").matches ? 80 : 120;
+            let active = "";
+            for (const section of sections)
+                if (section.getBoundingClientRect().top <= threshold)
+                    active = section.id;
+            if (Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2) {
+                const focused = document.activeElement?.closest("main > section[id]");
+                const rect = document.activeElement?.getBoundingClientRect();
+                active = focused && rect && rect.bottom > 0 && rect.top < window.innerHeight ? focused.id : sections[sections.length - 1]?.id ?? "";
+            }
+            setCurrent(active);
+            frame = 0;
+        }
+        function queueUpdate() { if (!frame)
+            frame = requestAnimationFrame(updateCurrent); }
+        updateCurrent();
+        window.addEventListener("scroll", queueUpdate, { passive: true });
+        window.addEventListener("resize", queueUpdate);
+        document.addEventListener("focusin", queueUpdate);
+        return () => { window.removeEventListener("scroll", queueUpdate); window.removeEventListener("resize", queueUpdate); document.removeEventListener("focusin", queueUpdate); cancelAnimationFrame(frame); };
+    }, [lang]);
+    const title = lang === "zh" ? "目录" : "Contents";
+    return l.createElement("aside", { className: "page-toc" },
+        l.createElement("h2", { className: "toc-title" }, title),
+        l.createElement("button", { type: "button", className: "toc-toggle", "aria-expanded": expanded, "aria-controls": "page-toc-links", onClick: () => setExpanded(!expanded) },
+            title,
+            l.createElement("span", { "aria-hidden": "true" }, expanded ? "−" : "+")),
+        l.createElement("nav", { id: "page-toc-links", "aria-label": title, "data-expanded": expanded },
+            l.createElement("ol", null, entries.map(entry => l.createElement("li", { key: entry.id },
+                l.createElement("a", { href: `#${entry.id}`, "aria-current": current === entry.id ? "location" : undefined, onClick: () => { setExpanded(false); setCurrent(entry.id); } }, entry.label))))));
+}
 function Home() {
     const [lang, setLang] = useState("zh");
     const c = content[lang];
@@ -146,7 +213,14 @@ function Home() {
                 details.open = true;
                 details = details.parentElement?.closest("details") ?? null;
             }
-            requestAnimationFrame(() => { target.scrollIntoView({ block: "center" }); target.focus({ preventScroll: true }); });
+            requestAnimationFrame(() => {
+                const section = target.matches("section[id]");
+                target.scrollIntoView({ block: section ? "start" : "center" });
+                const focusTarget = section ? target.querySelector("h2") ?? target : target;
+                if (!focusTarget.hasAttribute("tabindex"))
+                    focusTarget.setAttribute("tabindex", "-1");
+                focusTarget.focus({ preventScroll: true });
+            });
         }
         function repeatedLink(event) {
             if (event.target instanceof Element && event.target.closest('a[href^="#"]')?.getAttribute("href") === window.location.hash)
@@ -164,9 +238,10 @@ function Home() {
         window.history.replaceState(null, "", url);
         setLang(next);
     }
-    return l.createElement("main", null,
+    return l.createElement("main", { className: "page-with-toc" },
         l.createElement("a", { className: "skip-link", href: "#abstract" }, lang === "zh" ? "跳转正文" : "Skip to content"),
         l.createElement("button", { className: "lang-switch", onClick: chooseLanguage, "aria-label": lang === "zh" ? "Switch to English" : "切换中文" }, lang === "zh" ? "[English]" : "[中文]"),
+        l.createElement(PageContents, { lang: lang }),
         l.createElement("header", { className: "hero" },
             l.createElement("div", { className: "container" },
                 l.createElement("h1", null,
