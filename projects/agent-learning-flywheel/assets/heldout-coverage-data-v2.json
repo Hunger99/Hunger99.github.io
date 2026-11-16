@@ -1,0 +1,243 @@
+{
+  "data_version": "data-v2",
+  "count_unit": "tasks and prepared group_id values",
+  "counts": {
+    "dabstep": {
+      "train": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "diagnostic": {
+        "tasks": 10,
+        "source_groups": 10
+      },
+      "actor_selection": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "teacher_reserve": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "final_test": {
+        "tasks": 375,
+        "source_groups": 375
+      }
+    },
+    "docfinqa": {
+      "train": {
+        "tasks": 2504,
+        "source_groups": 358
+      },
+      "diagnostic": {
+        "tasks": 1036,
+        "source_groups": 241
+      },
+      "actor_selection": {
+        "tasks": 258,
+        "source_groups": 40
+      },
+      "teacher_reserve": {
+        "tasks": 18,
+        "source_groups": 4
+      },
+      "final_test": {
+        "tasks": 922,
+        "source_groups": 240
+      }
+    },
+    "dsbench_analysis": {
+      "train": {
+        "tasks": 341,
+        "source_groups": 29
+      },
+      "diagnostic": {
+        "tasks": 70,
+        "source_groups": 3
+      },
+      "actor_selection": {
+        "tasks": 16,
+        "source_groups": 2
+      },
+      "teacher_reserve": {
+        "tasks": 10,
+        "source_groups": 1
+      },
+      "final_test": {
+        "tasks": 29,
+        "source_groups": 3
+      }
+    },
+    "dsbench_modeling": {
+      "train": {
+        "tasks": 2,
+        "source_groups": 2
+      },
+      "diagnostic": {
+        "tasks": 1,
+        "source_groups": 1
+      },
+      "actor_selection": {
+        "tasks": 1,
+        "source_groups": 1
+      },
+      "teacher_reserve": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "final_test": {
+        "tasks": 1,
+        "source_groups": 1
+      }
+    },
+    "dscodebench": {
+      "train": {
+        "tasks": 285,
+        "source_groups": 282
+      },
+      "diagnostic": {
+        "tasks": 40,
+        "source_groups": 40
+      },
+      "actor_selection": {
+        "tasks": 33,
+        "source_groups": 33
+      },
+      "teacher_reserve": {
+        "tasks": 7,
+        "source_groups": 7
+      },
+      "final_test": {
+        "tasks": 40,
+        "source_groups": 40
+      }
+    },
+    "findeepresearch": {
+      "train": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "diagnostic": {
+        "tasks": 8,
+        "source_groups": 8
+      },
+      "actor_selection": {
+        "tasks": 7,
+        "source_groups": 7
+      },
+      "teacher_reserve": {
+        "tasks": 1,
+        "source_groups": 1
+      },
+      "final_test": {
+        "tasks": 48,
+        "source_groups": 48
+      }
+    },
+    "finsearchcomp": {
+      "train": {
+        "tasks": 277,
+        "source_groups": 275
+      },
+      "diagnostic": {
+        "tasks": 38,
+        "source_groups": 38
+      },
+      "actor_selection": {
+        "tasks": 27,
+        "source_groups": 27
+      },
+      "teacher_reserve": {
+        "tasks": 11,
+        "source_groups": 11
+      },
+      "final_test": {
+        "tasks": 38,
+        "source_groups": 38
+      }
+    },
+    "ifeval": {
+      "train": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "diagnostic": {
+        "tasks": 0,
+        "source_groups": 0
+      },
+      "actor_selection": {
+        "tasks": 223,
+        "source_groups": 223
+      },
+      "teacher_reserve": {
+        "tasks": 47,
+        "source_groups": 47
+      },
+      "final_test": {
+        "tasks": 271,
+        "source_groups": 271
+      }
+    }
+  },
+  "official_actor_subsets": {
+    "dscodebench": {
+      "library": {
+        "numpy": 8,
+        "pandas": 6,
+        "scipy": 13,
+        "sklearn": 6
+      }
+    },
+    "findeepresearch": {
+      "market": {
+        "USA": 1,
+        "UK": 1,
+        "China": 1,
+        "Hong Kong": 1,
+        "Singapore": 1,
+        "Malaysia": 1,
+        "Indonesia": 1
+      }
+    },
+    "finsearchcomp": {
+      "official_label": {
+        "Simple_Historical_Lookup(Greater China)": 9,
+        "Simple_Historical_Lookup(Global)": 8,
+        "Complex_Historical_Investigation(Global)": 3,
+        "Complex_Historical_Investigation(Greater China)": 7
+      }
+    }
+  },
+  "limits": [
+    "These counts do not certify semantic-template independence.",
+    "This is the existing split; a replacement stratified selection split has not been created.",
+    "DSBench analysis actor selection has 16 tasks from two workbooks.",
+    "DSBench modeling Train has two classification tasks; its single actor-selection task is regression.",
+    "DABstep has no selection pool.",
+    "The actor market sample excludes Australia, whose one selection item is reserved for teacher evaluation."
+  ],
+  "modeling_types": {
+    "classification": {
+      "train": 2,
+      "validation_diagnostic": 1,
+      "validation_select": 0,
+      "test": 1
+    },
+    "regression": {
+      "train": 0,
+      "validation_diagnostic": 0,
+      "validation_select": 1,
+      "test": 0
+    }
+  },
+  "taxonomy_stratification": {
+    "docfinqa": false,
+    "finsearchcomp": false,
+    "dscodebench": false,
+    "findeepresearch": "per_market_exact_1_diagnostic_1_selection_6_test",
+    "dabstep": "official_dev_vs_hard_test_not_new_stratification",
+    "ifeval": false,
+    "dsbench_analysis": false,
+    "dsbench_modeling": false
+  }
+}
