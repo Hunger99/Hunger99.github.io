@@ -1,0 +1,11 @@
+.cv-link {
+  position: absolute;
+  top: 1rem;
+  right: 7.5rem;
+  z-index: 10;
+  font-size: .95rem;
+  font-weight: 500;
+  color: #4a5565;
+}
+.cv-link:hover { color: #101828; }
+.cv-link:focus-visible { outline: 2px solid #7452ab; outline-offset: 4px; }
