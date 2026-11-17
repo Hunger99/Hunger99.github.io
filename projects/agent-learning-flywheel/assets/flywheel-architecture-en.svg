@@ -2007,8 +2007,8 @@ z
     </g>
    </g>
    <g id="text_14">
-    <!-- Rerun this round’s 32 Train checks -->
-    <g style="fill: #203243" transform="translate(72.727242 471.951828) scale(0.09 -0.09)">
+    <!-- Rerun this round’s -->
+    <g style="fill: #203243" transform="translate(106.109507 465.991507) scale(0.09 -0.09)">
      <defs>
       <path id="NotoSansCJKjp-Regular-2019" d="M 614 3085
 C 1107 3373 1376 3782 1376 4352
@@ -2018,17 +2018,6 @@ C 550 4371 730 4243 928 4243
 L 986 4250
 C 979 3840 800 3597 448 3360
 L 614 3085
-z
-" transform="scale(0.015625)"/>
-      <path id="NotoSansCJKjp-Regular-54" d="M 1619 0
-L 2214 0
-L 2214 4192
-L 3635 4192
-L 3635 4691
-L 198 4691
-L 198 4192
-L 1619 4192
-L 1619 0
 z
 " transform="scale(0.015625)"/>
      </defs>
@@ -2050,22 +2039,30 @@ z
      <use xlink:href="#NotoSansCJKjp-Regular-64" x="717.999863"/>
      <use xlink:href="#NotoSansCJKjp-Regular-2019" x="779.999847"/>
      <use xlink:href="#NotoSansCJKjp-Regular-73" x="807.799835"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="854.599823"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-33" x="876.999817"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-32" x="932.499802"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="987.999786"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-54" x="1010.39978"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-72" x="1070.299774"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-61" x="1109.099762"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-69" x="1165.39975"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="1192.899734"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="1253.899719"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-63" x="1276.299713"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-68" x="1327.299698"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1387.999695"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-63" x="1443.399689"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6b" x="1494.399673"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1549.59967"/>
+    </g>
+    <!-- 32 training questions -->
+    <g style="fill: #203243" transform="translate(100.443726 477.72371) scale(0.09 -0.09)">
+     <use xlink:href="#NotoSansCJKjp-Regular-33"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-32" x="55.499985"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="110.999969"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="133.399963"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-72" x="171.09996"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-61" x="209.899948"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-69" x="266.199936"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="293.699921"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-69" x="354.699905"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="382.19989"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-67" x="443.199875"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="499.599869"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-71" x="521.999863"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-75" x="583.999847"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="644.699844"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="700.099838"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="746.899826"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-69" x="784.599823"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="812.099808"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="872.699799"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="933.699783"/>
     </g>
    </g>
    <g id="text_15">
@@ -2154,6 +2151,19 @@ z
     </g>
     <!-- Two paths in Figure B -->
     <g style="fill: #203243" transform="translate(397.943167 486.164864) scale(0.094 -0.094)">
+     <defs>
+      <path id="NotoSansCJKjp-Regular-54" d="M 1619 0
+L 2214 0
+L 2214 4192
+L 3635 4192
+L 3635 4691
+L 198 4691
+L 198 4192
+L 1619 4192
+L 1619 0
+z
+" transform="scale(0.015625)"/>
+     </defs>
      <use xlink:href="#NotoSansCJKjp-Regular-54"/>
      <use xlink:href="#NotoSansCJKjp-Regular-77" x="59.899994"/>
      <use xlink:href="#NotoSansCJKjp-Regular-6f" x="140.099976"/>
@@ -2216,8 +2226,8 @@ z
     </g>
    </g>
    <g id="text_17">
-    <!-- Compare this round’s Train checks -->
-    <g style="fill: #203243" transform="translate(221.0151 580.273341) scale(0.095 -0.095)">
+    <!-- Compare results on these questions -->
+    <g style="fill: #203243" transform="translate(218.320959 580.273341) scale(0.095 -0.095)">
      <use xlink:href="#NotoSansCJKjp-Regular-43"/>
      <use xlink:href="#NotoSansCJKjp-Regular-6f" x="63.799988"/>
      <use xlink:href="#NotoSansCJKjp-Regular-6d" x="124.399979"/>
@@ -2226,34 +2236,35 @@ z
      <use xlink:href="#NotoSansCJKjp-Regular-72" x="335.299942"/>
      <use xlink:href="#NotoSansCJKjp-Regular-65" x="374.09993"/>
      <use xlink:href="#NotoSansCJKjp-Regular-20" x="429.499924"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-74" x="451.899918"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-68" x="489.599915"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-69" x="550.299911"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="577.799896"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="624.599884"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-72" x="646.999878"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="685.799866"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-75" x="746.399857"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="807.099854"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-64" x="868.099838"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-2019" x="930.099823"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="957.899811"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="1004.699799"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-54" x="1027.099792"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-72" x="1086.999786"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-61" x="1125.799774"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-69" x="1182.099762"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="1209.599747"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="1270.599731"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-63" x="1292.999725"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-68" x="1343.99971"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1404.699707"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-63" x="1460.099701"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6b" x="1511.099686"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1566.299683"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-72" x="451.899918"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="490.699905"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="546.099899"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-75" x="592.899887"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6c" x="653.599884"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="681.999878"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="719.699875"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="766.499863"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="788.899857"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="849.499847"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="910.499832"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="932.899826"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-68" x="970.599823"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1031.29982"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1086.699814"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1133.499802"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="1188.899796"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-71" x="1211.299789"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-75" x="1273.299774"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1333.999771"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1389.399765"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="1436.199753"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-69" x="1473.89975"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="1501.399734"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="1561.999725"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1622.99971"/>
     </g>
-    <!-- Select versions on separate held-out tasks -->
-    <g style="fill: #203243" transform="translate(204.450217 592.657333) scale(0.095 -0.095)">
+    <!-- Then use held-out questions -->
+    <g style="fill: #203243" transform="translate(234.659475 592.657333) scale(0.095 -0.095)">
      <defs>
       <path id="NotoSansCJKjp-Regular-2d" d="M 294 1568
 L 1933 1568
@@ -2263,48 +2274,33 @@ L 294 1568
 z
 " transform="scale(0.015625)"/>
      </defs>
-     <use xlink:href="#NotoSansCJKjp-Regular-53"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="59.599991"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6c" x="114.999985"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="143.399979"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-63" x="198.799973"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-74" x="249.799957"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="287.499954"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-76" x="309.899948"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="361.999939"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-72" x="417.399933"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="456.199921"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-69" x="502.999908"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="530.499893"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="591.099884"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="652.099869"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="698.899857"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="721.29985"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="781.899841"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="842.899826"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="865.29982"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="912.099808"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-70" x="967.499802"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-61" x="1029.499786"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-72" x="1085.799774"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-61" x="1124.599762"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-74" x="1180.89975"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1218.599747"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="1273.999741"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-68" x="1296.399734"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-65" x="1357.099731"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6c" x="1412.499725"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-64" x="1440.899719"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-2d" x="1502.899704"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="1537.599701"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-75" x="1598.199692"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-74" x="1658.899689"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-20" x="1696.599686"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-74" x="1718.99968"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-61" x="1756.699677"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1812.999664"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-6b" x="1859.799652"/>
-     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1914.999649"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-54"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-68" x="59.899994"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="120.599991"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="175.999985"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="236.999969"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-75" x="259.399963"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="320.09996"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="366.899948"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="422.299942"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-68" x="444.699936"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="505.399933"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6c" x="560.799927"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-64" x="589.199921"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-2d" x="651.199905"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="685.899902"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-75" x="746.499893"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="807.19989"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-20" x="844.899887"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-71" x="867.299881"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-75" x="929.299866"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-65" x="989.999863"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1045.399857"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-74" x="1092.199844"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-69" x="1129.899841"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6f" x="1157.399826"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-6e" x="1217.999817"/>
+     <use xlink:href="#NotoSansCJKjp-Regular-73" x="1278.999802"/>
     </g>
    </g>
    <g id="text_18">
