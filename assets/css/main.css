@@ -160,6 +160,7 @@ main { flex: 1; }
 .entry-name { font-size: .875rem; line-height: 1.375; color: var(--color-gray-800); }
 .entry-role { font-size: 80%; line-height: 1.375; color: var(--color-gray-700); min-width: 0; }
 .entry-role .area { color: var(--color-gray-400); }
+.entry-description { grid-column: 1 / -1; margin-top: .25rem; font-size: 80%; line-height: 1.5; color: var(--color-gray-700); }
 .entry-meta { display: flex; flex-wrap: wrap; column-gap: .375rem; font-size: 80%; line-height: 1.375; }
 .entry-date { color: var(--color-gray-700); }
 .entry-place { color: var(--color-gray-500); }
