@@ -3,7 +3,7 @@
   <desc id="desc">分析失败任务。规则有误就改 Skill，规则核实后仍做错就训练 LoRA。同一轮可先改 Skill 再训练。</desc>
   <rect width="1200" height="675" rx="24" fill="#f8f6fc"/>
   <text x="600" y="85" text-anchor="middle" font-size="48" font-weight="700" fill="#3d2869">金融智能体学习飞轮</text>
-  <text x="600" y="135" text-anchor="middle" font-size="28" fill="#615975">180B 金融智能体 · 固定 Claude Code harness</text>
+  <text x="600" y="135" text-anchor="middle" font-size="28" fill="#615975">金融智能体 · 固定 Claude Code harness</text>
   <g fill="#fff" stroke="#7954b8" stroke-width="3">
     <rect x="280" y="185" width="640" height="90" rx="16"/>
     <rect x="100" y="350" width="450" height="100" rx="16"/>

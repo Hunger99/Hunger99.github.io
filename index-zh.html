@@ -152,7 +152,7 @@
                   <span class="entry-sep" aria-hidden="true">·</span>
                   <p class="entry-place">美国芝加哥（远程）</p>
                 </div>
-                <p class="entry-description">复盘时设计了三路流程，用于改进金融数据查询 Agent 的 Skill（可复用的操作说明）。同一道题多做几次。全对时核实参考答案和评分，确认后保留原设置。有对有错时对照成败记录来写或改 Skill。全错时先核实参考答案和评分，再修已有 Skill 中有明确证据的规则错误。有改动时，用新版重做原题，再用未参与修改的题决定是否保留新版。</p>
+                <p class="entry-description">为 Gemini 3 Pro 金融数据查询 agent 编写并多轮持续改良可复用的 Skills。复盘时设计三路流程，同一道题多做几次，按全对、有对有错、全错分流，用执行记录判断是否该改 Skill。用原题和留出题复查改动。</p>
               </div>
             </li>
           </ul>
@@ -253,7 +253,7 @@
               <p class="pub-venue">
                 <span><em>ACM Club 实践项目，2026 年 9 月 - 2026 年 12 月。</em></span>
               </p>
-              <p class="pub-desc">为 180B 金融智能体设计逐轮改进流程，覆盖财报检索、财务计算和公司研究。根据任务失败原因决定更新方式。规则有误就改 Skill，规则核实后仍做错就生成经核验的工具执行记录，用于 LoRA 微调。同一轮可先改 Skill 再微调。负责工具调用和会话管理的 Claude Code harness 保持固定。在相同题目上比较新旧版本，再决定是否保留更新。</p>
+              <p class="pub-desc">为金融智能体设计改进流程，覆盖财报检索、财务计算和公司研究。Skill 写错就改 Skill。规则正确但模型仍做错，就合成并核验工具执行记录，用于 LoRA SFT。同一轮可先改 Skill 再训练。重做同一批检查题，再用留出题检查成绩有没有下降。已在 27B 模型上试跑一次 LoRA 更新。</p>
               <div class="pub-links">
                 <a class="btn btn-project" href="projects/agent-learning-flywheel/?lang=zh"><i class="fas fa-globe-americas" aria-hidden="true"></i>项目主页</a>
                 <a class="btn btn-sponsor" href="https://www.acm.illinois.edu/" target="_blank" rel="noopener noreferrer"><img src="assets/images/badges/ACM-UIUC.svg" alt="ACM @ UIUC">ACM Club 实践项目</a>

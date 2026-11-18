@@ -152,7 +152,7 @@
                   <span class="entry-sep" aria-hidden="true">·</span>
                   <p class="entry-place">Chicago, IL, USA (Remote)</p>
                 </div>
-                <p class="entry-description">After the project, designed a loop to improve reusable instructions (Skills) for the financial data query agent. Run each question several times. For all-correct results, verify the reference answer and scoring before keeping the original setup. Compare successful and failed runs when results are mixed to write or revise Skills. For all-wrong results, verify the reference and scoring first, then fix only confirmed errors in existing Skills. After a Skill change, rerun the original questions, then use held-out questions to decide whether to keep it.</p>
+                <p class="entry-description">Developed and iteratively refined reusable Skills for a Gemini 3 Pro financial-data query agent. In a follow-up design, group repeated runs as all correct, mixed, or all wrong to decide whether to update Skills, then retest on the original and held-out questions.</p>
               </div>
             </li>
           </ul>
@@ -249,11 +249,11 @@
               </a>
             </div>
             <div class="pub-text">
-              <h3 class="pub-title"><strong>Agent Learning Flywheel: Improving a 180B Financial LLM Agent</strong></h3>
+              <h3 class="pub-title"><strong>Agent Learning Flywheel: Improving a Financial LLM Agent</strong></h3>
               <p class="pub-venue">
                 <span><em>ACM Club practicum project, Sep. 2026 - Dec. 2026.</em></span>
               </p>
-              <p class="pub-desc">Designed a workflow for a 180B financial LLM agent that uses task failures to guide updates. Revise faulty Skill instructions and generate verified tool-use records for LoRA supervised fine-tuning when errors persist under verified rules. A round can revise the Skill and then fine-tune the model. The Claude Code harness, which manages tools and sessions, stays fixed; old and new versions are compared on identical tasks before retaining an update.</p>
+              <p class="pub-desc">Designed a Claude Code workflow for filing retrieval, financial calculations, and company analysis. Revise faulty Skills and use verified synthetic tool-use records for LoRA SFT if execution errors persist under sound rules. Both updates can occur in one round. Compare results on the same questions and check for regressions on held-out questions. Ran one LoRA update on a 27B model as a pilot.</p>
               <div class="pub-links">
                 <a class="btn btn-project" href="projects/agent-learning-flywheel/?lang=en"><i class="fas fa-globe-americas" aria-hidden="true"></i>Project Page</a>
                 <a class="btn btn-sponsor" href="https://www.acm.illinois.edu/" target="_blank" rel="noopener noreferrer"><img src="assets/images/badges/ACM-UIUC.svg" alt="ACM @ UIUC">ACM Club Practicum Project</a>

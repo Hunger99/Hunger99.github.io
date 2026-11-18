@@ -3,7 +3,7 @@
   <desc id="desc">Analyze failed tasks, revise Skills when rules are faulty, and train LoRA if execution errors persist under verified rules. Both can occur in the same round.</desc>
   <rect width="1200" height="675" rx="24" fill="#f8f6fc"/>
   <text x="600" y="85" text-anchor="middle" font-size="48" font-weight="700" fill="#3d2869">Agent Learning Flywheel</text>
-  <text x="600" y="135" text-anchor="middle" font-size="28" fill="#615975">180B financial agent · fixed Claude Code harness</text>
+  <text x="600" y="135" text-anchor="middle" font-size="28" fill="#615975">financial agent · fixed Claude Code harness</text>
   <g fill="#fff" stroke="#7954b8" stroke-width="3">
     <rect x="280" y="185" width="640" height="90" rx="16"/>
     <rect x="100" y="350" width="450" height="100" rx="16"/>
