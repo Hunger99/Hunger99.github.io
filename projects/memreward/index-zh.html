@@ -219,14 +219,13 @@
               <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> GNN 会误判，为什么加进去还可能比只用真实奖励的题更好？</p>
               <p>判反了确实会拖累学习，两条回答都打高分也只是打平。GNN 有用的条件是，在<strong>同一道题</strong>里，正确回答拿高分的比例比错误回答高。这样，GRPO 就能从原本会丢掉的 80% 的题里获得一些方向正确的更新。如果这些更新的收益盖过误判的损失，加入预测奖励就有价值。其余 20% 的题继续用真实奖励，提供可靠的更新。</p>
               <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> 你在 RL 训练中遇到过什么稳定性问题？你具体调了哪些参数，为什么这样调，最后怎么判断有效？</p>
-              <p>我遇到的挑战是 training reward 在训练早期和中期都出现过尖峰，之后一直震荡，validation reward 在第 2–3 个 epoch 就到了最高点。我分别对 learning rate 和 KL 系数做过控制变量对照，两者取较大值时，都观察到生成的 entropy 降得快，验证也更早见顶。<strong>Entropy 降得快提示模型过早集中到少数已经拿到高分的答法，后续更难探索能改善验证表现的新答法，而较小的 batch 可能让少数题的采样结果放大 training reward 的波动。</strong></p>
-              <p>最后我做了三项调整。</p>
+              <p>我遇到的是 training reward 在早期和中期出现尖峰，随后一直震荡，validation reward 在第 2–3 个 epoch 就见顶。我根据对照结果和曲线做了三个调整。</p>
               <ul>
-                <li><strong>把 actor learning rate 降到 <code>1e-6</code>。</strong> 缩小每次策略更新的步长，减缓模型过早集中到少数答法上的趋势。</li>
-                <li><strong>把 train batch size 增到 128 道题，每题采样 8 条回答。</strong> 一批共 1,024 条回答。用更多题组来平均梯度，减少少数题的采样结果对单次更新的影响。</li>
-                <li><strong>把 KL penalty 系数降到 <code>1e-3</code>。</strong> 保留对参考策略的约束，同时给任务奖励驱动的更新留出更多空间。</li>
+                <li><strong>把 actor learning rate 降到 <code>1e-6</code>，是为了缩小每次更新。</strong> 只改学习率时，较大的值让 entropy 降得更快，验证也更早见顶。我担心早期拿高分的答法在几步内就被强化得太快，所以用更小的步长给后续探索留时间。</li>
+                <li><strong>把 KL 系数降到 <code>1e-3</code>，是为了给策略偏离参考模型留出空间。</strong> 只改 KL 系数时，较大的值也伴随验证早早见顶。如果有用的新答法在参考模型里本来就很少出现，过大的 KL 惩罚可能抵消奖励对这些答法的推动。我因此降低了惩罚权重，同时保留对参考策略的约束。</li>
+                <li><strong>把 batch size 增到 128 道题，每题采样 8 条回答，是为了减少采样波动。</strong> 反复出现的尖峰让我怀疑，少数题的采样结果可能对一批的奖励和梯度影响太大。让每次更新平均更多题组，可以减小这种影响。这个判断来自曲线，batch size 的独立收益还没有单独验证。</li>
               </ul>
-              <p>换成这套配置后，training reward 爬升更平稳，尖峰少了。Validation reward 到第 7–8 个 epoch 才达到峰值，<strong>最佳验证表现和最终测试表现都更好</strong>。Learning rate 和 KL 系数分别做过对照，batch size 的效果是随整套配置一起观察到的。</p>
+              <p>三项合调后，训练奖励爬升更平稳，验证奖励到第 7–8 个 epoch 才见顶，最佳验证表现和最终测试表现也都更好。</p>
               <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> 为什么 20% 的标签在部分基准上能比全部标签得分更高？</p>
               <p>R1-Oracle 是所有 rollout 都用真实奖励的 Oracle 运行，它是全监督参照，而不是每个基准的严格上界：训练看到的仍是跨多个领域的有限随机样本，所以全监督并不保证每个基准都得到最好的结果，尤其是不同领域的梯度在联合优化中相互竞争时。MemReward 在数学上的选择性提升，可以用预测奖励的质量随领域不同来解释：在 Qwen2.5-1.5B、20% 标签下，冻结的 GNN 把正确 rollout 排在错误 rollout 之前的概率，即 ROC-AUC，在数学上是 0.918，QA 是 0.871，代码是 0.754。R1-Oracle 给所有领域的奖励都同样准确，所以它的更新反映联合的多领域目标；而在 MemReward 中，不均匀的奖励质量可能让优化实际上相对更侧重数学，减小其他领域噪声更大的梯度的影响，这可以让数学表现超过 R1-Oracle。为检验这一解释，我们把 QA 和代码的真实标签比例从 20% 提到 70%，数学保持 20%，GNN、backbone 和 GRPO 设置都不变：QA 和代码提升，数学下降 2.01 分，不再超过 R1-Oracle。这个结果符合由领域间奖励质量差异带来的多任务优化权衡。</p>
             </div>
