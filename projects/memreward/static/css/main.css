@@ -295,6 +295,19 @@ html[lang="zh-CN"] .teaser {
   font-weight: 700;
 }
 
+.pipeline-question-marker {
+  display: inline-block;
+  min-width: 1.6em;
+  margin-inline-end: .4em;
+  padding: 0 .3em;
+  border-radius: .3rem;
+  background: #f3effb;
+  color: #4c2a94;
+  font-size: .85em;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .pipeline-note {
   margin-top: .5rem;
   color: #4a5565;
