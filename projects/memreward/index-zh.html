@@ -218,7 +218,7 @@
               <p>冻结 GNN 是有意的设计选择，用来防止奖励预测器和策略之间出现移动目标（moving target）反馈回路：如果继续训练，GNN 的每次更新都会改变策略用来学习的奖励，策略的每次更新又会改变 GNN 用来学习的 rollout。20% 的真实奖励持续为策略优化提供可靠的监督。从实验看，在 Qwen2.5-3B 上，冻结的 GNN 在全部 410 个训练步中保持稳定的预测准确率，结合<a href="https://arxiv.org/html/2603.19310v5#A16" target="_blank" rel="noopener noreferrer">论文附录 P 的奖励翻转实验</a>，这些结果在我们的实验设定下没有显示预测奖励中的错误逐步累积的迹象。</p>
               <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> GNN 会误判，为什么加进去还可能比只用真实奖励的题更好？</p>
               <p>判反了确实会拖累学习，两条回答都打高分也只是打平。GNN 有用的条件是，在<strong>同一道题</strong>里，正确回答拿高分的比例比错误回答高。这样，GRPO 就能从原本会丢掉的 80% 的题里获得一些方向正确的更新。如果这些更新的收益盖过误判的损失，加入预测奖励就有价值。其余 20% 的题继续用真实奖励，提供可靠的更新。</p>
-              <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> 你在 RL 训练中遇到过什么稳定性问题？你具体调了哪些参数，为什么这样调，最后怎么判断有效？</p>
+              <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> MemReward 的 RL 训练出现了哪些稳定性问题？为此调整了哪些参数，为什么这样调，又如何验证效果？</p>
               <p>我遇到的是 training reward 在早期和中期出现尖峰，随后一直震荡，validation reward 在第 2–3 个 epoch 就见顶。我根据对照结果和曲线做了三个调整。</p>
               <ul>
                 <li><strong>把 actor learning rate 降到 <code>1e-6</code>，是为了缩小每次更新。</strong> 只改学习率时，较大的值让 entropy 降得更快，验证也更早见顶。我担心早期拿高分的答法在几步内就被强化得太快，所以用更小的步长给后续探索留时间。</li>
