@@ -191,8 +191,8 @@
             <img src="static/images/pipeline_gnn.png" alt="含有标签和无标签 rollout 子图的异构图">
             <div class="content has-text-justified">
               <p>GNN 按关系类型从相连节点汇集信息，再根据 query 与 rollout 的表示预测奖励。训练时，让预测接近有标签 rollout 的最终答案正确性；连续奖励实验则直接预测奖励数值。</p>
-              <p class="pipeline-group has-text-left">为什么要训练 GNN，而不是在同一张图上用固定规则扩散标签？</p>
-              <p>为了让比较可控，在图上把标签从有标签样本扩散到无标签样本的经典方法，即标签传播（Label Propagation），与 MemReward 使用完全相同的问题嵌入、相似度图、有标签样本，以及更新策略的 RL 算法 GRPO 的混合奖励流程。唯一的区别是它用固定的标签扩散代替学到的异构 GNN 消息传递。在 Qwen2.5-3B 上，只用 20% 有标签 rollout 训练、丢弃其余 rollout 的基线 R1-p 总分是 75.67，标签传播把它提到 75.97（分数是 10 个基准上的总体测试结果，单位是百分数）。MemReward 达到 77.02，比标签传播高 1.05 分，差距最大的是 MATH 和 GPQA 两个基准。所以 MemReward 的提升不能只用标签传播来解释。</p>
+              <p class="pipeline-group has-text-left">为什么用 GNN 预测奖励？</p>
+              <p>相似的题往往用得上相似的解法，也容易犯相似的错，所以旧题的作答经验可以帮助我们判断新题。GNN 先从有真实奖励的作答中学习这些规律，遇到新题时，再结合相似题的经验和这次作答的推理与答案，预测这条回答是否正确。</p>
             </div>
           </div>
           <div class="pipeline-panel" role="tabpanel" id="mr-panel-4" aria-labelledby="mr-tab-4" tabindex="0">
@@ -218,8 +218,17 @@
               </tbody></table></div>
               <p class="pipeline-group has-text-left">为什么预热后冻结 GNN，而不是在在线策略优化时继续训练它？</p>
               <p>冻结 GNN 是有意的设计选择，用来防止奖励预测器和策略之间出现移动目标（moving target）反馈回路：如果继续训练，GNN 的每次更新都会改变策略用来学习的奖励，策略的每次更新又会改变 GNN 用来学习的 rollout。20% 的真实奖励持续为策略优化提供可靠的监督。从实验看，在 Qwen2.5-3B 上，冻结的 GNN 在全部 410 个训练步中保持稳定的预测准确率，结合混合奖励 GRPO 环节的奖励翻转实验，这些结果在我们的实验设定下没有显示预测奖励中的错误逐步累积的迹象。</p>
-              <p class="pipeline-group has-text-left">预测奖励并不完美，GRPO 为什么仍能得到有用的更新信号？</p>
-              <p>GRPO 使用同一 query 的多条 rollout 之间的相对 advantage，而不只依赖奖励分类的总体准确率。组内奖励有差异时，advantage 由奖励减去组内均值、再除以组内标准差得到。只要预测奖励在组内仍提供与正确性有关的信息，它就可能比直接丢弃无标签 rollout 更有用；20% 的真实奖励同时持续参与策略优化。</p>
+              <p class="pipeline-group has-text-left">GNN 会误判，为什么加进去还可能比只用真实奖励的题更好？</p>
+              <p>判反了确实会拖累学习，两条回答都打高分也只是打平。GNN 有用的条件是，在<strong>同一道题</strong>里，正确回答拿高分的比例比错误回答高。这样，GRPO 就能从原本会丢掉的 80% 的题里获得一些方向正确的更新。如果这些更新的收益盖过误判的损失，加入预测奖励就有价值。其余 20% 的题继续用真实奖励，提供可靠的更新。</p>
+              <p class="pipeline-group has-text-left">你在 RL 训练中遇到过什么稳定性问题？你具体调了哪些参数，为什么这样调，最后怎么判断有效？</p>
+              <p>我遇到的挑战是 training reward 在训练早期和中期都出现过尖峰，之后一直震荡，validation reward 在第 2–3 个 epoch 就到了最高点。我分别对 learning rate 和 KL 系数做过控制变量对照，两者取较大值时，都观察到生成的 entropy 降得快，验证也更早见顶。<strong>Entropy 降得快提示模型过早集中到少数已经拿到高分的答法，后续更难探索能改善验证表现的新答法，而较小的 batch 可能让少数题的采样结果放大 training reward 的波动。</strong></p>
+              <p>最后我做了三项调整。</p>
+              <ul>
+                <li><strong>把 actor learning rate 降到 <code>1e-6</code>。</strong> 缩小每次策略更新的步长，减缓模型过早集中到少数答法上的趋势。</li>
+                <li><strong>把 train batch size 增到 128 道题，每题采样 8 条回答。</strong> 一批共 1,024 条回答。用更多题组来平均梯度，减少少数题的采样结果对单次更新的影响。</li>
+                <li><strong>把 KL penalty 系数降到 <code>1e-3</code>。</strong> 保留对参考策略的约束，同时给任务奖励驱动的更新留出更多空间。</li>
+              </ul>
+              <p>换成这套配置后，training reward 爬升更平稳，尖峰少了。Validation reward 到第 7–8 个 epoch 才达到峰值，<strong>最佳验证表现和最终测试表现都更好</strong>。Learning rate 和 KL 系数分别做过对照，batch size 的效果是随整套配置一起观察到的。</p>
               <p class="pipeline-group has-text-left">怎样检验预测奖励的噪声会不会破坏 RL 训练？</p>
               <p>在 Qwen2.5-1.5B 上，我们以 0%、30%、50%、70% 和 90% 的概率随机翻转 GNN 预测奖励，20% 的真实奖励保持不变，其余训练设置相同。相对于不额外翻转的配置，30% 和 50% 翻转时，10 个基准的总体分数分别下降 0.72 和 1.01 分；70% 和 90% 翻转时退化明显加剧。这个对照检验了训练对额外随机奖励扰动的敏感性，并保留了真实奖励的监督。</p>
               <p class="pipeline-group has-text-left">为什么 20% 的标签在部分基准上能比全部标签得分更高？</p>
