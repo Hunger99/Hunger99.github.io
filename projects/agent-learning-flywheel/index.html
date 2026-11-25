@@ -234,18 +234,18 @@ Error generating stack: `+e.message+`
     [
       "review-skill-write",
       "Opus 根据题目和作答证据修订已有规则。缺少做法且没有适用的 Skill 时，由 Opus 新建。两次独立的 Opus 审查核验改动的规则。",
-      "C5 证据以及已有的 Skill（如有）。两次都错的记录可用于修订证据明确的已有规则。新建 Skill 需要有对有错的作答证据。",
+      "C5 的错因证据以及已有 Skill（如有）。有对有错时可用成功作答给出做法。两次都错时，C1 和 C2 须通过，还要从原始资料和失败记录确认已有规则有缺陷，或确实缺少可复用的做法。",
       "通过核验的新版 Skill。规则核验未通过时沿用原 Skill。"
     ],
     [
       "review-skill-rerun",
-      "使用本轮开头的模型权重和通过核验的新版 Skill 重做同一批检查题。",
+      "Qwen 使用本轮开头的模型权重和通过核验的新版 Skill 重做同一批检查题。",
       "同一批 32 道题及改动前的作答，包括原本答对的题。",
-      "同类错误仍在独立来源上反复出现时，用新版 Skill 做 LoRA 微调。否则只评估 Skill 改动。"
+      "复诊确认没有剩余规则缺陷，且同类执行错误仍在至少两个独立来源组复现时，固定新版 Skill 做 LoRA。证据不足以决定时暂缓，其余情况只评估 Skill 改动。"
     ],
     [
       "review-f02",
-      "F02 针对确认的错误，用另一个 Train 来源出题。Opus 写财报和工作簿题。代码题用模板要求 Qwen 新增功能，或修好原本正常的功能。通过独立验算或执行测试，确认参考答案能通过，重现目标错误的答法会被判错。",
+      "F02 根据已确认的执行错误构造新题，材料来自与该错误所对应的检查题不同的 Train 来源组。构题程序通过 CLIProxyAPI 请 Opus 提出财务计算、表格操作和来源核对题的规格。对代码题，Opus 指定来源和题型，程序采用封存的规格与测试，或生成可测试的索引练习。程序通过验算或运行测试，确认参考答案能通过、目标错例会被判错。",
       "F01 或 Skill 复做确认的具体错误，以及独立来源的资料。",
       "给 Qwen 的合格新题和正常资料、工具。参考答案、测试和错例由评分端保留。"
     ],
@@ -287,7 +287,7 @@ Error generating stack: `+e.message+`
     ],
     [
       "review-f11",
-      "F11 以每条经核验的 Qwen 回复为终点截取样本。带提示的作答先移除教师提示，再由 Opus 核对剩余上下文能否支撑这条回复及其中的工具参数。必需回复未通过检查时，暂不采用这道题。",
+      "F11 导出程序以每条经核验的 Qwen 回复为终点截取样本。F07 的带提示作答通过 F08 验收后，导出程序从训练副本移除逐题提示。Opus 对照原题、Skill、正常材料和真实工具记录，核验保留的回复和工具参数是否仍有依据。必需回复未通过时暂不采用该题。",
       "原题和约束、此前的消息，以及当时实际收到的工具返回，包括工具报错。",
       "只对当前经核验的 Qwen 回复计算训练损失，回复可以包含工具调用或最终答案。评审意见、参考答案和带提示的原件另行保存。"
     ],
@@ -439,18 +439,18 @@ Error generating stack: `+e.message+`
     [
       "review-skill-write",
       "Opus revises an existing rule using the task and execution evidence, or writes a new Skill for a missing procedure when no Skill covers it. Two independent Opus reviews verify the changed rules.",
-      "C5 evidence and the existing Skill, if any. Two wrong answers support repair of a demonstrated defect in an existing rule. Creating a Skill requires mixed correct and incorrect attempts.",
+      "C5 evidence and the existing Skill, if any. A successful attempt can establish the procedure in a mixed pair. When both attempts fail, C1 and C2 must pass and the source and execution evidence must establish a defect in an existing rule or a missing reusable procedure.",
       "A verified new or revised Skill to test. If verification fails, keep using the current Skill."
     ],
     [
       "review-skill-rerun",
-      "Rerun the same check questions with the verified Skill and the round-start weights.",
+      "Qwen reruns the same check questions with the verified Skill and the round-start weights.",
       "The same 32 questions, including previously correct ones, and the earlier attempts.",
-      "If the same error still recurs across independent sources, proceed to LoRA with the revised Skill. Otherwise evaluate the Skill update alone."
+      "Freeze the revised Skill for LoRA if the new diagnosis finds no remaining rule defect and the execution error still recurs across at least two independent source groups. Pause when material evidence is incomplete. Otherwise evaluate the Skill update alone."
     ],
     [
       "review-f02",
-      "F02 Turn a confirmed error into a new question from a separate Train source. Opus writes financial and workbook questions. Coding templates ask Qwen to add a feature or repair previously working behavior. Recompute or run tests to verify that the reference passes and an answer repeating the error fails.",
+      "F02 Construct a question for a confirmed execution error using a Train source group different from the one used in the check question that exposed the error. Use CLIProxyAPI to ask Opus for financial arithmetic, table or source lookup specifications. For code, Opus specifies the source and type. The program uses the sealed specification and tests or builds a testable indexing exercise. Recompute or run tests so the reference passes and the target counterexample fails.",
       "A specific error from F01 or the Skill rerun, and independent source material.",
       "A verified practice question with sources and tools for Qwen. The reference answer, tests and wrong example stay with the scorer."
     ],
@@ -492,7 +492,7 @@ Error generating stack: `+e.message+`
     ],
     [
       "review-f11",
-      "F11 Cut a sample at each verified Qwen reply. For assisted runs, remove the teacher hint and have Opus check that the remaining context supports the reply and its tool arguments. Set the question aside if a required reply fails this check.",
+      "F11 The exporter cuts a sample at each verified Qwen reply. After the F07 hinted attempt passes the F08 checks, the exporter removes the per-question hint from a training copy. Opus checks whether the original task, Skill, normal materials and real tool records still support the kept replies and tool arguments. Set aside the question if a required reply fails.",
       "The original question and its constraints, earlier messages and real tool feedback available at this point, including any tool errors.",
       "Only the current verified Qwen reply is a training target. It can contain tool calls or a final answer. Keep judge comments, reference answers and the original assisted record separately."
     ],
@@ -1298,56 +1298,52 @@ function DapoReward({ lang }) {
 }
 const appendixQa = [
     [
-        "请在三分钟内介绍这个项目，假设我第一次听说它。",
-        "Agent Learning Flywheel 研究的是，金融问答模型出错以后，什么时候该改做题说明，什么时候该微调模型，以及怎么验证改动有效。举个例子，一次财报问答试跑里，模型算对了金额，却因为在规定格式的答案前多写了说明，没通过评分。我们把给模型的可复用做题说明叫作 Skill，里面会写怎么查资料、核对计算和提交答案。SkillOps 和 SkillOpt 都把更新放在外部 Skill 上，我们进一步研究规则已经明确、模型还是反复执行出错的情况。\n\n按方案，每轮 Qwen 用 Claude Code 把 32 道训练检查题各做两遍，留下真实的工具调用和返回。程序先做能自动核验的检查，难判断的地方由 Opus 对照原始资料、评分规则和作答记录来查。确认 Skill 有缺陷，Opus 就修规则，核验通过后让本轮开头的 Qwen 重做同一批题。如果规则已经核验通过，同类错误仍出现在至少两个独立的训练资料来源上，才把这个错误作为 LoRA 微调的目标。LoRA 冻结底座，只训练少量新增参数。\n\n要微调，项目组会从另一个训练来源取资料，围绕这个错误出新题，再通过验算或测试确认正确答法能通过、重现目标错误的答法会被拒收。Qwen 用真实工具作答，程序和 Opus 核对答案和执行证据。比如题目只允许用截至三月一日已披露的财报，训练样本会保留搜到四月财报的工具返回，让模型学习下一条经过核验的动作，也就是按正确的截止日期重新搜索。\n\n最后，项目组让候选版本重做本轮检查题，看已知错误有没有减少，再用来源独立的留出题比较，决定是否保留改动。截至十一月二十三日的运行快照，首轮目标 256 道题里已验收 201 道，全部来自 Qwen 无教师提示的作答。首轮 LoRA 和正式测试还没进行。现在有的是通过验收的训练示范，模型是否提升要靠后续的配对评测来回答。"
+        "Agent Learning Flywheel 想解决什么问题，怎样验证改动有效？",
+        "Agent Learning Flywheel 是一套反复检查并更新金融问答模型的流程。模型在工具交互中出错时，这套流程用作答证据判断该改操作说明，还是用数据微调模型。我们把可复用的操作说明叫作 Skill。比如一次财报问答试跑中，Qwen 算对金额，却在要求直接返回的 JSON 前加了一段说明，结果没通过评分。要判断该改哪一层，得先看原题、评分方式和作答记录。\n\n每轮先让本地 Qwen 在 Claude Code 的工具环境中，把同一批 32 道检查题各做两次。诊断程序先核参考答案、评分和可检查的执行证据，Opus 根据实际记录判断规则是否有缺陷、模型有没有按规则执行。规则缺失、含糊或写错时先改 Skill。如果规则已经核验，同类错误还在不同训练来源上反复出现，就从其他训练来源出新题，让 Qwen 实际用工具作答。验收程序筛选轨迹，导出程序构造 LoRA 微调的训练样本。\n\n版本选择时，Qwen 用轮初版本和候选版本重做同一批检查题，检查已发现的错误有没有减少，再用独立的留出题看能力能否迁移。页面所列的 2026 年 11 月 23 日 19:30 UTC 快照记录，27B Mixed v9 首轮计划收集 256 道合格题，当时已验收 201 道，均为无提示作答通过的通用补充题。这一快照仍处于数据组建阶段。"
     ],
     [
-        "请用一分钟说明，同一道检查题做两次之后，项目怎样根据两次的结果决定接下来检查什么？",
-        "程序按 Qwen 两次作答的得分走三条路。两次都对，就用原始资料核对参考答案，再拿该判对和该判错的答案测试评分器。两项都通过，这道题就查完了。两次都错，也先核对这两项，两项都通过才查 Qwen 的执行。一对一错，就直接查执行。参考答案或评分规则有修正，程序会重评两份作答，再按新结果分流。\n\n查执行时，先看读取、计算等必需步骤有没有做对。需要用工具的题，再查 Qwen 怎么调用工具、怎么用真实返回。接着 Opus 核对 Skill 的规则有没有写对，以及 Qwen 有没有照做。"
+        "诊断时，同一道检查题已经做了两次。诊断程序怎样根据两次结果决定接下来查什么？",
+        "诊断程序按两次作答的评分结果分流。评分程序对两份作答使用同一套判分规则。两次都对时，诊断程序先核对参考答案和评分器，两项通过后结束这道题的检查。两次都错时，也先查这两项，确认题和评分有效后再查模型是怎样执行的。一对一错时，诊断程序从两次执行的差异查起。\n\n查执行时，程序核对必要步骤、工具调用和真实返回，Opus 结合记录检查 Qwen 怎样用这些返回，以及当时的 Skill 有没有说清规则。如果检查中发现参考答案或评分器有误，先修正它，评分程序再重评原来的两份作答。诊断程序按新得分重新分流。"
     ],
     [
-        "请用一分钟说明，C1 到 C5 各检查什么，C5 根据什么证据判断错因？",
-        "C1 用原始资料和独立验算核对题目、参考答案。C2 拿应该判对和应该判错的答案测试评分器。C3 看 Qwen 有没有完成必需的读取、检索、计算或测试。C4 针对需要工具的题，查 Qwen 怎么调用、怎么用真实返回，也看工具有没有故障。C5 由 Opus 核对 Skill 里的规则和 Qwen 的实际做法。\n\nOpus 会把题目要求、Qwen 当时收到的 Skill、作答记录和适用的 C3、C4 检查结果放在一起看。它据此判断规则是不是缺失、含糊或写错，或者 Qwen 有没有漏做已经核验过的规则要求的步骤。证据不足就先把错因留待核查。"
+        "C1 到 C5 各检查什么？程序和 Opus 根据什么证据判断错因？",
+        "C1 核对题目与参考答案，程序对照原始资料并独立验算。C2 用应该判对和应该判错的样例测试评分器。C3 看作答记录，检查 Qwen 有没有做完所需的读取、检索、计算和测试。C4 核对工具调用、真实返回以及 Qwen 怎样使用返回，同时记录工具故障、资料不可访问等情况。\n\n程序先执行有明确判定规则的检查。需要语义判断时，Opus 看原题、Qwen 当时收到的 Skill、作答记录及相关检查结果。C5 用这些证据区分规则缺失、含糊或写错，还是 Qwen 没按已核验过的规则执行。证据不足的记录留待核查。每个诊断组、Skill 候选和合成题作答都以 5% 的概率被抽中，由独立人工审查者异步核查。查实问题时，审查者可以暂停流程。"
     ],
     [
-        "请用一分钟说明，什么情况下只改 Skill、只做 LoRA，或者先改 Skill 再做 LoRA？",
-        "只改 Skill 的情况，是 Opus 查实规则有缺陷，修订后通过两次独立审查。Qwen 用轮初权重重做原来那 32 道检查题，原来答对的也重做。如果同类错误在独立来源上不再反复出现，就只评估修改后的 Skill。\n\n只做 LoRA 的情况，是现有规则已经核验通过，同一个 Qwen 仍在至少两个独立训练来源上出现同类执行错误。同一份财报派生出几道题，也只算一个来源。\n\n先改 Skill 再做 LoRA 的情况，是规则确实有缺陷，改完并核验通过后，Qwen 重做检查题仍然在独立来源上反复犯同类错误。这时项目组固定新版 Skill，出题筛选示范，再用示范微调。最后要通过配对评估才保留改动。"
+        "C5 查明错因后，控制程序何时只改 Skill、只做 LoRA，或者先改 Skill 再做 LoRA？",
+        "控制程序要求同一种问题在同一套 Qwen 权重的至少两个独立 Train 来源组上得到确认。同一份财报派生出的题算同一个来源组。证据指向规则缺陷时，由 Opus 新建或修订 Skill。新版 Skill 通过核验后，Qwen 用轮初权重和新版 Skill 重做同一批检查题。控制程序根据复做记录再次检查规则缺陷和模型执行错误。\n\n轮初没有达到改 Skill 条件的规则缺陷，且使用已核验的轮初 Skill 时，同类执行错误仍在至少两个独立来源组复现，控制程序固定该 Skill，准备相应示范做 LoRA。用新版 Skill 重做后，C5 确认没有剩余规则缺陷，且同类执行错误仍在至少两个独立来源组复现，控制程序才固定新版 Skill 并开始准备示范。复诊有足够证据且未达到训练条件时，只评估 Skill 改动。证据不足以决定时暂缓。最终是否保留新 Skill、LoRA 权重或联合版本，由配对评测决定。"
     ],
     [
-        "请用一分钟说明，什么时候新建 Skill，什么时候修订已有 Skill，改完后怎样核验？",
-        "缺少所需的做法、又没有适用的 Skill 时，Opus 可以新建，但得有答对和答错的作答证据。如果已经有适用的 Skill，证据指向规则缺失、含糊或写错，Opus 就修订已有的规则。两次都答错也能支持修订，前提是证据明确指向已有规则的缺陷。\n\n改完后，Opus 做两次独立审查，对照原始资料和作答记录，检查新规则是否正确、能否覆盖已发现的问题。通过后，Qwen 用轮初权重和新版 Skill 重做同一批 32 道检查题，包括原来答对的题，再看同类执行错误会不会在独立来源上反复出现。"
+        "确认 Skill 有缺陷后，Opus 什么时候新建 Skill，什么时候修订已有 Skill？怎样核验改动？",
+        "缺少所需做法且没有适用的 Skill 时，Opus 可新建一份 Skill。有成有败的作答能提供正确做法和失败反例。两次都失败时，C1 和 C2 要先确认原题、答案和评分有效，原始资料与失败记录还须共同证明缺少某个可复用步骤，Opus 才据此新建。如果已有适用的 Skill，但规则缺失、含糊或写错，Opus 根据原始资料和执行证据修订已有 Skill。\n\n写完后，两次独立的 Opus 审查分别对照原始资料、作答记录和候选规则，核实规则是否正确、是否覆盖发现的问题。通过后才交给轮初权重的 Qwen 重做原来的 32 道检查题。原先答对的题也会重做，用来发现新规则引入的退化。审查未通过时，控制程序保留轮初 Skill。"
     ],
     [
-        "请用一分钟说明，项目怎样围绕目标错误合成并验收新题，再筛选训练示范，教师在什么情况下参与？",
-        "项目用另一个训练来源，围绕已确认的错误出题。Opus 写财报和工作簿题，代码题按模板构造。验收时独立验算或跑测试，确认参考答案能过，重现目标错误的答法会被判错。\n\nQwen 无提示独立做两次，项目根据执行记录看有没有复现同一个错因。一次合格、一次复现目标错误，就保留合格的那次。两次都复现，教师 Opus 才给纠错方向，Qwen 到新工作区用真实工具重做。两次都合格或出现其他结果，暂不采用。无提示和有提示的作答都得核对答案、格式和执行证据。程序先查，需要判断的交给 Opus，每题最多验收一条示范。"
+        "Flywheel 用哪些基准做诊断、合成题和评测？为什么要分开用？",
+        "训练集 Train 的原题用来复现错误。DocFinQA 提供可核对数字、单位和计算的财报任务，DSBench Analysis 提供工作簿分析任务，DSCodeBench 提供有可执行测试的编程任务。构题程序从这三套训练材料取原文或代码规格，因为生成题可以沿原文验算或跑测试。\n\nFinSearchComp 的 T2、T3 用来检查时间点检索和跨来源取证，进入原题诊断和评测。留出验证集 Valid 的主分来自 DocFinQA、FinSearchComp 和 DSCodeBench。其他评测还会单独看研究报告、支付规则、预测建模和指令遵循，例如 FinDeepResearch、DABstep Hard、DSBench Modeling 和 IFEval。来源组先划分，再出派生题。这样从 Train 查到的错误可以指导新题，Valid 和最后的 Test 仍能检验未见来源。"
     ],
     [
-        "请用一分钟举例说明，验收后怎样把一段作答拆成 LoRA 样本，输入里保留什么，训练目标是什么？",
-        "每段样本截到一条核验通过的 Qwen 回复为止，只对这条回复计算训练损失。输入保留系统指令、可用工具、原题和要求，以及此前的消息和真实工具返回。\n\n比如一次独立导出测试用了实际的财报问答记录。一次 Python 检查报错，后来 Qwen 发出通过核验的 Bash 纠正调用。这个样本把报错留在输入里，让模型学习后面那条纠正回复，包括工具名和参数。通过核验的最终答案也可以另成一段。原作答有教师提示的话，项目先移除提示，再由 Opus 核对剩下的上下文能否支撑这条回复和工具参数。"
+        "合成题怎样按错误类型选择新来源？财务计算、表格操作、来源核对和代码题分别怎样构造与验证？",
+        "F02 为已确认的执行错误构造专项题。构题程序以复现错误的 Train 检查题为依据，从另一个 Train 来源组取材料。原材料和派生题与 Valid、Test 按来源组隔离。前三类可用 DocFinQA 的财报节选或 DSBench Analysis 的表格资料。财务计算题定位原文数字并指定公式、单位和舍入位数，程序独立复算。表格操作题从真实行列取值，例如计算两个单元格的占比，程序核对位置并重算。来源核对题指定行和唯一标记，程序从原文截取标记后的答案。代码题以封存的 DSCodeBench 规格和测试为准，针对原下标错误时可生成可复现的索引练习。程序跑参考实现和错误实现，确认测试能区分两者。\n\nA 类把必要材料放在题面，B 类把材料放在另一个文件，Qwen 需要用工具取回后再解题。两类都允许用工具，A、B 分别计划收集 128 道合格题。每个题型的权重按已确认的同类执行错误涉及的独立 Train 来源组数加一计算，构题程序按权重在 A、B 的 128 道题内分别分配名额。先取整数，再按小数余量从大到小分配剩余名额。"
     ],
     [
-        "请用一分钟说明，项目为什么选这些数据集？请举代表性题目，说明各数据集分别用于训练、诊断还是评测。",
-        "这些数据集覆盖金融问答要用的取数、计算、检索和交付能力。训练和评测用 DocFinQA，比如读财报算收入同比，也用 DSBench 的工作簿分析题和 DSCodeBench 的数据处理代码题，比如写一个表格汇总函数。\n\nFinSearchComp 的 T2、T3 用于诊断和评测历史检索，比如找截止日前可用的证据，或跨来源查数再计算。其余用途是评测。FinDeepResearch 要写带引用的公司报告，DABstep Hard 要按支付规则算费用，DSBench 建模题要交预测结果，IFEval 则检查格式、长度等通用指令有没有遵守。"
+        "F02 验题通过后，哪一次多轮作答能成为训练示范？教师什么时候介入？",
+        "F03 由本地 Qwen 先独立做两次，两次都不给逐题提示。分流程序在 F04 使用各次作答的核验结果及真实执行记录。针对特定错误的题，一次通过验收、另一次重现目标错误时，保留已通过的那次。两次都重现同一目标错误时，请 Opus 在 F06 指出错误位置并给一条纠错方向。随后 Qwen 在 F07 带着提示在新工作区重做整题，实际调用工具。其余结果暂不计入专项配额，包括两次都通过、只重现了别的错误或错因不明。\n\nF08 的质量标准适用于无提示作答和带提示重做。验收程序复用 F02 已核验的新题、参考答案及评分方法，并在已核验的 Skill 下检查答案、格式和工具记录。需要判断证据含义和执行过程时由 Opus 负责。通用补充题有合格作答时，可再采一次无提示作答。两次都是已确认的执行失败时，也可以请 Opus 给提示。多条合格后，Opus 按取证是否正确、过程是否完整、工具调用是否必要来选一条。\n\n多候选筛选借鉴了 NVIDIA 的做法。STaR 在答错后给出正确答案以引导重新生成推理。Flywheel 借鉴失败后重做的思路，用 F06 提供纠错方向，再由 Qwen 实际执行 F07，留下可核查的工具调用与返回。"
     ],
     [
-        "请用一分钟说明，重做同一批检查题和使用留出题分别能看出什么，图 B 训练出的候选版本怎样进入这个比较？",
-        "重做同一批 Train 检查题，是看本轮已经发现的错误有没有减少。来源独立的 Valid 留出题用来检查改动遇到新资料时表现怎样、其他能力有没有退化，再决定是否保留。正式 Test 留到最后，比较初始组合和最终保留的 Mixed 版本。\n\n图 B 用达到配额的合格示范，从轮初权重训练出候选 LoRA，再送回图 A。比较 LoRA 时，Qwen 用候选和轮初两套权重作答，两边用同一个 Skill，题目、评分方式、工具、推理种子和预算也相同。两项一起改时，最终组合还要跟轮初组合比较。"
+        "同一道题怎样独立采样多轮轨迹？怎样证明模型当时真的收到了工具结果？CLIProxyAPI 在哪些环节用到？",
+        "采样程序固定同一轮的本地 Qwen3.8-27B BF16 权重、Skill、原料版本和工具权限，用不同随机种子与独立工作区采集两次无提示作答。每题最多再追加一次作答。v9 的单次常规作答上限是 32 轮、64 次工具调用、900 秒及 32,768 个生成 token。采集器按发生顺序保存每次模型请求、Qwen 回复、工具调用和真实返回。验收程序核对调用编号、返回内容和后续请求，确认 Qwen 作答时确实已经收到它所用的证据。超时、执行未完成和证据不足单独记录，供后续排查。\n\n在这套流程里，CLIProxyAPI 是调用 Opus 5.5 的模型请求代理，发请求时指定 high。F02 出题时经它调用 Opus 提出题目规格，代码题的 Opus 输出只指定来源题和题型，规格与测试由程序处理。需要 Opus 判断时，诊断、Skill 修订与独立审查、F08 的语义验收和通用候选评选也走这一入口。F06 的纠错提示和 F11 的去提示复核同样经它请求 Opus。本地 Qwen 发起工具调用并写作答，Claude Code 执行工具并回传结果，验收程序复算数值和运行测试。v9 的 Valid 涉及语义评分时，另用固定的本地 Qwen 作裁判。"
     ],
     [
-        "请在三分钟内介绍这个项目，假设我第一次听说它。",
-        "Agent Learning Flywheel 研究的是，金融问答模型出错时，什么时候该改做题说明，什么时候该微调模型，改完怎么验证。一次财报问答试跑里，模型算对了金额，却因为在规定格式的答案前多写说明，没通过评分。Skill 就是给模型的可复用做题说明，写明怎么查资料、核对计算和交答案。\n\n按方案，每轮 Qwen 用 Claude Code 把三十二道检查题各做两遍，留下实际的工具调用和返回。项目查参考答案、评分方式、模型执行和 Skill，程序难以判定的由 Opus 对照原始资料和作答记录核查。规则有缺陷时，Opus 先修订，核验后让 Qwen 用轮初权重重做原题。规则核验通过后，同类执行错误仍在至少两个独立训练来源上复现，才用 LoRA 微调。它冻结底座，只训练少量新增参数。\n\n项目从另一个训练来源出题，先验算或跑测试，确认参考答案能通过、重现目标错误的答法会被判错。Qwen 用真实工具作答，程序和 Opus 核对答案和执行证据。比如题目只允许用截至三月一日已披露的财报，搜到四月财报的工具返回留在样本输入里，模型要学的是下一条核验通过的回复，也就是按正确日期重搜。\n\n项目让候选和轮初版本在相同条件下重做同一批检查题，看已知错误有没有减少。再用独立来源的留出题比较成绩，检查其他能力有没有退化，决定是否保留改动。截至十一月二十三日，运行快照记录首轮目标二百五十六道题里已验收二百零一道，全是无教师提示的作答。首轮 LoRA 和正式测试还没进行。"
+        "LoRA 的一条训练样本里具体写什么？教师提示在哪一步给、在哪一步移除，为什么？",
+        "F11 的导出程序以每条已核验的 Qwen 回复为终点截一段训练样本。输入写入原题及约束、系统指令、可用工具和当时已发生的对话与工具返回。监督目标写入当前这条完整、可核验的回复，例如 Read 的工具名和读取参数、Bash 的可执行计算，或最终 JSON 中的 answer 数值及 unit 单位。训练只在该回复上计算损失。原题、先前回复和真实工具结果都留在输入里，帮助模型理解此时掌握了什么。有错误动作的回复及真实报错只作后续纠错的上下文。无提示样本里，若训练模板保留了当前合格回复的 thinking token，它们也参与损失计算。\n\nWebShop 的启发是把用户的原始要求写进纠错动作。WebShop 示例中，用户要六件装，工具返回的商品只有单件装。改写后的回复重申六件装要求并建议重新搜索。拿到新结果后，后续回复再核对包装数量。假如财报题要求资料最迟在 3 月 1 日披露，工具却返回一份 4 月披露的财报，就把这份真实返回留在历史里。目标回复是带原截止日的完整检索调用，拿到新结果后再核对披露日期。已有财报 B 类示范的训练目标也包含实际读取另一份财报的 Read、计算两期相对变化的 Bash 和最终百分比 JSON，分别放在对应片段中。\n\n教师提示是在采样阶段加的。F06 由 Opus 给一条纠错方向，F07 由 Qwen 带着它重做整题。F08 核对这份原始作答之后，F11 的导出程序从训练用副本移除逐题提示及辅助作答里的 thinking 内容，原件和提示另存以便审计。随后 Opus 通读提示移除后的实际执行，按原题、Skill、正常材料和真实工具记录核验每条动作、参数和答案。同一次复核请求另列原提示，供 Opus 检查复述和依赖。Valid 和 Test 让 Qwen 凭原题、Skill 和实际工具返回作答，无逐题教师提示。导出时移除提示，是为了让训练和评测中模型能看到的信息一致，避免留下只有依赖提示才能成立的动作。整条辅助轨迹通过复核并重新编码后，训练用副本才会进入数据池。"
     ],
     [
-        "请用一分钟说明，C1 到 C5 各检查什么，C5 根据什么证据判断错因？",
-        "C1 用原始资料和独立验算核对题目、参考答案。C2 用应该判对和判错的答案测试评分器。C3 查 Qwen 有没有做对必要的读取、检索、计算和测试。C4 针对需要工具的题，查调用和真实返回怎么用，也看工具是否故障、资料能否访问。C5 由 Opus 对照题目要求、Qwen 实际收到的 Skill、作答记录和适用的 C3、C4 结果，判断是规则缺失、含糊或写错，还是模型没照核验过的规则做。证据不足就留待核查。"
+        "最后答案已经正确，整道题还需要通过哪些检查才计入 LoRA 数据池？训练配方怎样控制样本用量？",
+        "验收程序按完整题计数。一条轨迹须包含可查的请求、实际工具返回和最终回复，参考答案与测试留在评分端。导出程序用实际的分词器和训练模板编码。每个必需的正确工具步骤及最终回复都要有完整片段，片段的输入和目标合计最多 16,384 个 token。缺一个必需片段或有一个超长，整道题不计入配额。同一道题的一条多轮轨迹可贡献多个片段。题数表示覆盖，片段数表示训练样本数，参与损失的 token 数表示实际监督量。\n\nMixed 和 A→B 用相同的训练片段、重复次数和支持数据位置，只改变新增 A/B 片段的顺序。8:1:1 按片段数计，每 8 个新增片段插入 1 个已核验的种子片段和 1 个已核验的旧题回看片段。缺少回看片段时，使用两个种子片段。B-only 保持相同的支持数据，按完整片段尽量匹配新增样本实际监督的 token 总量，并记录差额。这样能区分顺序和数据组成的影响。"
     ],
     [
-        "请用一分钟说明，什么情况下只改 Skill、只做 LoRA，或者先改 Skill 再做 LoRA？",
-        "只改 Skill，是规则有缺陷，修订后同类错误不再跨来源反复。Opus 修订规则，经过两次独立审查后，Qwen 用轮初权重重做同一批三十二道检查题，包括原来答对的。只做 LoRA，是现有规则通过核验，同一个 Qwen 仍在至少两个独立训练来源上犯同类执行错误。同一份财报的多道题只算一个来源。修订后的规则通过审查，重做后若仍达到这个复现条件，就固定新版 Skill，再用合格示范做 LoRA。最终由配对评测决定是否保留改动。"
-    ],
-    [
-        "请用一分钟说明，项目怎样围绕目标错误合成并验收新题，再筛选训练示范，教师在什么情况下参与？",
-        "项目用另一个训练来源，围绕已确认的错误出题。Opus 写财报和工作簿题，代码题用模板。验收时独立验算或跑测试，确认参考答案能过，目标错例会被判错。\n\nQwen 无提示做两次，按执行记录核对错因。一次合格、一次复现目标错误，就选合格的。两次都复现，Opus 才给纠错方向，Qwen 到新工作区用真实工具重做。其他结果暂不采用。两路都核对答案、格式和执行证据，程序先查，需要判断的交给 Opus，每题最多留一条。"
+        "复做原题、使用留出题、跑最终 Test 分别回答什么？训练候选又怎样通过版本比较？",
+        "复做原来的 Train 检查题是看已知错误是否减少。用独立来源的 Valid 比较，是看改变能否迁移并保护原有能力。F13 训练出候选 LoRA 后回到图 A，Qwen 用轮初与候选两套权重做相同的题，固定 Skill、工具、评分和预算。评估 Skill 时则固定权重。最后的 Test 只在版本冻结后运行，按相同条件比较初始组合和最终保留组合。\n\n版本选择程序对 DocFinQA、FinSearchComp 和 DSCodeBench 的 Valid 分数取等权平均。只改 Skill 时，要求同一批 32 道 Train 检查题的汇总得分提高、Valid 主分持平或提高，并且实际 Skill 改动所涉及的主要能力在 Valid 上的得分也不能下降。比较 LoRA 时，在同一份已核验的 Skill 下，候选权重的 Valid 主分至少提高 1 个百分点。两类更新均要求单个主数据集降幅不超过 5 个百分点，IFEval 降幅不超过 2 个百分点。先改 Skill 再微调时，还要把联合版本与轮初组合比较，要求同一批 Train 检查题的汇总得分提高、Valid 主分及受影响的主要能力均不下降，并通过同样的降幅保护门槛。微调或联合版本未达标时，可以单独保留已通过自己门槛的新版 Skill。\n\n研究设计还分别设置更新策略和出题策略的对照。在固定 Mixed 配方的条件下比较自适应更新、只改 Skill 和只训练，再从同一起点、用同样预算比较按错因出题和固定题型出题。它们回答哪种策略带来收益，配对版本门槛则负责决定本轮采用哪个版本。"
     ]
 ];
 function PageContents({ lang }) {
