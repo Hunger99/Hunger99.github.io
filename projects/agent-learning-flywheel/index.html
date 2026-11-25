@@ -20,7 +20,7 @@ td { white-space: pre-line; overflow-wrap: anywhere; }
 .settings-group > summary h3 { display: inline; margin: 0; font-size: 1.12rem; }
 .settings-group[open] > summary { border-bottom: 1px solid #e8e2ef; }
 .settings-group > .settings-list { padding: 0 22px 10px; }
-.shared-architecture { max-width: 1000px; margin: 32px auto; }
+.shared-architecture { max-width: 1000px; margin: 32px auto; scroll-margin-top: 56px; }
 .diagram-scroll { overflow-x: auto; border: 1px solid #e3ddec; border-radius: 10px; background: white; }
 .diagram-scroll img { display: block; width: 100%; height: auto; min-width: 720px; }
 .shared-architecture figcaption { font-size: .91rem; line-height: 1.65; color: #5d5668; padding: 12px 2px; }
@@ -28,6 +28,8 @@ td { white-space: pre-line; overflow-wrap: anywhere; }
 .appendix-qa-list dt { margin-top: 1em; font-weight: 650; }
 .appendix-qa-list dt:first-child { margin-top: 0; }
 .appendix-qa-list dd { margin: 0.35em 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.appendix-qa-list dd.appendix-diagram-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.9em; white-space: normal; }
+.appendix-diagram-links a { text-decoration: underline; text-underline-offset: 0.15em; }
 .module-explanation { border-bottom: 1px solid #ddd6e7; padding: 16px 0; }
 .module-explanation > summary { cursor: pointer; font-weight: 650; color: #593887; }
 .module-explanation .table-wrap { margin-top: 20px; }
@@ -83,7 +85,7 @@ summary:focus-visible, .diagram-scroll:focus-visible { outline: 3px solid #9171b
 .diagram-canvas { position: relative; min-width: 720px; width: 100%; }
 .diagram-node-links { position: absolute; inset: 0; }
 .diagram-node-links > a { position: absolute; display: block; border-radius: 6px; }
-.diagram-node-links > a:hover, .diagram-node-links > a:focus-visible { outline: 3px solid #593887; outline-offset: -2px; background: rgb(121 84 143 / 10%); }
+.diagram-node-links > a:is(:hover, :focus-visible, :target) { outline: 3px solid #593887; outline-offset: -2px; background: rgb(121 84 143 / 10%); }
 #pipeline tr:is(:target, :focus-visible) > * { background: #f3eafb; }
 #pipeline tr:is(:target, :focus-visible) { outline: 2px solid #79548f; outline-offset: -2px; }
 .diagram-return { display: block; width: fit-content; margin-top: .6em; font-size: .82em; }
@@ -1359,6 +1361,63 @@ const appendixQa = [
         "复做原来的 Train 检查题是看已知错误是否减少。用独立来源的 Valid 比较，是看改变能否迁移并保护原有能力。F13 训练出候选 LoRA 后回到图 A，Qwen 用轮初与候选两套权重做相同的题，固定 Skill、工具、评分和预算。评估 Skill 时则固定权重。最后的 Test 只在版本冻结后运行，按相同条件比较初始组合和最终保留组合。\n\n版本选择程序对 DocFinQA、FinSearchComp 和 DSCodeBench 的 Valid 分数取等权平均。只改 Skill 时，要求同一批 32 道 Train 检查题的汇总得分提高、Valid 主分持平或提高，并且实际 Skill 改动所涉及的主要能力在 Valid 上的得分也不能下降。比较 LoRA 时，在同一份已核验的 Skill 下，候选权重的 Valid 主分至少提高 1 个百分点。两类更新均要求单个主数据集降幅不超过 5 个百分点，IFEval 降幅不超过 2 个百分点。先改 Skill 再微调时，还要把联合版本与轮初组合比较，要求同一批 Train 检查题的汇总得分提高、Valid 主分及受影响的主要能力均不下降，并通过同样的降幅保护门槛。微调或联合版本未达标时，可以单独保留已通过自己门槛的新版 Skill。\n\n研究设计还分别设置更新策略和出题策略的对照。在固定 Mixed 配方的条件下比较自适应更新、只改 Skill 和只训练，再从同一起点、用同样预算比较按错因出题和固定题型出题。它们回答哪种策略带来收益，配对版本门槛则负责决定本轮采用哪个版本。"
     ]
 ];
+const appendixDiagramLinks = [
+    [
+        ["architecture", "图 A · 一轮诊断与更新", "Figure A · One round of diagnosis and updates"],
+    ],
+    [
+        ["diagram-node-overview-split", "图 A · 按作答结果分流", "Figure A · Route by the number of correct answers"],
+    ],
+    [
+        ["diagram-node-overview-audit_wrong-c1", "图 A · C1–C2 答案与评分", "Figure A · C1–C2 Reference answer and scoring"],
+        ["diagram-node-overview-C3", "图 A · C3–C5 执行诊断", "Figure A · C3–C5 Diagnose execution"],
+    ],
+    [
+        ["diagram-node-overview-F01", "图 A · F01 选择改动", "Figure A · F01 Decide what to change"],
+        ["diagram-node-overview-rerun_used", "图 A · 重做检查题", "Figure A · Rerun the check questions"],
+    ],
+    [
+        ["diagram-node-overview-write_skill", "图 A · 新建或修订 Skill", "Figure A · Create or revise a Skill"],
+        ["diagram-node-overview-rerun_used", "图 A · 重做检查题", "Figure A · Rerun the check questions"],
+    ],
+    [
+        ["diagram-node-overview-run", "图 A · 用原题诊断", "Figure A · Diagnose on the original questions"],
+        ["diagram-node-training-F02", "图 B · F02 构题与验题", "Figure B · F02 Build and verify questions"],
+        ["diagram-node-overview-evaluation", "图 A · 配对评测", "Figure A · Paired evaluation"],
+    ],
+    [
+        ["diagram-node-training-F02", "图 B · F02 构题与验题", "Figure B · F02 Build and verify questions"],
+    ],
+    [
+        ["diagram-node-training-F04", "图 B · F04 按作答结果分流", "Figure B · F04 Route the attempts"],
+        ["diagram-node-training-F06", "图 B · F06 教师提示", "Figure B · F06 Teacher hint"],
+    ],
+    [
+        ["diagram-node-training-F02", "图 B · F02 Opus 提出题目规格", "Figure B · F02 Opus proposes question specifications"],
+        ["diagram-node-training-F03", "图 B · F03 无提示作答", "Figure B · F03 Answer without hints"],
+        ["diagram-node-training-F08", "图 B · F08 核对执行证据", "Figure B · F08 Verify execution evidence"],
+    ],
+    [
+        ["diagram-node-training-F06", "图 B · F06 教师提示", "Figure B · F06 Teacher hint"],
+        ["diagram-node-training-F11", "图 B · F11 导出训练样本", "Figure B · F11 Export training samples"],
+    ],
+    [
+        ["diagram-node-training-F11", "图 B · F11 导出训练样本", "Figure B · F11 Export training samples"],
+        ["diagram-node-training-F12", "图 B · F12 核对题数", "Figure B · F12 Check question counts"],
+    ],
+    [
+        ["diagram-node-overview-evaluation", "图 A · 配对评测", "Figure A · Paired evaluation"],
+        ["diagram-node-overview-gate", "图 A · 判断是否保留改动", "Figure A · Decide whether to keep the update"],
+    ],
+    [
+        ["diagram-node-training-F13", "图 B · F13 LoRA 微调", "Figure B · F13 LoRA fine-tuning"],
+    ],
+];
+function AppendixDiagramLinks({ number, lang }) {
+    return l.createElement("dd", { className: "appendix-diagram-links", lang: lang === "zh" ? "zh-CN" : "en" },
+        appendixDiagramLinks[number - 1].map(([target, zh, en]) =>
+            l.createElement("a", { key: target, href: `#${target}` }, lang === "zh" ? zh : en)));
+}
 function PageContents({ lang }) {
     const [entries, setEntries] = useState([]);
     const [expanded, setExpanded] = useState(false);
@@ -1435,7 +1494,8 @@ function Home() {
             requestAnimationFrame(() => {
                 const section = target.matches("section[id]");
                 const summary = target.matches("details") ? target.querySelector(":scope > summary") : null;
-                (summary ?? target).scrollIntoView({ block: section || summary ? "start" : "center" });
+                const alignTop = section || summary || target.matches("figure.shared-architecture");
+                (summary ?? target).scrollIntoView({ block: alignTop ? "start" : "center" });
                 const focusTarget = section ? target.querySelector("h2") ?? target : summary ?? target;
                 if (!focusTarget.hasAttribute("tabindex") && focusTarget.tabIndex < 0)
                     focusTarget.setAttribute("tabindex", "-1");
@@ -1646,10 +1706,12 @@ function Home() {
                             l.createElement(l.Fragment, { key: index },
                                 l.createElement("dt", { lang: "en" }, `Q${index + 1} · Question`),
                                 l.createElement("dd", { lang: "zh-CN" }, question),
+                                l.createElement(AppendixDiagramLinks, { number: index + 1, lang }),
                                 l.createElement("dt", { lang: "en" }, `A${index + 1} · Answer`),
                                 l.createElement("dd", { lang: "zh-CN" }, answer))),
                         l.createElement("dt", { lang: "en" }, `Q${loraNumber} · Question`),
                         l.createElement("dd", { lang: loraLanguage }, loraQuestion),
+                        l.createElement(AppendixDiagramLinks, { number: loraNumber, lang }),
                         l.createElement("dt", { lang: "en" }, `A${loraNumber} · Answer`),
                         l.createElement("dd", { lang: loraLanguage },
                             loraAnswer, " ", l.createElement(Citation, { at: "appendix-lora", lang: lang }),
