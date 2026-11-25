@@ -132,6 +132,23 @@
 </section>
 <!-- End teaser figure -->
 
+<section class="section hero" id="key-takeaways" aria-labelledby="key-takeaways-heading">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered" id="key-takeaways-heading">核心要点</h2>
+        <div class="content">
+          <ol>
+            <li><strong>动机。</strong> 当只有部分作答（rollout）有真实奖励时，只用这部分作答更新策略，其余作答就用不上了。</li>
+            <li><strong>现有方法的局限。</strong> 一些方法按固定的相似度权重传播奖励，另一些方法逐条独立预测奖励。这两种做法都没有把相似问题、各自的推理过程和最终答案联系起来，一起判断作答是否正确。</li>
+            <li><strong>我们的方法。</strong> MemReward 把问题、推理过程和最终答案组织成一张异构图，并用有真实奖励的作答训练图神经网络（GNN）。在线强化学习时，MemReward 将待评分作答的问题连到图中的相似问题，用 GNN 预测这些作答的奖励，再结合真实奖励和预测奖励更新策略。</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Paper abstract -->
 <section class="section hero is-light">
   <div class="container is-max-desktop">

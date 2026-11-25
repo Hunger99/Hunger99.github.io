@@ -131,6 +131,23 @@
 </section>
 <!-- End teaser figure -->
 
+<section class="section hero" id="key-takeaways" aria-labelledby="key-takeaways-heading">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered" id="key-takeaways-heading">Key Takeaways</h2>
+        <div class="content">
+          <ol>
+            <li><strong>Motivation.</strong> When only some rollouts have ground-truth rewards, updating the policy on that subset leaves the remaining rollouts unused.</li>
+            <li><strong>Gap.</strong> Some methods propagate rewards using fixed similarity weights, while others score each rollout independently. Both approaches miss the opportunity to judge a rollout by looking at related queries together with their reasoning processes and final answers.</li>
+            <li><strong>Approach.</strong> MemReward builds a heterogeneous graph of queries, reasoning processes, and final answers and trains a graph neural network (GNN) on rollouts with ground-truth rewards. During online reinforcement learning, MemReward connects the queries of unscored rollouts to similar queries in the graph, uses the GNN to predict rewards for those rollouts, and updates the policy with both ground-truth and predicted rewards.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Paper abstract -->
 <section class="section hero is-light">
   <div class="container is-max-desktop">
