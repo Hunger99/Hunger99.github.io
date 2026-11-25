@@ -154,19 +154,42 @@ body {
   width: auto;
 }
 
-/* Language switch, top right of every project page. */
-.lang-switch {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  z-index: 10;
+/* Page links above the hero, in reading order at every viewport width. */
+.project-page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .25rem .4rem;
+  padding: .5rem 1rem 0;
+}
+
+.project-page-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 .6rem;
+  border-radius: .5rem;
   font-size: .95rem;
   font-weight: 500;
   color: #4a5565;
 }
 
-.lang-switch:hover {
+.project-page-nav .home-link {
+  border: 1px solid #d1d5dc;
+}
+
+.project-page-nav a:hover {
   color: #101828;
+  background: #f5f6f8;
+}
+
+.project-page-nav a:focus-visible {
+  outline: 2px solid #7452ab;
+  outline-offset: 2px;
+}
+
+.project-page-nav + .hero > .hero-body {
+  padding-top: 1rem;
 }
 
 html[lang="zh-CN"] body,

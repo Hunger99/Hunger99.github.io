@@ -20,13 +20,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
-  <link rel="stylesheet" href="static/css/main.css">
-  <link rel="stylesheet" href="../../assets/css/cv-navigation.css">
+  <link rel="stylesheet" href="static/css/main.css?v=3ec7908d9f3d">
 </head>
 <body>
 
-<a class="cv-link" href="../../assets/cv/CV-Tianyang-Luo-AI.pdf?v=15178b04f9f4" type="application/pdf" hreflang="en" aria-label="View English CV">CV</a>
-<a class="lang-switch" href="index-zh.html" hreflang="zh-CN" lang="zh-CN">[中文]</a>
+<nav class="project-page-nav" aria-label="Page links">
+  <a class="cv-link" href="../../assets/cv/CV-Tianyang-Luo-AI.pdf?v=15178b04f9f4" type="application/pdf" hreflang="en" aria-label="View English CV">CV</a>
+  <a class="home-link" href="../../index.html" hreflang="en">Home</a>
+  <a class="lang-switch" href="index-zh.html" hreflang="zh-CN" lang="zh-CN">[中文]</a>
+</nav>
 
 <section class="hero">
   <div class="hero-body">
@@ -242,8 +244,6 @@
                 <li><strong>I increased the batch size to 128 questions, with 8 sampled responses per question, to reduce sampling fluctuations.</strong> The repeated spikes made me suspect that samples from a few questions were having too much influence on the batch reward and gradient. Averaging across more question groups per update can reduce that influence. The curves motivated this hypothesis. The independent benefit of increasing the batch size remains to be verified.</li>
               </ul>
               <p>With all three adjustments, training reward rose more steadily, validation reward peaked in epoch 7 or 8, and both the best validation performance and the final test performance improved.</p>
-              <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">Q</span> Why can 20% labels score higher than full labels on some benchmarks?</p>
-              <p>R1-Oracle, the Oracle run with ground-truth rewards for all rollouts, is a fully supervised reference rather than a strict per-benchmark upper bound: training still sees limited random samples across several domains, so full reward supervision does not guarantee the best result on every benchmark, particularly when gradients from different domains compete during joint optimization. The selective gains of MemReward on math can be explained by the domain-dependent quality of its predicted rewards: on Qwen2.5-1.5B with 20% labels, the chance that the frozen GNN scores a correct rollout above an incorrect one, its ROC-AUC, is 0.918 on math, 0.871 on QA and 0.754 on code. R1-Oracle supplies uniformly accurate rewards to all domains, so its updates reflect the joint multi-domain objective, whereas in MemReward the uneven reward quality may place relatively greater effective emphasis on math and reduce the influence of noisier gradients from other domains, which can improve math performance beyond R1-Oracle. To test this explanation, we raise the ground-truth ratio for QA and code from 20% to 70%, keep math at 20% and leave the GNN, backbone and GRPO settings unchanged: QA and code improve, while math decreases by 2.01 points and no longer exceeds R1-Oracle. This result is consistent with a multi-task optimization trade-off induced by domain-dependent reward quality.</p>
             </div>
           </div>
         </div>

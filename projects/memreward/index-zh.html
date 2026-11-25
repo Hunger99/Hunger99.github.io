@@ -21,13 +21,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
-  <link rel="stylesheet" href="static/css/main.css">
-  <link rel="stylesheet" href="../../assets/css/cv-navigation.css">
+  <link rel="stylesheet" href="static/css/main.css?v=3ec7908d9f3d">
 </head>
 <body>
 
-<a class="cv-link" href="../../assets/cv/CV-Tianyang-Luo-AI-zh.pdf?v=6c5353caccb0" type="application/pdf" hreflang="zh-CN" aria-label="查看中文 CV">CV</a>
-<a class="lang-switch" href="index.html" hreflang="en" lang="en">[English]</a>
+<nav class="project-page-nav" aria-label="页面链接">
+  <a class="cv-link" href="../../assets/cv/CV-Tianyang-Luo-AI-zh.pdf?v=6c5353caccb0" type="application/pdf" hreflang="zh-CN" aria-label="查看中文 CV">CV</a>
+  <a class="home-link" href="../../index-zh.html" hreflang="zh-CN">返回主页</a>
+  <a class="lang-switch" href="index.html" hreflang="en" lang="en">[English]</a>
+</nav>
 
 <section class="hero">
   <div class="hero-body">
@@ -243,8 +245,6 @@
                 <li><strong>把 batch size 增到 128 道题，每题采样 8 条回答，是为了减少采样波动。</strong> 反复出现的尖峰让我怀疑，少数题的采样结果可能对一批的奖励和梯度影响太大。让每次更新平均更多题组，可以减小这种影响。这个判断来自曲线，batch size 的独立收益还没有单独验证。</li>
               </ul>
               <p>三项合调后，训练奖励爬升更平稳，验证奖励到第 7–8 个 epoch 才见顶，最佳验证表现和最终测试表现也都更好。</p>
-              <p class="pipeline-group has-text-left"><span class="pipeline-question-marker">问</span> 为什么 20% 的标签在部分基准上能比全部标签得分更高？</p>
-              <p>R1-Oracle 是所有 rollout 都用真实奖励的 Oracle 运行，它是全监督参照，而不是每个基准的严格上界：训练看到的仍是跨多个领域的有限随机样本，所以全监督并不保证每个基准都得到最好的结果，尤其是不同领域的梯度在联合优化中相互竞争时。MemReward 在数学上的选择性提升，可以用预测奖励的质量随领域不同来解释：在 Qwen2.5-1.5B、20% 标签下，冻结的 GNN 把正确 rollout 排在错误 rollout 之前的概率，即 ROC-AUC，在数学上是 0.918，QA 是 0.871，代码是 0.754。R1-Oracle 给所有领域的奖励都同样准确，所以它的更新反映联合的多领域目标；而在 MemReward 中，不均匀的奖励质量可能让优化实际上相对更侧重数学，减小其他领域噪声更大的梯度的影响，这可以让数学表现超过 R1-Oracle。为检验这一解释，我们把 QA 和代码的真实标签比例从 20% 提到 70%，数学保持 20%，GNN、backbone 和 GRPO 设置都不变：QA 和代码提升，数学下降 2.01 分，不再超过 R1-Oracle。这个结果符合由领域间奖励质量差异带来的多任务优化权衡。</p>
             </div>
           </div>
         </div>
